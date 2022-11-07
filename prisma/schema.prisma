@@ -1,0 +1,151 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                      String          @default(cuid()) @id
+  fullname                String
+  username                String          @unique
+  bio                     String?
+  email                   String?         @unique
+  password                String?
+  social                  String?
+  image                   String?
+  isOnline                Boolean         @default(true)
+  communitiesOwned        Community[]     @relation(name: "UserCommunityAuthor")
+  communitiesFollowed     Community[]     @relation(name: "UserCommunityMember")
+  currentChannel          Channel?
+  channelsInfo            ChannelInfo[]
+  messages                Message[]
+  files                   File[]
+  replyMessages           ReplyMessage[]
+  notificationsSend       Notification[]  @relation(name: "UserNotificationSender")
+  notificationsReceived   Notification[]  @relation(name: "UserNotificationReceiver")
+  reactions               Reaction[]
+  role                    Role[]          @relation(name: "UserRoles")
+  owner                   String?
+}
+
+model Community {
+  id                      String                    @default(cuid()) @id
+  name                    String                    @unique
+  url                     String                    @unique
+  image                   String?
+  description             String?
+  isPrivate               Boolean                   @default(false)
+  author                  User?                     @relation(name: "UserCommunityAuthor")
+  members                 User[]                    @relation(name: "UserCommunityMember")
+  channels                Channel[]
+  notifications           Notification[]
+}
+
+model Channel {
+  id                      String          @default(cuid()) @id
+  createdAt               DateTime        @default(now())
+  name                    String
+  url                     String          @unique
+  description             String?
+  isPrivate               Boolean         @default(false)
+  community               Community
+  author                  User?           @relation(name: "UserChannelAuthor")
+  messages                Message[]
+  typingUsers             User[]
+  notifications           Notification[]
+  userData                ChannelInfo[]
+}
+
+model Message {
+  id                      String             @default(cuid()) @id
+  createdAt               DateTime           @default(now())
+  updatedAt               DateTime            @updatedAt
+  body                    String?
+  channel                 Channel?
+  author                  User
+  attachments             File[]
+  remoteAttachments       RemoteAttachment[]
+  children                ReplyMessage[]
+  reactions               Reaction[]
+}
+
+model ReplyMessage {
+  id                      String              @default(cuid()) @id
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+  body                    String
+  author                  User
+  attachments             File[]
+  remoteAttachments       RemoteAttachment[]
+  parent                  Message
+}
+
+model Reaction {
+  id                      String          @default(cuid()) @id
+  name                    String
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+  users                   User[]
+  message                 Message
+}
+
+model Notification {
+  id                      String          @default(cuid()) @id
+  createdAt               DateTime        @default(now())
+  body                    String?
+  type                    String?
+  action                  String?
+  message                 Message?
+  channel                 Channel?
+  community               Community?
+  sender                  User            @relation(name: "UserNotificationSender")
+  receiver                User            @relation(name: "UserNotificationReceiver")
+  isRead                  Boolean         @default(false)
+}
+
+model File {
+  id                      String          @default(cuid()) @id
+  createdAt               DateTime        @default(now())
+  filename                String
+  mimetype                String
+  filesize                String?
+  message                 Message?
+  encoding                String
+  Key                     String          @unique
+  uploader                User
+}
+
+model Role {
+  id                      String          @default(cuid()) @id
+  createdAt               DateTime        @default(now())
+  title                   String          @unique
+  roleSettings            String
+  color                   String
+  users                   User[]          @relation(name: "UserRoles")
+}
+
+model ChannelInfo {
+  id                      String          @default(cuid()) @id
+  channel                 Channel
+  user                    User
+  lastUpdateAt            DateTime        @default(now())
+  uniqueUserChannelPair   String          @unique
+}
+
+model RemoteAttachment {
+  id                      String          @default(cuid()) @id
+  title                   String
+  description             String?
+  siteName                String?
+  url                     String
+  preview                 String?
+  videoLink               String?
+  parentMessage           Message?
+  parentReplyMessage      ReplyMessage?
+}
