@@ -1,4 +1,4 @@
-import { GraphQLUpload as Upload } from 'graphql-upload'
+// import { GraphQLUpload as Upload } from 'graphql-upload'
 import { Query } from './Query'
 import { Mutation } from './Mutation'
 import { Subscription } from './Subscription'
@@ -38,6 +38,6 @@ export const resolvers = {
   Notification,
   File,
   RemoteAttachment,
-  Upload,
+  // Upload,
   TypingStatus
 }

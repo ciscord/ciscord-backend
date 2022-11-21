@@ -1,7 +1,7 @@
 import * as express from 'express'
 const { run } = require('../scripts/helpers')
 import { PrismaClient } from '@prisma/client'
-import { MultiTenant } from 'prisma-multi-tenant'
+// import { MultiTenant } from 'prisma-multi-tenant'
 
 export const createTenant = async (req: any, res: any, next: any) => {
   
@@ -11,19 +11,10 @@ export const createTenant = async (req: any, res: any, next: any) => {
   const description = req.body.description
   const image = req.body.image
   const email = req.body.email
-  try {
-    // Create new tenant
-    await run(
-      `prisma-multi-tenant new --name=${name} --provider=postgresql
-      --url=${process.env.DATABASE_URL}?schema=${name}`
-    )
-    await run(`prisma-multi-tenant env ${name} -- prisma2 migrate save --experimental`)
-    await run(`prisma-multi-tenant migrate ${name} up -- --auto-approve`)
-  } catch (err) {}
 
   try {
-    const multiTenant = new MultiTenant<PrismaClient>();
-    const prisma = await multiTenant.get(name)
+    // const multiTenant = new MultiTenant<PrismaClient>();
+    const prisma = await PrismaClient()
 
 
     await prisma.user.create({
@@ -103,7 +94,6 @@ export const createTenant = async (req: any, res: any, next: any) => {
       }
     })
 
-    await multiTenant.disconnect()
     res.status(201).json({ success: true })
   } catch (err) {
     next(err)
@@ -111,16 +101,16 @@ export const createTenant = async (req: any, res: any, next: any) => {
 }
 
 export const deleteTenant = async (req: any, res: any, next: any) => {
-  try {
-    const name = req.body.tenantName
+  // try {
+  //   const name = req.body.tenantName
 
-    const multiTenant = new MultiTenant()
-    await multiTenant.deleteTenant(name)
+  //   const multiTenant = new MultiTenant()
+  //   await multiTenant.deleteTenant(name)
 
-    await multiTenant.disconnect()
-  } catch (err) {
-    next(err)
-  }
+  //   await multiTenant.disconnect()
+  // } catch (err) {
+  //   next(err)
+  // }
 }
 
 const router = express.Router()

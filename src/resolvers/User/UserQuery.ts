@@ -1,12 +1,12 @@
 import { queryField, stringArg } from 'nexus'
 import { getUserId, isEmpty } from '../../utils'
-import * as Twitter from 'twitter'
+import Twitter from 'twitter'
 
 const client = new Twitter({
-  consumer_key: process.env['TWITTER_CONSUMER_KEY'],
-  consumer_secret: process.env['TWITTER_CONSUMER_SECRET'],
-  access_token_key: process.env['TWITTER_TOKEN'],
-  access_token_secret: process.env['TWITTER_TOKEN_SECRET']
+  consumer_key: process.env['TWITTER_CONSUMER_KEY'] || '',
+  consumer_secret: process.env['TWITTER_CONSUMER_SECRET'] || '',
+  access_token_key: process.env['TWITTER_TOKEN'] || '',
+  access_token_secret: process.env['TWITTER_TOKEN_SECRET'] || ''
 })
 
 export const me = queryField('me', {
