@@ -1,16 +1,14 @@
-import { mutationField, stringArg } from 'nexus'
+import { mutationField, stringArg, nonNull, nullable } from 'nexus'
 import { sign } from 'jsonwebtoken'
 import { compare, hash } from 'bcryptjs'
 import { getTenant, getUserId } from '../../utils'
-import { channel } from '../Channel/ChannelQuery'
-import { disconnect } from 'cluster'
 
 export const login = mutationField('login', {
   type: 'AuthPayload',
   args: {
-    email: stringArg({ nullable: false }),
-    password: stringArg({ nullable: false }),
-    social: stringArg({ nullable: false })
+    email: nonNull(stringArg()),
+    password: nonNull(stringArg()),
+    social: nonNull(stringArg())
   },
   resolve: async (_parent, { email, password, social }, context) => {
     try {
@@ -39,7 +37,7 @@ export const login = mutationField('login', {
       const data = {
         token: sign(
           { userId: user.id, tenant: getTenant(context) },
-          process.env['APP_SECRET']
+          process.env['APP_SECRET'] || ''
         ),
         user
       }
@@ -71,7 +69,7 @@ export const login = mutationField('login', {
         })
 
         return {
-          token: sign({ userId: user.id }, process.env['APP_SECRET']),
+          token: sign({ userId: user.id }, process.env['APP_SECRET'] || ''),
           user
         }
       } else {
@@ -84,11 +82,11 @@ export const login = mutationField('login', {
 export const signup = mutationField('signup', {
   type: 'AuthPayload',
   args: {
-    fullname: stringArg({ nullable: false }),
-    username: stringArg({ nullable: false }),
+    fullname: nonNull(stringArg()),
+    username: nonNull(stringArg()),
     bio: stringArg(),
-    email: stringArg({ nullable: false }),
-    password: stringArg({ nullable: false })
+    email: nonNull(stringArg()),
+    password: nonNull(stringArg())
   },
   resolve: async (
     _parent,
@@ -121,7 +119,7 @@ export const signup = mutationField('signup', {
     return {
       token: sign(
         { userId: user.id, tenant: getTenant(context) },
-        process.env['APP_SECRET']
+        process.env['APP_SECRET'] || ''
       ),
       user
     }
@@ -131,9 +129,9 @@ export const signup = mutationField('signup', {
 export const updateUser = mutationField('updateUser', {
   type: 'User',
   args: {
-    email: stringArg({ nullable: false }),
-    fullname: stringArg({ nullable: false }),
-    username: stringArg({ nullable: false }),
+    email: nonNull(stringArg()),
+    fullname: nonNull(stringArg()),
+    username: nonNull(stringArg()),
     image: stringArg()
   },
   resolve: (_parent, { email, fullname, username, image }, context) => {
@@ -150,8 +148,8 @@ export const updateUser = mutationField('updateUser', {
 
 export const users = mutationField('users', {
   type: 'User',
-  list: true,
-  args: { searchString: stringArg({ nullable: true }) },
+  
+  args: { searchString: nullable(stringArg()) },
   resolve: (parent, { searchString }, context) => {
     return context.prisma.user.findMany({
       where: {
@@ -184,7 +182,7 @@ export const logout = mutationField('logout', {
 export const setCurrentChannel = mutationField('setCurrentChannel', {
   type: 'User',
   args: {
-    channelUrl: stringArg({ nullable: true })
+    channelUrl: nullable(stringArg())
   },
   resolve: async (_parent, { channelUrl }, context) => {
     try {

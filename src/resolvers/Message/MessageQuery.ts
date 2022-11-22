@@ -1,16 +1,16 @@
-import { queryField, stringArg, idArg } from 'nexus'
+import { queryField, stringArg, idArg, nullable } from 'nexus'
 import { getUserId, isEmpty } from '../../utils'
 
 const messagesNumber = 30
 
 export const lastMessages = queryField('getLastMessages', {
   type: 'Message',
-  list: true,
+  
   args: {
     channelUrl: stringArg(),
-    number: stringArg({ nullable: true }),
-    cursorId: idArg({ nullable: true }),
-    lastVisitDate: stringArg({ nullable: true })
+    number: nullable(stringArg()),
+    cursorId: nullable(idArg()),
+    lastVisitDate: nullable(stringArg())
   },
   resolve: async (_, { channelUrl, number, cursorId, lastVisitDate }, ctx) => {
     const userId: string = getUserId(ctx);
@@ -83,10 +83,10 @@ export const lastMessages = queryField('getLastMessages', {
 
 export const prevMessages = queryField('getPrevMessages', {
   type: 'Message',
-  list: true,
+  
   args: {
     channelUrl: stringArg(),
-    number: stringArg({ nullable: true }),
+    number: nullable(stringArg()),
     cursorId: idArg()
   },
   resolve: async (_, { channelUrl, cursorId, number }, ctx) => {
@@ -102,10 +102,10 @@ export const prevMessages = queryField('getPrevMessages', {
 
 export const nextMessages = queryField('getNextMessages', {
   type: 'Message',
-  list: true,
+  
   args: {
     channelUrl: stringArg(),
-    number: stringArg({ nullable: true }),
+    number: nullable(stringArg()),
     cursorId: idArg()
   },
   resolve: async (_, { channelUrl, cursorId, number }, ctx) => {
@@ -121,7 +121,7 @@ export const nextMessages = queryField('getNextMessages', {
 
 export const allMessages = queryField('allMessages', {
   type: 'Message',
-  list: true,
+  
   args: {
     channelUrl: stringArg()
   },
@@ -138,7 +138,7 @@ export const allMessages = queryField('allMessages', {
 
 export const searchMessages = queryField('searchMessages', {
   type: 'Message',
-  list: true,
+  
   args: {
     channelUrl: stringArg(),
     searchQuery: stringArg()

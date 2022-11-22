@@ -1,15 +1,14 @@
-import { mutationField, stringArg, arg } from "nexus";
+import { mutationField, stringArg, nullable } from "nexus";
 import { getUserId, getTenant } from "../../utils";
-import { processUpload, deleteFromAws } from "../../utils/fileApi";
-import { removeFile,getOpenGraphData, createRemoteAttachments } from "../../utils/helpers";
+import { removeFile, createRemoteAttachments } from "../../utils/helpers";
 
 export const replyMessage = mutationField("replyMessage", {
   type: "ReplyMessage",
   args: {
     body: stringArg(),
     parentId: stringArg(),
-    attachments: stringArg({ list: true, nullable: true }),
-    urlList: stringArg({ list: true, nullable: true })
+    attachments: nullable(stringArg()),
+    urlList: nullable(stringArg())
   },
   resolve: async (parent, { body, parentId, attachments, urlList }, ctx) => {
     const userId = (await getUserId(ctx)) || "ck3fot8rr0000qmkp16jlc1mq";

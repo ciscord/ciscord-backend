@@ -1,4 +1,4 @@
-import { mutationField, stringArg, arg } from 'nexus'
+import { mutationField, stringArg, nullable } from 'nexus'
 import { getUserId, getTenant } from '../../utils'
 import { processUpload, deleteFromAws } from '../../utils/fileApi'
 import { removeFile, getOpenGraphData, createRemoteAttachments } from '../../utils/helpers'
@@ -7,10 +7,10 @@ export const sendMessage = mutationField('sendMessage', {
   type: 'Message',
   args: {
     body: stringArg(),
-    attachments: stringArg({ list: true, nullable: true }),
+    attachments: nullable(stringArg()),
     channelUrl: stringArg(),
-    urlList: stringArg({ list: true, nullable: true }),
-    mentions: stringArg({ list: true, nullable: true }),
+    urlList: nullable(stringArg()),
+    mentions: nullable(stringArg()),
     communityUrl: stringArg()
   },
   resolve: async (parent, { body, channelUrl, attachments, urlList, mentions, communityUrl }, ctx) => {
@@ -285,7 +285,7 @@ export const deleteMessage = mutationField('deleteMessage', {
 
 export const searchMessages = mutationField('searchMessages', {
   type: 'Message',
-  list: true,
+  
   args: {
     channelUrl: stringArg(),
     searchQuery: stringArg()

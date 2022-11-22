@@ -67,7 +67,7 @@ export const Subscription = objectType({
     t.field('userWentOnline', {
       type: 'User',
       args: { tenant: stringArg() },
-      nullable: true,
+      
       subscribe: (_, { channelUrl, tenant }, context) => {
         return pipe(
           context.subscribe('USER_WENT_ONLINE'),
@@ -82,7 +82,7 @@ export const Subscription = objectType({
     t.field('userWentOffline', {
       type: 'User',
       args: { tenant: stringArg() },
-      nullable: true,
+      
       subscribe: (_, { channelUrl, tenant }, context) => {
         return pipe(
           context.subscribe('USER_WENT_OFFLINE'),
@@ -101,7 +101,7 @@ export const Subscription = objectType({
         tenant: stringArg(),
         username: stringArg()
       },
-      nullable: true,
+      
       subscribe: ({ userTypingStatus }, { channelUrl, tenant, username }, context) => {
         return pipe(
           context.subscribe('USER_TYPING_STATUS'),

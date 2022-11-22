@@ -1,11 +1,11 @@
-import { queryField, stringArg, idArg } from 'nexus'
+import { queryField, stringArg, idArg, nullable } from 'nexus'
 import { getUserId } from '../../utils';
 
 export const files = queryField('files', {
   type: 'File',
-  list: true,
+  
   args: {
-    after: idArg({ nullable: true }),
+    after: nullable(idArg()),
   },
   resolve: async (_, { after }, ctx) => {
     const userId = await getUserId(ctx)
@@ -18,9 +18,9 @@ export const files = queryField('files', {
 
 export const userFiles = queryField('userFiles', {
   type: 'File',
-  list: true,
+  
   args: {
-    after: idArg({ nullable: true }),
+    after: nullable(idArg()),
     userId: idArg(),
   },
   resolve: async (parent, {userId, after}, ctx) => {

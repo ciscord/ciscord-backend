@@ -1,12 +1,12 @@
-import { queryField, stringArg, idArg } from 'nexus'
+import { queryField, stringArg, idArg, nullable } from 'nexus'
 import { getUserId } from '../../utils';
 
 export const messages = queryField('replyMessages', {
   type: 'Message',
-  list: true,
+  
   args: {
     channelUrl: stringArg(),
-    after: idArg({ nullable: true }),
+    after: nullable(idArg()),
   },
   resolve: async (_, { channelUrl, after }, ctx) => {
 
@@ -19,10 +19,10 @@ export const messages = queryField('replyMessages', {
 
 export const messageReplies = queryField('messageReplies', {
   type: 'ReplyMessage',
-  list: true,
+  
   args: {
     messageId: stringArg(),
-    after: idArg({ nullable: true }),
+    after: nullable(idArg()),
   },
   resolve: async (_, { messageId, after }, ctx) => {
 

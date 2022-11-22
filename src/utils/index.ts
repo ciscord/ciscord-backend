@@ -1,5 +1,5 @@
 import { verify } from 'jsonwebtoken'
-import { Context } from '../types'
+import { Context } from '../context'
 
 interface Token {
   userId: string

@@ -1,11 +1,13 @@
-import { GraphQLUpload } from "graphql-upload";
-import { mutationField, arg, stringArg } from "nexus";
+import { FileUpload, GraphQLUpload } from "graphql-upload";
+import { mutationField, arg, stringArg, nullable, nonNull, list } from "nexus";
 import { processUpload, deleteFromAws } from "../../utils/fileApi";
 import { getUserId } from "../../utils";
+import { File } from '../index'
+import { Upload } from '../User/Others'
 
 export const uploadFile = mutationField("uploadFile", {
-  type: "File",
-  args: { file: arg({ type: "Upload", nullable: true }) },
+  type: File,
+  args: { file: nullable(arg({ type: Upload })) },
   resolve: async (parent, { file }, ctx) => {
     const userId = getUserId(ctx);
     if (!userId) {
@@ -30,9 +32,10 @@ export const uploadFile = mutationField("uploadFile", {
 });
 
 export const uploadFiles = mutationField("uploadFiles", {
-  type: 'File',
-  list: true,
-  args: { files: arg({ type: "Upload", required: true, list: true }) },
+  type: File,
+  args: {
+    files: arg({ type: nonNull(list(nonNull(Upload))) }),
+  },
   resolve: async (parent, { files }, ctx) => {
     const userId = getUserId(ctx);
     if (!userId) {
@@ -40,7 +43,7 @@ export const uploadFiles = mutationField("uploadFiles", {
     }
 
     const resultList = await Promise.all(
-      files.map(async (file) => {
+      files.map(async (file: FileUpload) => {
         const { Key, filename, mimetype, encoding } = await processUpload(file);
 
         const result = await ctx.prisma.file.create({

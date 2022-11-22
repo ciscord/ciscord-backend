@@ -1,4 +1,4 @@
-import { mutationField, stringArg, booleanArg } from "nexus";
+import { mutationField, stringArg, booleanArg, nullable } from "nexus";
 import { getUserId } from "../../utils";
 
 export const createCommunity = mutationField("createCommunity", {
@@ -7,8 +7,8 @@ export const createCommunity = mutationField("createCommunity", {
     name: stringArg(),
     url: stringArg(),
     image: stringArg(),
-    description: stringArg({ nullable: true }),
-    isPrivate: booleanArg({ nullable: true })
+    description: nullable(stringArg()),
+    isPrivate: nullable(booleanArg())
   },
   resolve: (parent, { name, url, description, isPrivate, image }, ctx) => {
     const userId = getUserId(ctx);

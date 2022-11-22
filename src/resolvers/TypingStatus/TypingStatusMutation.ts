@@ -1,7 +1,7 @@
 import { mutationField, stringArg, booleanArg } from "nexus";
 import { sign } from "jsonwebtoken";
 import { compare, hash } from "bcryptjs";
-import { APP_SECRET, getTenant, getUserId } from "../../utils";
+import { getTenant, getUserId } from "../../utils";
 
 export const setUserTypingStatus = mutationField("setUserTypingStatus", {
   type: "TypingStatus",

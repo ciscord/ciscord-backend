@@ -1,11 +1,11 @@
-import { mutationField, stringArg, booleanArg } from 'nexus'
+import { mutationField, stringArg, nonNull } from 'nexus'
 import { getUserId } from '../../utils'
 
 export const updateChannelInfo = mutationField("updateChannelInfo", {
   type: "User",
   args: {
-    channelUrl: stringArg({ nullable: false }),
-    date: stringArg({ nullable: false }),
+    channelUrl: nonNull(stringArg()),
+    date: nonNull(stringArg()),
   },
   resolve: async (_parent, { channelUrl, date }, ctx) => {
     const userId = await getUserId(ctx);

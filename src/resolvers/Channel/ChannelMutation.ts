@@ -1,13 +1,13 @@
-import { mutationField, stringArg, booleanArg } from 'nexus'
+import { mutationField, stringArg, booleanArg, nullable } from 'nexus'
 import { getUserId } from '../../utils'
 
 export const createChannel = mutationField('createChannel', {
   type: 'Channel',
   args: {
     name: stringArg(),
-    description: stringArg({ nullable: true }),
+    description: nullable(stringArg()),
     url: stringArg(),
-    isPrivate: booleanArg({ nullable: true }),
+    isPrivate: nullable(booleanArg()),
     communityUrl: stringArg()
   },
   resolve: async (
@@ -34,7 +34,7 @@ export const editChannel = mutationField('editChannel', {
   args: {
     channelId: stringArg(),
     name: stringArg(),
-    description: stringArg({ nullable: true })
+    description: nullable(stringArg())
   },
   resolve: async (parent, { channelId, name, description }, ctx) => {
     const userId = getUserId(ctx)

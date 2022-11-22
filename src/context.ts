@@ -15,9 +15,7 @@ export interface Token {
 const prisma = new PrismaClient()
 const pubsub = createPubSub()
 
-export function createContext(): Context {
-  return {
-    prisma: prisma,
-    pubsub: pubsub,
-  }
+export const context = {
+  prisma,
+  pubsub
 }

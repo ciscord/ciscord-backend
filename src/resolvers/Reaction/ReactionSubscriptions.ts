@@ -5,7 +5,7 @@ const ReactionSubscriptions = (t: any) => {
   t.field("newReaction", {
     type: "Reaction",
     args: { channelUrl: stringArg(), tenant: stringArg() },
-    nullable: true,
+    
     subscribe: (_, { channelUrl, tenant }, context) => {
       return pipe(
         context.subscribe('NEW_REACTION'),
@@ -17,7 +17,7 @@ const ReactionSubscriptions = (t: any) => {
   t.field("updatedReaction", {
     type: "Reaction",
     args: { channelUrl: stringArg(), tenant: stringArg() },
-    nullable: true,
+    
     subscribe: (_, { channelUrl, tenant }, context) => {
       return pipe(
         context.subscribe('UPDATE_REACTION'),
@@ -29,7 +29,7 @@ const ReactionSubscriptions = (t: any) => {
   t.field("removedReaction", {
     type: "Reaction",
     args: { channelUrl: stringArg(), tenant: stringArg() },
-    nullable: true,
+    
     subscribe: (_, { channelUrl, tenant }, context) => {
       return pipe(
         context.subscribe('REMOVE_REACTION'),

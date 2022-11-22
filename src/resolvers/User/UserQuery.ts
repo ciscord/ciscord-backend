@@ -1,4 +1,4 @@
-import { queryField, stringArg } from 'nexus'
+import { queryField, stringArg, nonNull, nullable } from 'nexus'
 import { getUserId, isEmpty } from '../../utils'
 import Twitter from 'twitter'
 
@@ -27,7 +27,7 @@ export const me = queryField('me', {
 
 export const getUser = queryField('getUser', {
   type: 'TwitterPayload',
-  args: { username: stringArg({ nullable: false }) },
+  args: { username: nonNull(stringArg()) },
   resolve: async (_parent, { username }, context) => {
     if(!username) throw "username is required";
 
@@ -52,8 +52,8 @@ export const getUser = queryField('getUser', {
 
 export const users = queryField('users', {
   type: 'User',
-  list: true,
-  args: { searchString: stringArg({ nullable: true }) },
+  
+  args: { searchString: nullable(stringArg()) },
   resolve: (parent, { searchString } : any, ctx) => {
     return ctx.prisma.user.findMany({
       where: {
