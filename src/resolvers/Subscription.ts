@@ -1,5 +1,5 @@
 import { objectType } from 'nexus'
-import { withFilter } from 'graphql-yoga'
+import { filter, pipe } from 'graphql-yoga'
 import { stringArg } from 'nexus'
 import ReactionSubscriptions from './Reaction/ReactionSubscriptions'
 
@@ -9,13 +9,13 @@ export const Subscription = objectType({
     t.field('newMessage', {
       type: 'Message',
       args: { channelUrl: stringArg(), tenant: stringArg() },
-      subscribe: withFilter(
-        (_parent, { channelUrl, tenant }, ctx) => ctx.pubsub.asyncIterator('NEW_MESSAGE'),
-        (payload, { channelUrl, tenant }) => {
-          return payload.newMessage.channel.url === channelUrl && payload.tenant === tenant
-        }
-      ),
-      resolve: payload => {
+      subscribe: (_, { channelUrl, tenant }, context) => {
+        return pipe(
+          context.subscribe('NEW_MESSAGE'),
+          filter((payload) => payload.newMessage.channel.url === channelUrl && payload.tenant === tenant)
+        )
+      },
+      resolve: (payload) => {
         return payload.newMessage
       }
     })
@@ -23,64 +23,58 @@ export const Subscription = objectType({
     t.field('editMessage', {
       type: 'Message',
       args: { channelUrl: stringArg(), tenant: stringArg() },
-      nullable: true,
-      subscribe: withFilter(
-        (_parrent, { channelUrl, tenant }, ctx) => {
-          return ctx.pubsub.asyncIterator('EDITED_MESSAGE')
-        },
-        (payload, { channelUrl, tenant }) => {
-          return payload.editMessage.channel.url === channelUrl && payload.tenant === tenant
-        }
-      )
+      subscribe: (_, { channelUrl, tenant }, context) => {
+        return pipe(
+          context.subscribe('EDITED_MESSAGE'),
+          filter((payload) => payload.editMessage.channel.url === channelUrl && payload.tenant === tenant)
+        )
+      }
     })
 
     t.field('deleteMessage', {
       type: 'Message',
       args: { channelUrl: stringArg(), tenant: stringArg() },
-      nullable: true,
-      subscribe: withFilter(
-        (_parrent, { channelUrl, tenant }, ctx) => {
-          return ctx.pubsub.asyncIterator('DELETED_MESSAGE')
-        },
-        (payload, { channelUrl, tenant }) => {
-          return payload.deleteMessage.channel.url === channelUrl && payload.tenant === tenant
-        }
-      )
+      subscribe: (_, { channelUrl, tenant }, context) => {
+        return pipe(
+          context.subscribe('DELETED_MESSAGE'),
+          filter((payload) => payload.deleteMessage.channel.url === channelUrl && payload.tenant === tenant)
+        )
+      }
     })
 
     t.field('newNotification', {
       type: 'Notification',
       args: { receiverId: stringArg(), tenant: stringArg() },
-      subscribe: withFilter(
-        (_parent, { receiverId, tenant }, ctx) => ctx.pubsub.asyncIterator('NEW_NOTIFICATION'),
-        (payload, { receiverId, tenant }) => {
-          return payload.newNotification.receiver.id === receiverId && payload.tenant === tenant
-        }
-      )
+      subscribe: (_, { channelUrl, tenant }, context) => {
+        return pipe(
+          context.subscribe('NEW_NOTIFICATION'),
+          filter((payload) => payload.newNotification.channel.url === channelUrl && payload.tenant === tenant)
+        )
+      }
     })
 
     t.field('channelNewMessage', {
       type: 'Channel',
       args: { communityUrl: stringArg(), tenant: stringArg() },
-      subscribe: withFilter(
-        (_parent, { communityUrl, tenant }, ctx) => ctx.pubsub.asyncIterator('CHANNEL_NEW_MESSAGE'),
-        (payload, { communityUrl, tenant }) => {
-          return payload.channelNewMessage.community.url === communityUrl && payload.tenant === tenant
-        }
-      )
+      subscribe: (_, { channelUrl, tenant }, context) => {
+        return pipe(
+          context.subscribe('CHANNEL_NEW_MESSAGE'),
+          filter((payload) => payload.channelNewMessage.channel.url === channelUrl && payload.tenant === tenant)
+        )
+      }
     })
 
     t.field('userWentOnline', {
       type: 'User',
       args: { tenant: stringArg() },
       nullable: true,
-      subscribe: withFilter(
-        (_parent, { tenant }, ctx) => ctx.pubsub.asyncIterator('USER_WENT_ONLINE'),
-        (payload, { tenant }) => {
-          return payload.tenant === tenant
-        }
-      ),
-      resolve: payload => {
+      subscribe: (_, { channelUrl, tenant }, context) => {
+        return pipe(
+          context.subscribe('USER_WENT_ONLINE'),
+          filter((payload) => payload.tenant === tenant)
+        )
+      },
+      resolve: (payload) => {
         return payload.user
       }
     })
@@ -89,13 +83,13 @@ export const Subscription = objectType({
       type: 'User',
       args: { tenant: stringArg() },
       nullable: true,
-      subscribe: withFilter(
-        (_parent, { tenant }, ctx) => ctx.pubsub.asyncIterator('USER_WENT_OFFLINE'),
-        (payload, { tenant }) => {
-          return payload.tenant === tenant
-        }
-      ),
-      resolve: payload => {
+      subscribe: (_, { channelUrl, tenant }, context) => {
+        return pipe(
+          context.subscribe('USER_WENT_OFFLINE'),
+          filter((payload) => payload.tenant === tenant)
+        )
+      },
+      resolve: (payload) => {
         return payload.user
       }
     })
@@ -108,13 +102,17 @@ export const Subscription = objectType({
         username: stringArg()
       },
       nullable: true,
-      subscribe: withFilter(
-        (_parent, { channelUrl, tenant, username }, ctx) => ctx.pubsub.asyncIterator('USER_TYPING_STATUS'),
-        ({ userTypingStatus }, { channelUrl, tenant, username }) =>
-          channelUrl === userTypingStatus.channelUrl &&
-          userTypingStatus.tenant === tenant &&
-          userTypingStatus.username !== username
-      )
+      subscribe: ({ userTypingStatus }, { channelUrl, tenant, username }, context) => {
+        return pipe(
+          context.subscribe('USER_TYPING_STATUS'),
+          filter(
+            (payload) =>
+              channelUrl === userTypingStatus.channelUrl &&
+              userTypingStatus.tenant === tenant &&
+              userTypingStatus.username !== username
+          )
+        )
+      }
     })
 
     ReactionSubscriptions(t)
