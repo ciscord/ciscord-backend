@@ -5,8 +5,8 @@ export const channels = queryField('channels', {
   type: 'Channel',
 
   args: { communityUrl: stringArg() },
-  resolve: (parent, { communityUrl }, ctx) => {
-    return ctx.prisma.channel.findMany({
+  resolve: (parent, { communityUrl }, Context) => {
+    return Context.prisma.channel.findMany({
       where: {
         community: {
           url: communityUrl
@@ -23,8 +23,8 @@ export const channel = queryField('channel', {
   args: {
     url: stringArg()
   },
-  resolve: (parent, { url }, ctx) => {
-    return ctx.prisma.channel.findOne({
+  resolve: (parent, { url }, Context) => {
+    return Context.prisma.channel.findOne({
       where: { url }
     })
   }
@@ -33,10 +33,10 @@ export const channel = queryField('channel', {
 export const privateChannels = queryField('privateChannels', {
   type: 'Channel',
 
-  resolve: async (_parent, {}, ctx) => {
-    const userId = await getUserId(ctx)
+  resolve: async (_parent, {}, Context) => {
+    const userId = await getUserId(Context)
 
-    const user = await ctx.prisma.user.findOne({
+    const user = await Context.prisma.user.findOne({
       where: {
         id: userId
       }
@@ -45,7 +45,7 @@ export const privateChannels = queryField('privateChannels', {
     const searchString = 'direct/'
     const searchString1 = user.username + '-'
 
-    const channels = await ctx.prisma.channel.findMany({
+    const channels = await Context.prisma.channel.findMany({
       where: {
         AND: [{ url: { contains: searchString } }, { url: { contains: searchString1 } }]
       },

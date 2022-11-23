@@ -7,15 +7,15 @@ export const updateChannelInfo = mutationField("updateChannelInfo", {
     channelUrl: nonNull(stringArg()),
     date: nonNull(stringArg()),
   },
-  resolve: async (_parent, { channelUrl, date }, ctx) => {
-    const userId = await getUserId(ctx);
+  resolve: async (_parent, { channelUrl, date }, Context) => {
+    const userId = await getUserId(Context);
 
-    const user = await ctx.prisma.user.findOne({
+    const user = await Context.prisma.user.findOne({
       where: { id: userId },
       include: { channelsInfo: { include: { channel: true } } }
     });
 
-    const channel = await ctx.prisma.channel.findOne({
+    const channel = await Context.prisma.channel.findOne({
       where: {
         url: channelUrl
       }
@@ -23,7 +23,7 @@ export const updateChannelInfo = mutationField("updateChannelInfo", {
 
     if (!channel) throw new Error("nonexistent channel ");
 
-    const channelsInfo = await ctx.prisma.channelInfo.findMany({
+    const channelsInfo = await Context.prisma.channelInfo.findMany({
       where: {
         channel: { url: channelUrl },
         user: { id: userId }
@@ -45,7 +45,7 @@ export const updateChannelInfo = mutationField("updateChannelInfo", {
       }
     }
     
-    const res = await ctx.prisma.channelInfo.upsert({
+    const res = await Context.prisma.channelInfo.upsert({
       where: {
         uniqueUserChannelPair: `${user.username}:${channel.url}`
       },

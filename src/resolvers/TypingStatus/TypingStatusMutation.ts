@@ -6,19 +6,19 @@ import { getTenant, getUserId } from "../../utils";
 export const setUserTypingStatus = mutationField("setUserTypingStatus", {
   type: "TypingStatus",
   args: { channelUrl: stringArg(), isTyping: booleanArg() },
-  resolve: async (parent, { channelUrl, isTyping }, ctx) => {
-    const userId = await getUserId(ctx);
+  resolve: async (parent, { channelUrl, isTyping }, Context) => {
+    const userId = await getUserId(Context);
 
-    const user = await ctx.prisma.user.findOne({
+    const user = await Context.prisma.user.findOne({
       where: {
         id: userId
       }
     });
 
-    ctx.pubsub.publish("USER_TYPING_STATUS", {
+    Context.pubsub.publish("USER_TYPING_STATUS", {
       userTypingStatus: {
         username: user.username,
-        tenant: await getTenant(ctx),
+        tenant: await getTenant(Context),
         isTyping,
         channelUrl
       }

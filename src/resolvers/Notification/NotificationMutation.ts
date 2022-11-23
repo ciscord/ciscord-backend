@@ -17,10 +17,10 @@ export const sendNotification = mutationField('sendNotification', {
     communityUrl: stringArg(),
     type: stringArg()
   },
-  resolve: async (parent, { messageId, receiverName, channelUrl, communityUrl, type }, ctx) => {
-    const userId = await getUserId(ctx)
+  resolve: async (parent, { messageId, receiverName, channelUrl, communityUrl, type }, Context) => {
+    const userId = await getUserId(Context)
 
-    const notification = await ctx.prisma.notification.create({
+    const notification = await Context.prisma.notification.create({
       data: {
         type,
         sender: { connect: { id: userId } },
@@ -36,9 +36,9 @@ export const sendNotification = mutationField('sendNotification', {
         channel: true
       }
     })
-    ctx.pubsub.publish('NEW_NOTIFICATION', {
+    Context.pubsub.publish('NEW_NOTIFICATION', {
       newNotification: notification,
-      tenant: getTenant(ctx)
+      tenant: getTenant(Context)
     })
 
     return notification
@@ -50,10 +50,10 @@ export const markNotificationAsRead = mutationField('markNotificationAsRead', {
   args: {
     id: stringArg()
   },
-  resolve: async (parent, { id }, ctx) => {
-    const userId = await getUserId(ctx)
+  resolve: async (parent, { id }, Context) => {
+    const userId = await getUserId(Context)
 
-    return ctx.prisma.notification.updateMany({
+    return Context.prisma.notification.updateMany({
       where: {
         id,
         receiver: { id: userId }
@@ -68,10 +68,10 @@ export const markNotificationsAsRead = mutationField('markNotificationsAsRead', 
   args: {
     type: stringArg()
   },
-  resolve: async (parent, { type }, ctx) => {
-    const userId = await getUserId(ctx)
+  resolve: async (parent, { type }, Context) => {
+    const userId = await getUserId(Context)
 
-    return ctx.prisma.notification.updateMany({
+    return Context.prisma.notification.updateMany({
       where: {
         AND: [{ isRead: false }, { receiver: { id: userId } }, { type: type }]
       },
@@ -83,10 +83,10 @@ export const markNotificationsAsRead = mutationField('markNotificationsAsRead', 
 export const markChannelNotificationsAsRead = mutationField('markChannelNotificationsAsRead', {
   type: 'Notification',
   args: { channelUrl: stringArg() },
-  resolve: async (parent, { channelUrl }, ctx) => {
-    const userId = await getUserId(ctx)
+  resolve: async (parent, { channelUrl }, Context) => {
+    const userId = await getUserId(Context)
 
-    return ctx.prisma.notification.updateMany({
+    return Context.prisma.notification.updateMany({
       where: {
         AND: [{ isRead: false }, { receiver: { id: userId } }, { channel: { url: channelUrl } }]
       },
@@ -98,10 +98,10 @@ export const markChannelNotificationsAsRead = mutationField('markChannelNotifica
 export const markCommunityNotificationsAsRead = mutationField('markCommunityNotificationsAsRead', {
   type: 'Notification',
   args: { communityUrl: stringArg() },
-  resolve: async (parent, { communityUrl }, ctx) => {
-    const userId = await getUserId(ctx)
+  resolve: async (parent, { communityUrl }, Context) => {
+    const userId = await getUserId(Context)
 
-    return ctx.prisma.notification.updateMany({
+    return Context.prisma.notification.updateMany({
       where: {
         AND: [{ isRead: false }, { receiver: { id: userId } }, { community: { url: communityUrl } }]
       },

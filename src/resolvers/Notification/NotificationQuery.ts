@@ -4,10 +4,10 @@ import { getUserId } from '../../utils'
 export const notifications = queryField('notifications', {
   type: 'Notification',
   
-  resolve: (parent, args, ctx) => {
-    const userId = getUserId(ctx)
+  resolve: (parent, args, Context) => {
+    const userId = getUserId(Context)
 
-    return ctx.prisma.notification.findMany({
+    return Context.prisma.notification.findMany({
       where: { receiver: { id: userId }, type: 'mention' },
       orderBy: { createdAt: 'desc' }
     })
@@ -17,10 +17,10 @@ export const notifications = queryField('notifications', {
 export const unreadNotifications = queryField('unreadNotifications', {
   type: 'Notification',
   
-  resolve: (parent, args, ctx) => {
-    const userId = getUserId(ctx)
+  resolve: (parent, args, Context) => {
+    const userId = getUserId(Context)
 
-    return ctx.prisma.notification.findMany({
+    return Context.prisma.notification.findMany({
       where: {
         AND: [{ isRead: false }, { receiver: { id: userId } }]
       }
@@ -32,10 +32,10 @@ export const channelNotifications = queryField('channelNotifications', {
   type: 'Notification',
   
   args: { channelUrl: stringArg() },
-  resolve: (parent, { channelUrl }, ctx) => {
-    const userId = getUserId(ctx)
+  resolve: (parent, { channelUrl }, Context) => {
+    const userId = getUserId(Context)
 
-    return ctx.prisma.notification.findMany({
+    return Context.prisma.notification.findMany({
       where: {
         AND: [{ channel: { url: channelUrl } }, { receiver: { id: userId } }, { isRead: false }]
       },
@@ -48,10 +48,10 @@ export const communityNotifications = queryField('communityNotifications', {
   type: 'Notification',
   
   args: { communityUrl: stringArg() },
-  resolve: (parent, { communityUrl }, ctx) => {
-    const userId = getUserId(ctx)
+  resolve: (parent, { communityUrl }, Context) => {
+    const userId = getUserId(Context)
 
-    return ctx.prisma.notification.findMany({
+    return Context.prisma.notification.findMany({
       where: {
         AND: [{ community: { url: communityUrl } }, { receiver: { id: userId } }, { isRead: false }]
       },

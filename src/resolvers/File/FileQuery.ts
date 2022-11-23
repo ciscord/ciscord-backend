@@ -7,10 +7,10 @@ export const files = queryField('files', {
   args: {
     after: nullable(idArg()),
   },
-  resolve: async (_, { after }, ctx) => {
-    const userId = await getUserId(ctx)
+  resolve: async (_, { after }, Context) => {
+    const userId = await getUserId(Context)
 
-    return ctx.prisma.file.findMany({
+    return Context.prisma.file.findMany({
       after
     })
   },
@@ -23,10 +23,10 @@ export const userFiles = queryField('userFiles', {
     after: nullable(idArg()),
     userId: idArg(),
   },
-  resolve: async (parent, {userId, after}, ctx) => {
-    const requestUserId = await getUserId(ctx);
+  resolve: async (parent, {userId, after}, Context) => {
+    const requestUserId = await getUserId(Context);
 
-    const fileList = await ctx.prisma.file.findMany({
+    const fileList = await Context.prisma.file.findMany({
       where: {
         uploader: {
           id: userId,

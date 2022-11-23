@@ -4,8 +4,8 @@ import { getUserId } from '../../utils'
 export const roles = queryField('roles', {
   type: 'Role',
   
-  resolve: (parent, args, ctx) => {
-    return ctx.prisma.role.findMany()
+  resolve: (parent, args, Context) => {
+    return Context.prisma.role.findMany()
   },
 })
 

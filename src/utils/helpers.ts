@@ -2,12 +2,12 @@ import { deleteFromAws } from "./fileApi";
 
 type removeFileProps = {
   filesList: string[],
-  ctx: any,
+  Context: any,
   messageId: string,
 }
 
-export const removeFile = async ({filesList, ctx, messageId}: removeFileProps) => {
-  await ctx.prisma.file.deleteMany({
+export const removeFile = async ({filesList, Context, messageId}: removeFileProps) => {
+  await Context.prisma.file.deleteMany({
     where: {
       message: {
         id: messageId

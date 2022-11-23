@@ -11,10 +11,10 @@ const client = new Twitter({
 
 export const me = queryField('me', {
   type: 'User',
-  resolve: (parent, args, ctx) => {
-    const userId: string = getUserId(ctx);
+  resolve: (parent, args, Context) => {
+    const userId: string = getUserId(Context);
     if (!isEmpty(userId)) {
-      return ctx.prisma.user.findOne({
+      return Context.prisma.user.findOne({
         where: {
           id: userId,
         },
@@ -54,8 +54,8 @@ export const users = queryField('users', {
   type: 'User',
   
   args: { searchString: nullable(stringArg()) },
-  resolve: (parent, { searchString } : any, ctx) => {
-    return ctx.prisma.user.findMany({
+  resolve: (parent, { searchString } : any, Context) => {
+    return Context.prisma.user.findMany({
       where: {
         username: {
           contains: searchString,

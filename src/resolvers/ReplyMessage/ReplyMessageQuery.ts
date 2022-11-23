@@ -8,9 +8,9 @@ export const messages = queryField('replyMessages', {
     channelUrl: stringArg(),
     after: nullable(idArg()),
   },
-  resolve: async (_, { channelUrl, after }, ctx) => {
+  resolve: async (_, { channelUrl, after }, Context) => {
 
-    return ctx.prisma.message.findMany({
+    return Context.prisma.message.findMany({
       where: { channel: { url: channelUrl } },
       after: { id: after }
     })
@@ -24,9 +24,9 @@ export const messageReplies = queryField('messageReplies', {
     messageId: stringArg(),
     after: nullable(idArg()),
   },
-  resolve: async (_, { messageId, after }, ctx) => {
+  resolve: async (_, { messageId, after }, Context) => {
 
-    return ctx.prisma.replyMessage.findMany({
+    return Context.prisma.replyMessage.findMany({
       where: { parent: { id: messageId } },
       after: { id: after }
     })

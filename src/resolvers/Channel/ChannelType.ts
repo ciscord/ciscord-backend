@@ -7,7 +7,7 @@ export const Channel = objectType({
   definition(t) {
     t.field("author", { type: User })
     t.nonNull.field("community", { type: Community })
-    t.nonNull.field("createdAt", { type: DateTime })
+    t.nonNull.field("createdAt", { type: 'DateTime' })
     t.string("description")
     t.nonNull.string("id")
     t.nonNull.boolean("isPrivate")

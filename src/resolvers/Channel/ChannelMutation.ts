@@ -13,10 +13,10 @@ export const createChannel = mutationField('createChannel', {
   resolve: async (
     parent,
     { name, url, description, isPrivate, communityUrl },
-    ctx
+    Context
   ) => {
-    const userId = getUserId(ctx)
-    return ctx.prisma.channel.create({
+    const userId = getUserId(Context)
+    return Context.prisma.channel.create({
       data: {
         name,
         url,
@@ -36,9 +36,9 @@ export const editChannel = mutationField('editChannel', {
     name: stringArg(),
     description: nullable(stringArg())
   },
-  resolve: async (parent, { channelId, name, description }, ctx) => {
-    const userId = getUserId(ctx)
-    return ctx.prisma.channel.update({
+  resolve: async (parent, { channelId, name, description }, Context) => {
+    const userId = getUserId(Context)
+    return Context.prisma.channel.update({
       where: { id: channelId },
       data: {
         name,

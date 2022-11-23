@@ -10,10 +10,10 @@ export const Message = objectType({
     t.string("body")
     t.field("channel", { type: Channel })
     t.nonNull.list.nonNull.field("children", { type: ReplyMessage })
-    t.nonNull.field("createdAt", { type: DateTime })
+    t.nonNull.field("createdAt", { type: 'DateTime' })
     t.nonNull.string("id")
     t.nonNull.list.nonNull.field("reactions", { type: Reaction })
     t.nonNull.list.nonNull.field("remoteAttachments", { type: RemoteAttachment })
-    t.nonNull.field("updatedAt", { type: DateTime })
+    t.nonNull.field("updatedAt", { type: 'DateTime' })
   }
 })

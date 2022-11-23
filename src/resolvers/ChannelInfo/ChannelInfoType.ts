@@ -7,7 +7,7 @@ export const ChannelInfo = objectType({
   definition(t) {
     t.nonNull.field("channel", { type: Channel })
     t.nonNull.string("id")
-    t.nonNull.field("lastUpdateAt", { type: DateTime })
+    t.nonNull.field("lastUpdateAt", { type: 'DateTime' })
     t.nonNull.string("uniqueUserChannelPair")
     t.nonNull.field("user", { type: User })
   }

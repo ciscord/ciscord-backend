@@ -17,10 +17,10 @@ export const ReplyMessage = objectType({
     })
     t.nonNull.field("author", { type: User })
     t.nonNull.string("body")
-    t.nonNull.field("createdAt", { type: DateTime })
+    t.nonNull.field("createdAt", { type: 'DateTime' })
     t.nonNull.string("id")
     t.nonNull.field("parent", { type: Message })
     t.nonNull.list.nonNull.field("remoteAttachments", { type: RemoteAttachment })
-    t.nonNull.field("updatedAt", { type: DateTime })
+    t.nonNull.field("updatedAt", { type: 'DateTime' })
   }
 })

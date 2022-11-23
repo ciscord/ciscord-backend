@@ -7,10 +7,10 @@ export const reactions = queryField('reactions', {
   args: {
     messageId: stringArg(),
   },
-  resolve: async (parrent, { messageId }, ctx) => {
-    const userId = await getUserId(ctx)
+  resolve: async (parrent, { messageId }, Context) => {
+    const userId = await getUserId(Context)
 
-    return ctx.prisma.reaction.findMany({
+    return Context.prisma.reaction.findMany({
       where: { message: { id: messageId } },
     })
   },

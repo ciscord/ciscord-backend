@@ -6,7 +6,7 @@ export const Role = objectType({
   name: "Role",
   definition(t) {
     t.nonNull.string("color")
-    t.nonNull.field("createdAt", { type: DateTime })
+    t.nonNull.field("createdAt", { type: 'DateTime' })
     t.nonNull.string("id")
     t.nonNull.string("roleSettings")
     t.nonNull.string("title")

@@ -8,15 +8,15 @@ import { Upload } from '../User/Others'
 export const uploadFile = mutationField("uploadFile", {
   type: File,
   args: { file: nullable(arg({ type: Upload })) },
-  resolve: async (parent, { file }, ctx) => {
-    const userId = getUserId(ctx);
+  resolve: async (parent, { file }, Context) => {
+    const userId = getUserId(Context);
     if (!userId) {
       throw new Error("nonexistent user");
     }
 
     const { Key, filename, mimetype, encoding, filesize } = await processUpload(file);
 
-    const result = await ctx.prisma.file.create({
+    const result = await Context.prisma.file.create({
       data: {
         Key,
         filename,
@@ -36,8 +36,8 @@ export const uploadFiles = mutationField("uploadFiles", {
   args: {
     files: arg({ type: nonNull(list(nonNull(Upload))) }),
   },
-  resolve: async (parent, { files }, ctx) => {
-    const userId = getUserId(ctx);
+  resolve: async (parent, { files }, Context) => {
+    const userId = getUserId(Context);
     if (!userId) {
       throw new Error("nonexistent user");
     }
@@ -46,7 +46,7 @@ export const uploadFiles = mutationField("uploadFiles", {
       files.map(async (file: FileUpload) => {
         const { Key, filename, mimetype, encoding } = await processUpload(file);
 
-        const result = await ctx.prisma.file.create({
+        const result = await Context.prisma.file.create({
           data: {
             Key,
             filename,
@@ -67,10 +67,10 @@ export const uploadFiles = mutationField("uploadFiles", {
 export const deleteFile = mutationField("deleteFile", {
   type: "String",
   args: { Key: stringArg() },
-  resolve: async (parent, { Key }, ctx) => {
-    const userId = getUserId(ctx);
+  resolve: async (parent, { Key }, Context) => {
+    const userId = getUserId(Context);
 
-    const file = await ctx.prisma.file.findMany({
+    const file = await Context.prisma.file.findMany({
       where: {
         Key,
         uploader: {
@@ -88,7 +88,7 @@ export const deleteFile = mutationField("deleteFile", {
     const res = await deleteFromAws(Key);
 
     if (res) {
-      await ctx.prisma.file.delete({
+      await Context.prisma.file.delete({
         where: {
           Key
         }

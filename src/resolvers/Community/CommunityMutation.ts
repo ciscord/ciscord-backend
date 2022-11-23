@@ -10,10 +10,10 @@ export const createCommunity = mutationField("createCommunity", {
     description: nullable(stringArg()),
     isPrivate: nullable(booleanArg())
   },
-  resolve: (parent, { name, url, description, isPrivate, image }, ctx) => {
-    const userId = getUserId(ctx);
+  resolve: (parent, { name, url, description, isPrivate, image }, Context) => {
+    const userId = getUserId(Context);
 
-    return ctx.prisma.community.create({
+    return Context.prisma.community.create({
       data: {
         name,
         url,
@@ -38,9 +38,9 @@ export const createCommunity = mutationField("createCommunity", {
 export const followCommunity = mutationField("followCommunity", {
   type: "Community",
   args: { url: stringArg() },
-  resolve: async (parent, { url }, ctx) => {
-    const userId = getUserId(ctx);
-    return ctx.prisma.community.update({
+  resolve: async (parent, { url }, Context) => {
+    const userId = getUserId(Context);
+    return Context.prisma.community.update({
       where: { url },
       data: { members: { connect: { id: userId } } }
     });
@@ -50,9 +50,9 @@ export const followCommunity = mutationField("followCommunity", {
 export const unfollowCommunity = mutationField("unfollowCommunity", {
   type: "Community",
   args: { url: stringArg() },
-  resolve: async (parent, { url }, ctx) => {
-    const userId = getUserId(ctx);
-    return ctx.prisma.community.update({
+  resolve: async (parent, { url }, Context) => {
+    const userId = getUserId(Context);
+    return Context.prisma.community.update({
       where: { url },
       data: { members: { disconnect: { id: userId } } }
     });
