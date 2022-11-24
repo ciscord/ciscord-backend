@@ -1,5 +1,5 @@
 # Backend
-Node Version: 12.x
+Node Version: 14.16.2
 
 ## 1. install packages
 ### 1) install global packages
