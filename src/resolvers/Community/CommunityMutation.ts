@@ -1,8 +1,9 @@
 import { mutationField, stringArg, booleanArg, nullable } from "nexus";
 import { getUserId } from "../../utils";
+import { Community } from '../index';
 
 export const createCommunity = mutationField("createCommunity", {
-  type: "Community",
+  type: Community,
   args: {
     name: stringArg(),
     url: stringArg(),
@@ -36,7 +37,7 @@ export const createCommunity = mutationField("createCommunity", {
 });
 
 export const followCommunity = mutationField("followCommunity", {
-  type: "Community",
+  type: Community,
   args: { url: stringArg() },
   resolve: async (parent, { url }, Context) => {
     const userId = getUserId(Context);
@@ -48,7 +49,7 @@ export const followCommunity = mutationField("followCommunity", {
 });
 
 export const unfollowCommunity = mutationField("unfollowCommunity", {
-  type: "Community",
+  type: Community,
   args: { url: stringArg() },
   resolve: async (parent, { url }, Context) => {
     const userId = getUserId(Context);

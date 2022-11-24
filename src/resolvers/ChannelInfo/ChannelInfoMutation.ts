@@ -1,8 +1,9 @@
 import { mutationField, stringArg, nonNull } from 'nexus'
 import { getUserId } from '../../utils'
+import { User } from '../index';
 
 export const updateChannelInfo = mutationField("updateChannelInfo", {
-  type: "User",
+  type: User,
   args: {
     channelUrl: nonNull(stringArg()),
     date: nonNull(stringArg()),

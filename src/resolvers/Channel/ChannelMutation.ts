@@ -1,8 +1,9 @@
 import { mutationField, stringArg, booleanArg, nullable } from 'nexus'
 import { getUserId } from '../../utils'
+import { Channel } from '../index';
 
 export const createChannel = mutationField('createChannel', {
-  type: 'Channel',
+  type: Channel,
   args: {
     name: stringArg(),
     description: nullable(stringArg()),
@@ -30,7 +31,7 @@ export const createChannel = mutationField('createChannel', {
 })
 
 export const editChannel = mutationField('editChannel', {
-  type: 'Channel',
+  type: Channel,
   args: {
     channelId: stringArg(),
     name: stringArg(),

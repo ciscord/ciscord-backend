@@ -2,9 +2,10 @@ import { mutationField, stringArg, nonNull, nullable } from 'nexus'
 import { sign } from 'jsonwebtoken'
 import { compare, hash } from 'bcryptjs'
 import { getTenant, getUserId } from '../../utils'
+import { AuthPayload, User } from '../index';
 
 export const login = mutationField('login', {
-  type: 'AuthPayload',
+  type: AuthPayload,
   args: {
     email: nonNull(stringArg()),
     password: nonNull(stringArg()),
@@ -80,7 +81,7 @@ export const login = mutationField('login', {
 })
 
 export const signup = mutationField('signup', {
-  type: 'AuthPayload',
+  type: AuthPayload,
   args: {
     fullname: nonNull(stringArg()),
     username: nonNull(stringArg()),
@@ -127,7 +128,7 @@ export const signup = mutationField('signup', {
 })
 
 export const updateUser = mutationField('updateUser', {
-  type: 'User',
+  type: User,
   args: {
     email: nonNull(stringArg()),
     fullname: nonNull(stringArg()),
@@ -147,7 +148,7 @@ export const updateUser = mutationField('updateUser', {
 })
 
 export const users = mutationField('users', {
-  type: 'User',
+  type: User,
   
   args: { searchString: nullable(stringArg()) },
   resolve: (parent, { searchString }, context) => {
@@ -162,7 +163,7 @@ export const users = mutationField('users', {
 })
 
 export const logout = mutationField('logout', {
-  type: 'User',
+  type: User,
   resolve: async (parent, args, context) => {
     try {
       const userId = await getUserId(context)
@@ -180,7 +181,7 @@ export const logout = mutationField('logout', {
 })
 
 export const setCurrentChannel = mutationField('setCurrentChannel', {
-  type: 'User',
+  type: User,
   args: {
     channelUrl: nullable(stringArg())
   },

@@ -1,8 +1,8 @@
 import { mutationField, stringArg, nullable, nonNull } from 'nexus'
-import { string } from 'yup'
+import { Role } from '../index';
 
 export const createRole = mutationField('createRole', {
-  type: 'Role',
+  type: Role,
   args: {
     title: stringArg(),
     roleSettings: stringArg(),
@@ -25,7 +25,7 @@ export const createRole = mutationField('createRole', {
 })
 
 export const updateRole = mutationField('updateRole', {
-  type: 'Role',
+  type: Role,
   args: {
     id: stringArg(),
     title: stringArg(),

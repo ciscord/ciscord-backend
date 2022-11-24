@@ -1,6 +1,6 @@
 import { objectType } from 'nexus'
 import { Message, User } from '../index'
-// import { DateTime } from '../User/Others'
+import { DateTime } from '../Others'
 
 export const Reaction = objectType({
   name: "Reaction",

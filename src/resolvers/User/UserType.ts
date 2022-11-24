@@ -1,7 +1,7 @@
 import { arg, intArg, objectType } from "nexus";
 import { Channel, ChannelInfo, Notification, File, Community, Message, Reaction, ReplyMessage, Role } from "../index";
-import { NotificationWhereUniqueInput } from "./Others";
-import { ReplyMessageWhereUniqueInput } from "./Others";
+import { NotificationWhereUniqueInput } from "../Others";
+import { ReplyMessageWhereUniqueInput } from "../Others";
 
 export const User = objectType({
   name: "User",

@@ -1,5 +1,6 @@
 import { mutationField, idArg, stringArg, objectType } from 'nexus'
 import { getUserId, getTenant } from '../../utils'
+import { Notification } from '../index';
 
 const CountType = objectType({
   name: 'Count',
@@ -9,7 +10,7 @@ const CountType = objectType({
 })
 
 export const sendNotification = mutationField('sendNotification', {
-  type: 'Notification',
+  type: Notification,
   args: {
     messageId: idArg(),
     receiverName: stringArg(),
@@ -81,7 +82,7 @@ export const markNotificationsAsRead = mutationField('markNotificationsAsRead', 
 })
 
 export const markChannelNotificationsAsRead = mutationField('markChannelNotificationsAsRead', {
-  type: 'Notification',
+  type: Notification,
   args: { channelUrl: stringArg() },
   resolve: async (parent, { channelUrl }, Context) => {
     const userId = await getUserId(Context)

@@ -1,6 +1,6 @@
 import { arg, intArg, objectType } from 'nexus'
 import { User } from '../index'
-import { DateTime, UserWhereUniqueInput } from '../User/Others'
+import { UserWhereUniqueInput, DateTime } from '../Others'
 
 export const Role = objectType({
   name: "Role",

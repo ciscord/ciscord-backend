@@ -3,7 +3,7 @@ import { mutationField, arg, stringArg, nullable, nonNull, list } from "nexus";
 import { processUpload, deleteFromAws } from "../../utils/fileApi";
 import { getUserId } from "../../utils";
 import { File } from '../index'
-import { Upload } from '../User/Others'
+import { Upload } from '../Others'
 
 export const uploadFile = mutationField("uploadFile", {
   type: File,

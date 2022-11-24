@@ -1,5 +1,6 @@
 import { mutationField, stringArg } from "nexus";
 import { getUserId, getTenant } from "../../utils";
+import { Reaction } from '../index';
 
 type reactionPayload = {
   messageId?: string;
@@ -85,7 +86,7 @@ const removeReaction = async ({reactionId, Context}: reactionPayload) => {
 }
 
 export const toggleReaction = mutationField("toggleReaction", {
-  type: "Reaction",
+  type: Reaction,
   args: {
     messageId: stringArg(),
     name: stringArg()

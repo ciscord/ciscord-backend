@@ -1,4 +1,6 @@
-import { inputObjectType, scalarType } from "nexus";
+import { inputObjectType, scalarType, decorateType, asNexusMethod } from "nexus";
+import { GraphQLDateTime } from 'graphql-scalars';
+
 
 export const ChannelInfoWhereUniqueInput = inputObjectType({
   name: "ChannelInfoWhereUniqueInput",
@@ -35,12 +37,6 @@ export const UserWhereUniqueInput = inputObjectType({
   }
 });
 
-export const DateTime = scalarType({
-  name: "DateTime",
-  serialize() { /* Todo */ },
-  parseValue() { /* Todo */ },
-  parseLiteral() { /* Todo */ }
-});
 export const Upload = scalarType({
   name: "Upload",
   description: 'The `Upload` scalar type represents a file upload.',
@@ -48,3 +44,5 @@ export const Upload = scalarType({
   parseValue() { /* Todo */ },
   parseLiteral() { /* Todo */ }
 });
+
+export const DateTime = asNexusMethod(GraphQLDateTime, 'date')

@@ -1,10 +1,9 @@
 import { mutationField, stringArg, booleanArg } from "nexus";
-import { sign } from "jsonwebtoken";
-import { compare, hash } from "bcryptjs";
+import { TypingStatus } from '../index';
 import { getTenant, getUserId } from "../../utils";
 
 export const setUserTypingStatus = mutationField("setUserTypingStatus", {
-  type: "TypingStatus",
+  type: TypingStatus,
   args: { channelUrl: stringArg(), isTyping: booleanArg() },
   resolve: async (parent, { channelUrl, isTyping }, Context) => {
     const userId = await getUserId(Context);
