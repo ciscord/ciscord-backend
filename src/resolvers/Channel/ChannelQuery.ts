@@ -1,12 +1,12 @@
-import { queryField, stringArg, list } from 'nexus'
+import { queryField, stringArg } from 'nexus'
 import { getUserId, getTenant } from '../../utils'
 
 export const channels = queryField('channels', {
-  type: list('Channel'),
-
+  type: 'Channel',
+  list: true,
   args: { communityUrl: stringArg() },
-  resolve: (parent, { communityUrl }, Context) => {
-    return Context.prisma.channel.findMany({
+  resolve: (parent, { communityUrl }, ctx) => {
+    return ctx.prisma.channel.findMany({
       where: {
         community: {
           url: communityUrl
@@ -18,25 +18,25 @@ export const channels = queryField('channels', {
 })
 
 export const channel = queryField('channel', {
-  type: list('Channel'),
-
+  type: 'Channel',
+  nullable: true,
   args: {
     url: stringArg()
   },
-  resolve: (parent, { url }, Context) => {
-    return Context.prisma.channel.findFirst({
+  resolve: (parent, { url }, ctx) => {
+    return ctx.prisma.channel.findOne({
       where: { url }
     })
   }
 })
 
 export const privateChannels = queryField('privateChannels', {
-  type: list('Channel'),
+  type: 'Channel',
+  list: true,
+  resolve: async (_parent, {}, ctx) => {
+    const userId = await getUserId(ctx)
 
-  resolve: async (_parent, {}, Context) => {
-    const userId = await getUserId(Context)
-
-    const user = await Context.prisma.user.findFirst({
+    const user = await ctx.prisma.user.findOne({
       where: {
         id: userId
       }
@@ -45,7 +45,7 @@ export const privateChannels = queryField('privateChannels', {
     const searchString = 'direct/'
     const searchString1 = user.username + '-'
 
-    const channels = await Context.prisma.channel.findMany({
+    const channels = await ctx.prisma.channel.findMany({
       where: {
         AND: [{ url: { contains: searchString } }, { url: { contains: searchString1 } }]
       },

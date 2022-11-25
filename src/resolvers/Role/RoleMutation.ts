@@ -1,20 +1,20 @@
-import { mutationField, stringArg, nullable, nonNull } from 'nexus'
-import { Role } from '../index';
+import { mutationField, stringArg } from 'nexus'
+import { string } from 'yup'
 
 export const createRole = mutationField('createRole', {
   type: 'Role',
   args: {
     title: stringArg(),
     roleSettings: stringArg(),
-    color: nullable(stringArg()),
+    color: stringArg({ nullable: true }),
   },
   resolve: (_parent, {
     title,
     roleSettings,
     color,
-  }, Context) => {
+  }, ctx) => {
 
-    return Context.prisma.role.create({
+    return ctx.prisma.role.create({
       data: {
         title,
         roleSettings,
@@ -30,16 +30,16 @@ export const updateRole = mutationField('updateRole', {
     id: stringArg(),
     title: stringArg(),
     roleSettings: stringArg(),
-    color: nullable(stringArg()),
+    color: stringArg({ nullable: true }),
   },
   resolve: (_parent, {
     title,
     roleSettings,
     color,
     id,
-  }, Context) => {
+  }, ctx) => {
 
-    return Context.prisma.role.update({
+    return ctx.prisma.role.update({
       where: { id },
       data: {
         title,
@@ -58,9 +58,9 @@ export const deleteRole = mutationField('deleteRole', {
   },
   resolve: (_parent, {
     id,
-  }, Context) => {
+  }, ctx) => {
 
-    return Context.prisma.role.delete({
+    return ctx.prisma.role.delete({
       where: { id },
     })
   },
@@ -69,11 +69,11 @@ export const deleteRole = mutationField('deleteRole', {
 export const attachRoleToUser = mutationField('attachRoleToUser', {
   type: 'User',
   args: { 
-    userId: nonNull(stringArg()),
-    roleId: nullable(stringArg())
+    userId: stringArg({ nullable: false }),
+    roleId: stringArg({ nullable: false }) 
   } ,
-  resolve: async (parent, { userId, roleId }, Context) => {
-    const user = await Context.prisma.user.update({
+  resolve: async (parent, { userId, roleId }, ctx) => {
+    const user = await ctx.prisma.user.update({
       where: { id: userId },
       data: { role: { connect: { id: roleId } }, },
     });
@@ -84,11 +84,11 @@ export const attachRoleToUser = mutationField('attachRoleToUser', {
 export const deattachRoleToUser = mutationField('deattachRoleToUser', {
   type: 'User',
   args: { 
-    userId: nonNull(stringArg()),
-    roleId: nonNull(stringArg()) 
+    userId: stringArg({ nullable: false }),
+    roleId: stringArg({ nullable: false }) 
   } ,
-  resolve: async (parent, { userId, roleId }, Context) => {
-    const user = await Context.prisma.user.update({
+  resolve: async (parent, { userId, roleId }, ctx) => {
+    const user = await ctx.prisma.user.update({
       where: { id: userId },
       data: { role: { disconnect: { id: roleId } }, },
     });

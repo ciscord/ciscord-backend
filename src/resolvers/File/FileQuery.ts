@@ -1,38 +1,38 @@
-import { queryField, list, idArg, nullable } from 'nexus'
+import { queryField, stringArg, idArg } from 'nexus'
 import { getUserId } from '../../utils';
 
 export const files = queryField('files', {
-  type: list('File'),
-  
+  type: 'File',
+  list: true,
   args: {
-    after: nullable(idArg()),
+    after: idArg({ nullable: true }),
   },
-  resolve: async (_, { after }, Context) => {
-    const userId = await getUserId(Context)
+  resolve: async (_, { after }, ctx) => {
+    const userId = await getUserId(ctx)
 
-    return Context.prisma.file.findMany({
-      take: +after!
+    return ctx.prisma.file.findMany({
+      after
     })
   },
 })
 
 export const userFiles = queryField('userFiles', {
-  type: list('File'),
-  
+  type: 'File',
+  list: true,
   args: {
-    after: nullable(idArg()),
+    after: idArg({ nullable: true }),
     userId: idArg(),
   },
-  resolve: async (parent, {userId, after}, Context) => {
-    const requestUserId = await getUserId(Context);
+  resolve: async (parent, {userId, after}, ctx) => {
+    const requestUserId = await getUserId(ctx);
 
-    const fileList = await Context.prisma.file.findMany({
+    const fileList = await ctx.prisma.file.findMany({
       where: {
         uploader: {
-          id: userId!,
+          id: userId,
         }
       },
-      take: +after!
+        after
     });
 
     if( !fileList.length ) throw new Error("This user have no files")

@@ -1,20 +1,20 @@
-import { queryField, stringArg, nonNull, nullable } from 'nexus'
+import { queryField, stringArg } from 'nexus'
 import { getUserId, isEmpty } from '../../utils'
-import Twitter from 'twitter'
+import * as Twitter from 'twitter'
 
 const client = new Twitter({
-  consumer_key: process.env['TWITTER_CONSUMER_KEY'] || '',
-  consumer_secret: process.env['TWITTER_CONSUMER_SECRET'] || '',
-  access_token_key: process.env['TWITTER_TOKEN'] || '',
-  access_token_secret: process.env['TWITTER_TOKEN_SECRET'] || ''
+  consumer_key: process.env['TWITTER_CONSUMER_KEY'],
+  consumer_secret: process.env['TWITTER_CONSUMER_SECRET'],
+  access_token_key: process.env['TWITTER_TOKEN'],
+  access_token_secret: process.env['TWITTER_TOKEN_SECRET']
 })
 
 export const me = queryField('me', {
   type: 'User',
-  resolve: (parent, args, Context) => {
-    const userId: string = getUserId(Context);
+  resolve: (parent, args, ctx) => {
+    const userId: string = getUserId(ctx);
     if (!isEmpty(userId)) {
-      return Context.prisma.user.findFirst({
+      return ctx.prisma.user.findOne({
         where: {
           id: userId,
         },
@@ -27,11 +27,11 @@ export const me = queryField('me', {
 
 export const getUser = queryField('getUser', {
   type: 'TwitterPayload',
-  args: { username: nonNull(stringArg()) },
+  args: { username: stringArg({ nullable: false }) },
   resolve: async (_parent, { username }, context) => {
     if(!username) throw "username is required";
 
-    const user = await context.prisma.user.findFirst({
+    const user = await context.prisma.user.findOne({
       where: {
         username,
       },
@@ -52,10 +52,10 @@ export const getUser = queryField('getUser', {
 
 export const users = queryField('users', {
   type: 'User',
-  
-  args: { searchString: nullable(stringArg()) },
-  resolve: (parent, { searchString } : any, Context) => {
-    return Context.prisma.user.findMany({
+  list: true,
+  args: { searchString: stringArg({ nullable: true }) },
+  resolve: (parent, { searchString } : any, ctx) => {
+    return ctx.prisma.user.findMany({
       where: {
         username: {
           contains: searchString,

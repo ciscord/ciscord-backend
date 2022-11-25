@@ -1,23 +1,24 @@
 import { mutationField, stringArg, booleanArg } from "nexus";
-import { TypingStatus } from '../index';
-import { getTenant, getUserId } from "../../utils";
+import { sign } from "jsonwebtoken";
+import { compare, hash } from "bcryptjs";
+import { APP_SECRET, getTenant, getUserId } from "../../utils";
 
 export const setUserTypingStatus = mutationField("setUserTypingStatus", {
-  type: 'TypingStatus',
+  type: "TypingStatus",
   args: { channelUrl: stringArg(), isTyping: booleanArg() },
-  resolve: async (parent, { channelUrl, isTyping }, Context) => {
-    const userId = await getUserId(Context);
+  resolve: async (parent, { channelUrl, isTyping }, ctx) => {
+    const userId = await getUserId(ctx);
 
-    const user = await Context.prisma.user.findFirst({
+    const user = await ctx.prisma.user.findOne({
       where: {
         id: userId
       }
     });
 
-    Context.pubsub.publish("USER_TYPING_STATUS", {
+    ctx.pubsub.publish("USER_TYPING_STATUS", {
       userTypingStatus: {
         username: user.username,
-        tenant: await getTenant(Context),
+        tenant: await getTenant(ctx),
         isTyping,
         channelUrl
       }

@@ -36,5 +36,3 @@ export const Mutation = {
   markCommunityNotificationsAsRead: { NotificationMutation },
   uploadFile: { FileMutation },
 };
-
-

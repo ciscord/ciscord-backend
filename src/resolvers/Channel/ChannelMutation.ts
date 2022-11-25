@@ -1,23 +1,22 @@
-import { mutationField, stringArg, booleanArg, nullable } from 'nexus'
+import { mutationField, stringArg, booleanArg } from 'nexus'
 import { getUserId } from '../../utils'
-import { Channel } from '../index';
 
 export const createChannel = mutationField('createChannel', {
   type: 'Channel',
   args: {
     name: stringArg(),
-    description: nullable(stringArg()),
+    description: stringArg({ nullable: true }),
     url: stringArg(),
-    isPrivate: nullable(booleanArg()),
+    isPrivate: booleanArg({ nullable: true }),
     communityUrl: stringArg()
   },
   resolve: async (
     parent,
     { name, url, description, isPrivate, communityUrl },
-    Context
+    ctx
   ) => {
-    const userId = getUserId(Context)
-    return Context.prisma.channel.create({
+    const userId = getUserId(ctx)
+    return ctx.prisma.channel.create({
       data: {
         name,
         url,
@@ -35,11 +34,11 @@ export const editChannel = mutationField('editChannel', {
   args: {
     channelId: stringArg(),
     name: stringArg(),
-    description: nullable(stringArg())
+    description: stringArg({ nullable: true })
   },
-  resolve: async (parent, { channelId, name, description }, Context) => {
-    const userId = getUserId(Context)
-    return Context.prisma.channel.update({
+  resolve: async (parent, { channelId, name, description }, ctx) => {
+    const userId = getUserId(ctx)
+    return ctx.prisma.channel.update({
       where: { id: channelId },
       data: {
         name,

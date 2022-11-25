@@ -1,22 +1,21 @@
-import { mutationField, stringArg, nonNull } from 'nexus'
+import { mutationField, stringArg, booleanArg } from 'nexus'
 import { getUserId } from '../../utils'
-import { User } from '../index';
 
 export const updateChannelInfo = mutationField("updateChannelInfo", {
-  type: 'User',
+  type: "User",
   args: {
-    channelUrl: nonNull(stringArg()),
-    date: nonNull(stringArg()),
+    channelUrl: stringArg({ nullable: false }),
+    date: stringArg({ nullable: false }),
   },
-  resolve: async (_parent, { channelUrl, date }, Context) => {
-    const userId = await getUserId(Context);
+  resolve: async (_parent, { channelUrl, date }, ctx) => {
+    const userId = await getUserId(ctx);
 
-    const user = await Context.prisma.user.findFirst({
+    const user = await ctx.prisma.user.findOne({
       where: { id: userId },
       include: { channelsInfo: { include: { channel: true } } }
     });
 
-    const channel = await Context.prisma.channel.findFirst({
+    const channel = await ctx.prisma.channel.findOne({
       where: {
         url: channelUrl
       }
@@ -24,7 +23,7 @@ export const updateChannelInfo = mutationField("updateChannelInfo", {
 
     if (!channel) throw new Error("nonexistent channel ");
 
-    const channelsInfo = await Context.prisma.channelInfo.findMany({
+    const channelsInfo = await ctx.prisma.channelInfo.findMany({
       where: {
         channel: { url: channelUrl },
         user: { id: userId }
@@ -46,7 +45,7 @@ export const updateChannelInfo = mutationField("updateChannelInfo", {
       }
     }
     
-    const res = await Context.prisma.channelInfo.upsert({
+    const res = await ctx.prisma.channelInfo.upsert({
       where: {
         uniqueUserChannelPair: `${user.username}:${channel.url}`
       },
