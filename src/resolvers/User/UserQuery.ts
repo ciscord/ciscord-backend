@@ -14,7 +14,7 @@ export const me = queryField('me', {
   resolve: (parent, args, Context) => {
     const userId: string = getUserId(Context);
     if (!isEmpty(userId)) {
-      return Context.prisma.user.findOne({
+      return Context.prisma.user.findFirst({
         where: {
           id: userId,
         },
@@ -31,7 +31,7 @@ export const getUser = queryField('getUser', {
   resolve: async (_parent, { username }, context) => {
     if(!username) throw "username is required";
 
-    const user = await context.prisma.user.findOne({
+    const user = await context.prisma.user.findFirst({
       where: {
         username,
       },

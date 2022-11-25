@@ -5,16 +5,19 @@ import { PrismaClient } from '@prisma/client'
 
 export const createTenant = async (req: any, res: any, next: any) => {
   
-  const name = req.body.tenantName
   const username = req.body.username
   const fullname = req.body.fullname
   const description = req.body.description
   const image = req.body.image
   const email = req.body.email
 
+  if (!username) {
+    res.status(400).json({ success: false, message: 'username is required' });
+    return
+  }
   try {
     // const multiTenant = new MultiTenant<PrismaClient>();
-    const prisma = await PrismaClient()
+    const prisma = new PrismaClient()
 
 
     await prisma.user.create({

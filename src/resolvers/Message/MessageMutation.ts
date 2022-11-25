@@ -55,7 +55,7 @@ export const sendMessage = mutationField('sendMessage', {
       })
 
       //upsert his channelinfo
-      const user = await Context.prisma.user.findOne({
+      const user = await Context.prisma.user.findFirst({
         where: { id: userId },
         include: { channelsInfo: { include: { channel: true } } }
       });
@@ -109,7 +109,7 @@ export const sendMessage = mutationField('sendMessage', {
         // ----- get other user and create the notification for private chat
         const channelUsernames = channelUrl.replace('direct/', '').split('-')
         
-        const user1 = await Context.prisma.user.findOne({
+        const user1 = await Context.prisma.user.findFirst({
           where: {
             username: channelUsernames[0]
           },
@@ -118,7 +118,7 @@ export const sendMessage = mutationField('sendMessage', {
           }
         })
 
-        const user2 = await Context.prisma.user.findOne({
+        const user2 = await Context.prisma.user.findFirst({
           where: {
             username: channelUsernames[1]
           },

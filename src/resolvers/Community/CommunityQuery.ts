@@ -1,8 +1,8 @@
-import { queryField, stringArg, idArg, nullable } from 'nexus'
+import { queryField, stringArg, idArg, nullable, list } from 'nexus'
 import { getUserId } from '../../utils'
 
 export const community = queryField('community', {
-  type: 'Community',
+  type: list('Community'),
   
   args: {
     id: nullable(idArg()),
@@ -10,11 +10,11 @@ export const community = queryField('community', {
   },
   resolve: (parent, { id, url }, Context) => {
     if (id) {
-      return Context.prisma.community.findOne({
+      return Context.prisma.community.findFirst({
         where: { id }
       })
     } else if (url) {
-      return Context.prisma.community.findOne({
+      return Context.prisma.community.findFirst({
         where: { url }
       })
     }
@@ -22,7 +22,7 @@ export const community = queryField('community', {
 })
 
 export const communities = queryField('communities', {
-  type: 'Community',
+  type: list('Community'),
   
   args: {},
   resolve: (parent, {}, Context) => {
@@ -50,7 +50,7 @@ export const communities = queryField('communities', {
 // })
 
 export const searchCommunities = queryField('searchCommunities', {
-  type: 'Community',
+  type: list('Community'),
   
   args: { searchString: nullable(stringArg()) },
   resolve: (parent, { searchString }, Context) => {

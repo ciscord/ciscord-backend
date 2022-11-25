@@ -11,6 +11,7 @@ export const User = objectType({
     t.nonNull.list.nonNull.field("communitiesFollowed", { type: Community })
     t.nonNull.list.nonNull.field("communitiesOwned", { type: Community })
     t.field("currentChannel", { type: Channel })
+    t.field("chanelAuthor", { type: Channel })
     t.string("email")
     t.nonNull.list.nonNull.field("files", { type: File })
     t.nonNull.string("fullname")

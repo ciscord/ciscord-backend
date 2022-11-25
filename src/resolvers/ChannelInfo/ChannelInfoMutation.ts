@@ -11,12 +11,12 @@ export const updateChannelInfo = mutationField("updateChannelInfo", {
   resolve: async (_parent, { channelUrl, date }, Context) => {
     const userId = await getUserId(Context);
 
-    const user = await Context.prisma.user.findOne({
+    const user = await Context.prisma.user.findFirst({
       where: { id: userId },
       include: { channelsInfo: { include: { channel: true } } }
     });
 
-    const channel = await Context.prisma.channel.findOne({
+    const channel = await Context.prisma.channel.findFirst({
       where: {
         url: channelUrl
       }

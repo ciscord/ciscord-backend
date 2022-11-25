@@ -11,6 +11,7 @@ type Channel {
   author: User
   community: Community!
   createdAt: DateTime!
+  currentChannel: User
   description: String
   id: String!
   isPrivate: Boolean!
@@ -100,7 +101,7 @@ type Mutation {
   editMessage(body: String, messageId: String): Message
   editReplyMessage(body: String, messageId: String): ReplyMessage
   followCommunity(url: String): Community
-  login(email: String!, password: String!, social: String!): AuthPayload
+  login(email: String!, password: String!): AuthPayload
   logout: User
   markChannelNotificationsAsRead(channelUrl: String): Notification
   markCommunityNotificationsAsRead(communityUrl: String): Notification
@@ -148,30 +149,30 @@ type OnlinePayload {
 }
 
 type Query {
-  allMessages(channelUrl: String): Message
-  channel(url: String): Channel
-  channelNotifications(channelUrl: String): Notification
-  channels(communityUrl: String): Channel
-  communities: Community
-  community(id: ID, url: String): Community
-  communityNotifications(communityUrl: String): Notification
-  files(after: ID): File
-  getLastMessages(channelUrl: String, cursorId: ID, lastVisitDate: String, number: String): Message
-  getNextMessages(channelUrl: String, cursorId: ID, number: String): Message
-  getPrevMessages(channelUrl: String, cursorId: ID, number: String): Message
+  allMessages(channelUrl: String): [Message]
+  channel(url: String): [Channel]
+  channelNotifications(channelUrl: String): [Notification]
+  channels(communityUrl: String): [Channel]
+  communities: [Community]
+  community(id: ID, url: String): [Community]
+  communityNotifications(communityUrl: String): [Notification]
+  files(after: ID): [File]
+  getLastMessages(channelUrl: String, cursorId: ID, lastVisitDate: String, number: String): [Message]
+  getNextMessages(channelUrl: String, cursorId: ID, number: String): [Message]
+  getPrevMessages(channelUrl: String, cursorId: ID, number: String): [Message]
   getUnreadMessagesCount(channelUrl: String, username: String): UnreadMessagePayload
   getUser(username: String!): TwitterPayload
   me: User
-  messageReplies(after: ID, messageId: String): ReplyMessage
-  notifications: Notification
-  privateChannels: Channel
-  reactions(messageId: String): Reaction
-  replyMessages(after: ID, channelUrl: String): Message
-  roles: Role
-  searchCommunities(searchString: String): Community
-  searchMessages(channelUrl: String, searchQuery: String): Message
-  unreadNotifications: Notification
-  userFiles(after: ID, userId: ID): File
+  messageReplies(after: ID, messageId: String): [ReplyMessage]
+  notifications: [Notification]
+  privateChannels: [Channel]
+  reactions(messageId: String): [Reaction]
+  replyMessages(after: ID, channelUrl: String): [Message]
+  roles: [Role]
+  searchCommunities(searchString: String): [Community]
+  searchMessages(channelUrl: String, searchQuery: String): [Message]
+  unreadNotifications: [Notification]
+  userFiles(after: ID, userId: ID): [File]
   users(searchString: String): User
 }
 
@@ -257,6 +258,7 @@ scalar Upload
 
 type User {
   bio: String
+  chanelAuthor: Channel
   channelsInfo: [ChannelInfo!]!
   communitiesFollowed: [Community!]!
   communitiesOwned: [Community!]!

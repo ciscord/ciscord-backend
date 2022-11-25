@@ -8,7 +8,7 @@ export const setUserTypingStatus = mutationField("setUserTypingStatus", {
   resolve: async (parent, { channelUrl, isTyping }, Context) => {
     const userId = await getUserId(Context);
 
-    const user = await Context.prisma.user.findOne({
+    const user = await Context.prisma.user.findFirst({
       where: {
         id: userId
       }

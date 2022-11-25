@@ -1,8 +1,7 @@
-import { queryField, stringArg, idArg, nullable } from 'nexus'
-import { getUserId } from '../../utils';
+import { queryField, stringArg, idArg, nullable, list } from 'nexus'
 
 export const messages = queryField('replyMessages', {
-  type: 'Message',
+  type: list('Message'),
   
   args: {
     channelUrl: stringArg(),
@@ -11,14 +10,14 @@ export const messages = queryField('replyMessages', {
   resolve: async (_, { channelUrl, after }, Context) => {
 
     return Context.prisma.message.findMany({
-      where: { channel: { url: channelUrl } },
-      after: { id: after }
+      where: { channel: { url: channelUrl! } },
+      cursor: { id: after! }
     })
   },
 })
 
 export const messageReplies = queryField('messageReplies', {
-  type: 'ReplyMessage',
+  type: list('ReplyMessage'),
   
   args: {
     messageId: stringArg(),
@@ -27,8 +26,8 @@ export const messageReplies = queryField('messageReplies', {
   resolve: async (_, { messageId, after }, Context) => {
 
     return Context.prisma.replyMessage.findMany({
-      where: { parent: { id: messageId } },
-      after: { id: after }
+      where: { parent: { id: messageId! } },
+      cursor: { id: after! }
     })
   },
 })

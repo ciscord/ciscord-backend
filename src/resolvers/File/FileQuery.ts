@@ -1,8 +1,8 @@
-import { queryField, stringArg, idArg, nullable } from 'nexus'
+import { queryField, list, idArg, nullable } from 'nexus'
 import { getUserId } from '../../utils';
 
 export const files = queryField('files', {
-  type: 'File',
+  type: list('File'),
   
   args: {
     after: nullable(idArg()),
@@ -11,13 +11,13 @@ export const files = queryField('files', {
     const userId = await getUserId(Context)
 
     return Context.prisma.file.findMany({
-      after
+      take: +after!
     })
   },
 })
 
 export const userFiles = queryField('userFiles', {
-  type: 'File',
+  type: list('File'),
   
   args: {
     after: nullable(idArg()),
@@ -29,10 +29,10 @@ export const userFiles = queryField('userFiles', {
     const fileList = await Context.prisma.file.findMany({
       where: {
         uploader: {
-          id: userId,
+          id: userId!,
         }
       },
-        after
+      take: +after!
     });
 
     if( !fileList.length ) throw new Error("This user have no files")

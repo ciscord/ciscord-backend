@@ -6,6 +6,7 @@ export const Channel = objectType({
   name: "Channel",
   definition(t) {
     t.field("author", { type: User })
+    t.field("currentChannel", { type: User })
     t.nonNull.field("community", { type: Community })
     t.nonNull.field("createdAt", { type: 'DateTime' })
     t.string("description")

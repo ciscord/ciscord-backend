@@ -3,6 +3,7 @@ import { PubSub, createPubSub } from 'graphql-yoga'
 
 export interface Context {
   prisma: PrismaClient
+  request: any
 }
 
 export interface Token {

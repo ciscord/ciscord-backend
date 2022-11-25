@@ -1,8 +1,8 @@
-import { queryField, stringArg, idArg } from 'nexus'
+import { queryField, stringArg, list } from 'nexus'
 import { getUserId } from '../../utils';
 
 export const reactions = queryField('reactions', {
-  type: 'Reaction',
+  type: list('Reaction'),
   
   args: {
     messageId: stringArg(),
@@ -11,7 +11,7 @@ export const reactions = queryField('reactions', {
     const userId = await getUserId(Context)
 
     return Context.prisma.reaction.findMany({
-      where: { message: { id: messageId } },
+      where: { message: { id: messageId! } },
     })
   },
 })

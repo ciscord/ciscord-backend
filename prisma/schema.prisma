@@ -24,6 +24,7 @@ model User {
   communitiesOwned        Community[]     @relation(name: "UserCommunityAuthor")
   communitiesFollowed     Community[]     @relation(name: "UserCommunityMember")
   channelsInfo            ChannelInfo[]
+  currentChannel          Channel?        @relation(name: "UserCurrentChannel", fields: [currentChannelId], references: [id])
   messages                Message[]
   files                   File[]
   replyMessages           ReplyMessage[]
@@ -32,10 +33,11 @@ model User {
   reactions               Reaction[]
   role                    Role[]          @relation(name: "UserRoles")
   owner                   String?
-  chanelAuthor            Channel         @relation(name: "UserAuthor", fields: [chanelAuthorId], references: [id])
-  typingUsers            Channel         @relation(name: "UserTypingUsers", fields: [typingUsersId], references: [id])
-  typingUsersId           String
-  chanelAuthorId          String        @unique
+  chanelAuthor            Channel?         @relation(name: "UserAuthor", fields: [chanelAuthorId], references: [id])
+  typingUsers            Channel?         @relation(name: "UserTypingUsers", fields: [typingUsersId], references: [id])
+  typingUsersId           String?
+  currentChannelId           String?      @unique
+  chanelAuthorId          String?        @unique
 }
 
 model Community {
@@ -66,6 +68,7 @@ model Channel {
   notifications           Notification[]
   userData                ChannelInfo[]
   communityId             String
+  currentChannel          User?           @relation(name: "UserCurrentChannel")
 }
 
 model Message {

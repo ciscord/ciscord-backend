@@ -9,35 +9,24 @@ export const login = mutationField('login', {
   args: {
     email: nonNull(stringArg()),
     password: nonNull(stringArg()),
-    social: nonNull(stringArg())
   },
-  resolve: async (_parent, { email, password, social }, context) => {
+  resolve: async (_parent, { email, password }, context) => {
     try {
-      let user = await context.prisma.user.findOne({
+      let user = await context.prisma.user.findUnique({
         where: { email }
       })
       if (!user) {
         throw new Error(`No user found for email: ${email}`)
       }
 
-      if (social === '') {
-        const passwordValid = await compare(password, user.password)
-        if (!passwordValid) {
-          throw new Error('Invalid password')
-        }
+      const passwordValid = await compare(password, user.password!)
+      if (!passwordValid) {
+        throw new Error('Invalid password')
       }
-
-      const twitterProfile = JSON.parse(social)
-      user = await context.prisma.user.update({
-        where: { email },
-        data: {
-          image: twitterProfile.photos[0].value,
-        }
-      })
       
       const data = {
         token: sign(
-          { userId: user.id, tenant: getTenant(context) },
+          { userId: user.id },
           process.env['APP_SECRET'] || ''
         ),
         user
@@ -45,37 +34,7 @@ export const login = mutationField('login', {
       console.log(data, 'user')
       return data;
     } catch (error) {
-      if (social !== '') {
-        const twitterProfile = JSON.parse(social)
-        const user = await context.prisma.user.create({
-          data: {
-            username: twitterProfile.username,
-            fullname: twitterProfile.displayName,
-            image: twitterProfile.photos[0].value,
-            email,
-            social: 'twitter',
-            password: '',
-            communitiesFollowed: { connect: { url: 'general' } }
-          }
-        })
-
-        await context.prisma.community.update({
-          where: { url: 'general' },
-          data: { members: { connect: { email } } }
-        })
-
-        await context.prisma.role.update({
-          where: { title: 'Member' },
-          data: { users: { connect: { id: user.id } } }
-        })
-
-        return {
-          token: sign({ userId: user.id }, process.env['APP_SECRET'] || ''),
-          user
-        }
-      } else {
-        throw new Error(`No user found for email: ${email}`)
-      }
+      throw error
     }
   }
 })

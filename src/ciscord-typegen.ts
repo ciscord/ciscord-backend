@@ -135,6 +135,7 @@ export interface NexusGenFieldTypes {
     author: NexusGenRootTypes['User'] | null; // User
     community: NexusGenRootTypes['Community']; // Community!
     createdAt: NexusGenScalars['DateTime']; // DateTime!
+    currentChannel: NexusGenRootTypes['User'] | null; // User
     description: string | null; // String
     id: string; // String!
     isPrivate: boolean; // Boolean!
@@ -244,30 +245,30 @@ export interface NexusGenFieldTypes {
     user: NexusGenRootTypes['User']; // User!
   }
   Query: { // field return type
-    allMessages: NexusGenRootTypes['Message'] | null; // Message
-    channel: NexusGenRootTypes['Channel'] | null; // Channel
-    channelNotifications: NexusGenRootTypes['Notification'] | null; // Notification
-    channels: NexusGenRootTypes['Channel'] | null; // Channel
-    communities: NexusGenRootTypes['Community'] | null; // Community
-    community: NexusGenRootTypes['Community'] | null; // Community
-    communityNotifications: NexusGenRootTypes['Notification'] | null; // Notification
-    files: NexusGenRootTypes['File'] | null; // File
-    getLastMessages: NexusGenRootTypes['Message'] | null; // Message
-    getNextMessages: NexusGenRootTypes['Message'] | null; // Message
-    getPrevMessages: NexusGenRootTypes['Message'] | null; // Message
+    allMessages: Array<NexusGenRootTypes['Message'] | null> | null; // [Message]
+    channel: Array<NexusGenRootTypes['Channel'] | null> | null; // [Channel]
+    channelNotifications: Array<NexusGenRootTypes['Notification'] | null> | null; // [Notification]
+    channels: Array<NexusGenRootTypes['Channel'] | null> | null; // [Channel]
+    communities: Array<NexusGenRootTypes['Community'] | null> | null; // [Community]
+    community: Array<NexusGenRootTypes['Community'] | null> | null; // [Community]
+    communityNotifications: Array<NexusGenRootTypes['Notification'] | null> | null; // [Notification]
+    files: Array<NexusGenRootTypes['File'] | null> | null; // [File]
+    getLastMessages: Array<NexusGenRootTypes['Message'] | null> | null; // [Message]
+    getNextMessages: Array<NexusGenRootTypes['Message'] | null> | null; // [Message]
+    getPrevMessages: Array<NexusGenRootTypes['Message'] | null> | null; // [Message]
     getUnreadMessagesCount: NexusGenRootTypes['UnreadMessagePayload'] | null; // UnreadMessagePayload
     getUser: NexusGenRootTypes['TwitterPayload'] | null; // TwitterPayload
     me: NexusGenRootTypes['User'] | null; // User
-    messageReplies: NexusGenRootTypes['ReplyMessage'] | null; // ReplyMessage
-    notifications: NexusGenRootTypes['Notification'] | null; // Notification
-    privateChannels: NexusGenRootTypes['Channel'] | null; // Channel
-    reactions: NexusGenRootTypes['Reaction'] | null; // Reaction
-    replyMessages: NexusGenRootTypes['Message'] | null; // Message
-    roles: NexusGenRootTypes['Role'] | null; // Role
-    searchCommunities: NexusGenRootTypes['Community'] | null; // Community
-    searchMessages: NexusGenRootTypes['Message'] | null; // Message
-    unreadNotifications: NexusGenRootTypes['Notification'] | null; // Notification
-    userFiles: NexusGenRootTypes['File'] | null; // File
+    messageReplies: Array<NexusGenRootTypes['ReplyMessage'] | null> | null; // [ReplyMessage]
+    notifications: Array<NexusGenRootTypes['Notification'] | null> | null; // [Notification]
+    privateChannels: Array<NexusGenRootTypes['Channel'] | null> | null; // [Channel]
+    reactions: Array<NexusGenRootTypes['Reaction'] | null> | null; // [Reaction]
+    replyMessages: Array<NexusGenRootTypes['Message'] | null> | null; // [Message]
+    roles: Array<NexusGenRootTypes['Role'] | null> | null; // [Role]
+    searchCommunities: Array<NexusGenRootTypes['Community'] | null> | null; // [Community]
+    searchMessages: Array<NexusGenRootTypes['Message'] | null> | null; // [Message]
+    unreadNotifications: Array<NexusGenRootTypes['Notification'] | null> | null; // [Notification]
+    userFiles: Array<NexusGenRootTypes['File'] | null> | null; // [File]
     users: NexusGenRootTypes['User'] | null; // User
   }
   Reaction: { // field return type
@@ -337,6 +338,7 @@ export interface NexusGenFieldTypes {
   }
   User: { // field return type
     bio: string | null; // String
+    chanelAuthor: NexusGenRootTypes['Channel'] | null; // Channel
     channelsInfo: NexusGenRootTypes['ChannelInfo'][]; // [ChannelInfo!]!
     communitiesFollowed: NexusGenRootTypes['Community'][]; // [Community!]!
     communitiesOwned: NexusGenRootTypes['Community'][]; // [Community!]!
@@ -369,6 +371,7 @@ export interface NexusGenFieldTypeNames {
     author: 'User'
     community: 'Community'
     createdAt: 'DateTime'
+    currentChannel: 'User'
     description: 'String'
     id: 'String'
     isPrivate: 'Boolean'
@@ -571,6 +574,7 @@ export interface NexusGenFieldTypeNames {
   }
   User: { // field return type name
     bio: 'String'
+    chanelAuthor: 'Channel'
     channelsInfo: 'ChannelInfo'
     communitiesFollowed: 'Community'
     communitiesOwned: 'Community'
@@ -670,7 +674,6 @@ export interface NexusGenArgTypes {
     login: { // args
       email: string; // String!
       password: string; // String!
-      social: string; // String!
     }
     markChannelNotificationsAsRead: { // args
       channelUrl?: string | null; // String
