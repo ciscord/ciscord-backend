@@ -1,20 +1,19 @@
-import { mutationField, stringArg, booleanArg, nullable } from "nexus";
+import { mutationField, stringArg, booleanArg } from "nexus";
 import { getUserId } from "../../utils";
-import { Community } from '../index';
 
 export const createCommunity = mutationField("createCommunity", {
-  type: 'Community',
+  type: "Community",
   args: {
     name: stringArg(),
     url: stringArg(),
     image: stringArg(),
-    description: nullable(stringArg()),
-    isPrivate: nullable(booleanArg())
+    description: stringArg({ nullable: true }),
+    isPrivate: booleanArg({ nullable: true })
   },
-  resolve: (parent, { name, url, description, isPrivate, image }, Context) => {
-    const userId = getUserId(Context);
+  resolve: (parent, { name, url, description, isPrivate, image }, ctx) => {
+    const userId = getUserId(ctx);
 
-    return Context.prisma.community.create({
+    return ctx.prisma.community.create({
       data: {
         name,
         url,
@@ -37,11 +36,11 @@ export const createCommunity = mutationField("createCommunity", {
 });
 
 export const followCommunity = mutationField("followCommunity", {
-  type: 'Community',
+  type: "Community",
   args: { url: stringArg() },
-  resolve: async (parent, { url }, Context) => {
-    const userId = getUserId(Context);
-    return Context.prisma.community.update({
+  resolve: async (parent, { url }, ctx) => {
+    const userId = getUserId(ctx);
+    return ctx.prisma.community.update({
       where: { url },
       data: { members: { connect: { id: userId } } }
     });
@@ -49,11 +48,11 @@ export const followCommunity = mutationField("followCommunity", {
 });
 
 export const unfollowCommunity = mutationField("unfollowCommunity", {
-  type: 'Community',
+  type: "Community",
   args: { url: stringArg() },
-  resolve: async (parent, { url }, Context) => {
-    const userId = getUserId(Context);
-    return Context.prisma.community.update({
+  resolve: async (parent, { url }, ctx) => {
+    const userId = getUserId(ctx);
+    return ctx.prisma.community.update({
       where: { url },
       data: { members: { disconnect: { id: userId } } }
     });

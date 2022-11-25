@@ -1,40 +1,20 @@
-import { arg, intArg, objectType } from 'nexus'
-import { ChannelInfo, Community, Message, User, Notification } from '../index'
-import { ChannelInfoWhereUniqueInput, DateTime, UserWhereUniqueInput } from '../Others'
+import { objectType } from 'nexus'
+import { getUserId } from '../../utils'
 
 export const Channel = objectType({
-  name: "Channel",
+  name: 'Channel',
   definition(t) {
-    t.field("author", { type: User })
-    t.field("currentChannel", { type: User })
-    t.nonNull.field("community", { type: Community })
-    t.nonNull.field("createdAt", { type: 'DateTime' })
-    t.string("description")
-    t.nonNull.string("id")
-    t.nonNull.boolean("isPrivate")
-    t.nonNull.list.nonNull.field("messages", { type: Message })
-    t.nonNull.string("name")
-    t.nonNull.list.nonNull.field("notifications", { type: Notification })
-    t.nonNull.list.nonNull.field("typingUsers", {
-      type: User,
-      args: {
-        after: arg({ type: UserWhereUniqueInput }),
-        before: arg({ type: UserWhereUniqueInput }),
-        first: intArg(),
-        last: intArg(),
-        skip: intArg(),
-      },
-    })
-    t.nonNull.string("url")
-    t.nonNull.list.nonNull.field("userData", {
-      type: ChannelInfo,
-      args: {
-        after: arg({ type: ChannelInfoWhereUniqueInput }),
-        before: arg({ type: ChannelInfoWhereUniqueInput }),
-        first: intArg(),
-        last: intArg(),
-        skip: intArg(),
-      },
-    })
+    t.model.id()
+    t.model.name()
+    t.model.url()
+    t.model.description()
+    t.model.createdAt()
+    t.model.isPrivate()
+    t.model.community()
+    t.model.author()
+    t.model.messages({ pagination: false })
+    t.model.notifications({ pagination: false })
+    t.model.typingUsers()
+    t.model.userData()
   }
 })

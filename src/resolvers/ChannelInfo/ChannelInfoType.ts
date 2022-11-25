@@ -1,14 +1,12 @@
 import { objectType } from 'nexus'
-import { Channel, User } from '../index'
-import { DateTime } from '../Others'
 
 export const ChannelInfo = objectType({
-  name: "ChannelInfo",
+  name: 'ChannelInfo',
   definition(t) {
-    t.nonNull.field("channel", { type: Channel })
-    t.nonNull.string("id")
-    t.nonNull.field("lastUpdateAt", { type: 'DateTime' })
-    t.nonNull.string("uniqueUserChannelPair")
-    t.nonNull.field("user", { type: User })
-  }
+    t.model.id()
+    t.model.channel()
+    t.model.lastUpdateAt()
+    t.model.uniqueUserChannelPair()
+    t.model.user()
+  },
 })

@@ -1,43 +1,43 @@
-import { queryField, stringArg, list } from 'nexus'
+import { queryField, stringArg } from 'nexus'
 import { getUserId } from '../../utils'
 
 export const notifications = queryField('notifications', {
-  type: list('Notification'),
-  
-  resolve: (parent, args, Context) => {
-    const userId = getUserId(Context)
+  type: 'Notification',
+  list: true,
+  resolve: (parent, args, ctx) => {
+    const userId = getUserId(ctx)
 
-    return Context.prisma.notification.findMany({
-      where: { receiverId: userId, type: 'mention' },
+    return ctx.prisma.notification.findMany({
+      where: { receiver: { id: userId }, type: 'mention' },
       orderBy: { createdAt: 'desc' }
     })
   }
 })
 
 export const unreadNotifications = queryField('unreadNotifications', {
-  type: list('Notification'),
-  
-  resolve: (parent, args, Context) => {
-    const userId = getUserId(Context)
+  type: 'Notification',
+  list: true,
+  resolve: (parent, args, ctx) => {
+    const userId = getUserId(ctx)
 
-    return Context.prisma.notification.findMany({
+    return ctx.prisma.notification.findMany({
       where: {
-        AND: [{ isRead: false }, { receiverId: userId }]
+        AND: [{ isRead: false }, { receiver: { id: userId } }]
       }
     })
   }
 })
 
 export const channelNotifications = queryField('channelNotifications', {
-  type: list('Notification'),
-  
+  type: 'Notification',
+  list: true,
   args: { channelUrl: stringArg() },
-  resolve: (parent, { channelUrl }, Context) => {
-    const userId = getUserId(Context)
+  resolve: (parent, { channelUrl }, ctx) => {
+    const userId = getUserId(ctx)
 
-    return Context.prisma.notification.findMany({
+    return ctx.prisma.notification.findMany({
       where: {
-        AND: [{ channel: { url: channelUrl! } }, { receiverId: userId }, { isRead: false }]
+        AND: [{ channel: { url: channelUrl } }, { receiver: { id: userId } }, { isRead: false }]
       },
       orderBy: { createdAt: 'desc' }
     })
@@ -45,17 +45,17 @@ export const channelNotifications = queryField('channelNotifications', {
 })
 
 export const communityNotifications = queryField('communityNotifications', {
-  type: list('Notification'),
-  
+  type: 'Notification',
+  list: true,
   args: { communityUrl: stringArg() },
-  resolve: (parent, { communityUrl }, Context) => {
-    const userId = getUserId(Context)
+  resolve: (parent, { communityUrl }, ctx) => {
+    const userId = getUserId(ctx)
 
-    return Context.prisma.notification.findMany({
+    return ctx.prisma.notification.findMany({
       where: {
-        AND: [{ community: { url: communityUrl! } }, { receiverId: userId }, { isRead: false }]
+        AND: [{ community: { url: communityUrl } }, { receiver: { id: userId } }, { isRead: false }]
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: 'desc' }
     })
   }
 })
