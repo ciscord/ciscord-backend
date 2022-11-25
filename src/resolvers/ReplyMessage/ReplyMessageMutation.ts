@@ -4,7 +4,7 @@ import { removeFile, createRemoteAttachments } from "../../utils/helpers";
 import { ReplyMessage } from '../index';
 
 export const replyMessage = mutationField("replyMessage", {
-  type: ReplyMessage,
+  type: 'ReplyMessage',
   args: {
     body: stringArg(),
     parentId: stringArg(),
@@ -48,7 +48,7 @@ export const replyMessage = mutationField("replyMessage", {
 });
 
 export const editReplyMessage = mutationField("editReplyMessage", {
-  type: ReplyMessage,
+  type: 'ReplyMessage',
   args: {
     body: stringArg(),
     messageId: stringArg()
@@ -96,7 +96,7 @@ export const editReplyMessage = mutationField("editReplyMessage", {
 });
 
 export const deleteReplyMessage = mutationField("deleteReplyMessage", {
-  type: ReplyMessage,
+  type: 'ReplyMessage',
   args: {
     messageId: stringArg()
   },

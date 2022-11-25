@@ -48,6 +48,10 @@ type Community {
   url: String!
 }
 
+type CountType {
+  count: Int
+}
+
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -80,6 +84,43 @@ type Message {
   reactions: [Reaction!]!
   remoteAttachments: [RemoteAttachment!]!
   updatedAt: DateTime!
+}
+
+type Mutation {
+  attachRoleToUser(roleId: String, userId: String!): User
+  createChannel(communityUrl: String, description: String, isPrivate: Boolean, name: String, url: String): Channel
+  createCommunity(description: String, image: String, isPrivate: Boolean, name: String, url: String): Community
+  createRole(color: String, roleSettings: String, title: String): Role
+  deattachRoleToUser(roleId: String!, userId: String!): User
+  deleteFile(Key: String): String
+  deleteMessage(messageId: String): Message
+  deleteReplyMessage(messageId: String): ReplyMessage
+  deleteRole(id: String): Role
+  editChannel(channelId: String, description: String, name: String): Channel
+  editMessage(body: String, messageId: String): Message
+  editReplyMessage(body: String, messageId: String): ReplyMessage
+  followCommunity(url: String): Community
+  login(email: String!, password: String!, social: String!): AuthPayload
+  logout: User
+  markChannelNotificationsAsRead(channelUrl: String): Notification
+  markCommunityNotificationsAsRead(communityUrl: String): Notification
+  markNotificationAsRead(id: String): CountType
+  markNotificationsAsRead(type: String): CountType
+  replyMessage(attachments: String, body: String, parentId: String, urlList: String): ReplyMessage
+  searchMessages(channelUrl: String, searchQuery: String): Message
+  sendMessage(attachments: String, body: String, channelUrl: String, communityUrl: String, mentions: String, urlList: String): Message
+  sendNotification(channelUrl: String, communityUrl: String, messageId: ID, receiverName: String, type: String): Notification
+  setCurrentChannel(channelUrl: String): User
+  setUserTypingStatus(channelUrl: String, isTyping: Boolean): TypingStatus
+  signup(bio: String, email: String!, fullname: String!, password: String!, username: String!): AuthPayload
+  toggleReaction(messageId: String, name: String): Reaction
+  unfollowCommunity(url: String): Community
+  updateChannelInfo(channelUrl: String!, date: String!): User
+  updateRole(color: String, id: String, roleSettings: String, title: String): Role
+  updateUser(email: String!, fullname: String!, image: String, username: String!): User
+  uploadFile(file: Upload): File
+  uploadFiles(files: [Upload!]!): File
+  users(searchString: String): User
 }
 
 type Notification {
@@ -177,6 +218,20 @@ type Role {
   roleSettings: String!
   title: String!
   users(after: UserWhereUniqueInput, before: UserWhereUniqueInput, first: Int, last: Int, skip: Int): [User!]!
+}
+
+type Subscription {
+  channelNewMessage(communityUrl: String, tenant: String): Channel
+  deleteMessage(channelUrl: String, tenant: String): Message
+  editMessage(channelUrl: String, tenant: String): Message
+  newMessage(channelUrl: String, tenant: String): Message
+  newNotification(receiverId: String, tenant: String): Notification
+  newReaction(channelUrl: String, tenant: String): Reaction
+  removedReaction(channelUrl: String, tenant: String): Reaction
+  updatedReaction(channelUrl: String, tenant: String): Reaction
+  userTypingStatus(channelUrl: String, tenant: String, username: String): TypingStatus
+  userWentOffline(tenant: String): User
+  userWentOnline(tenant: String): User
 }
 
 type TwitterPayload {

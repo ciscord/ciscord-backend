@@ -4,7 +4,7 @@ import { removeFile, getOpenGraphData, createRemoteAttachments } from '../../uti
 import { Message } from '../index';
 
 export const sendMessage = mutationField('sendMessage', {
-  type: Message,
+  type: 'Message',
   args: {
     body: stringArg(),
     attachments: nullable(stringArg()),
@@ -163,7 +163,7 @@ export const sendMessage = mutationField('sendMessage', {
 })
 
 export const editMessage = mutationField('editMessage', {
-  type: Message,
+  type: 'Message',
   args: {
     body: stringArg(),
     messageId: stringArg()
@@ -210,7 +210,7 @@ export const editMessage = mutationField('editMessage', {
 })
 
 export const deleteMessage = mutationField('deleteMessage', {
-  type: Message,
+  type: 'Message',
   args: {
     messageId: stringArg()
   },
@@ -284,7 +284,7 @@ export const deleteMessage = mutationField('deleteMessage', {
 })
 
 export const searchMessages = mutationField('searchMessages', {
-  type: Message,
+  type: 'Message',
   
   args: {
     channelUrl: stringArg(),

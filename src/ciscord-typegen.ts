@@ -71,8 +71,12 @@ export interface NexusGenObjects {
   Channel: PrismaClient.Channel;
   ChannelInfo: PrismaClient.ChannelInfo;
   Community: PrismaClient.Community;
+  CountType: { // root type
+    count?: number | null; // Int
+  }
   File: PrismaClient.File;
   Message: PrismaClient.Message;
+  Mutation: {};
   Notification: PrismaClient.Notification;
   OnlinePayload: { // root type
     id: string; // String!
@@ -84,6 +88,16 @@ export interface NexusGenObjects {
   RemoteAttachment: PrismaClient.RemoteAttachment;
   ReplyMessage: PrismaClient.ReplyMessage;
   Role: PrismaClient.Role;
+  Subscription: { // root type
+    channelNewMessage?: NexusGenRootTypes['Channel'] | null; // Channel
+    deleteMessage?: NexusGenRootTypes['Message'] | null; // Message
+    editMessage?: NexusGenRootTypes['Message'] | null; // Message
+    newNotification?: NexusGenRootTypes['Notification'] | null; // Notification
+    newReaction?: NexusGenRootTypes['Reaction'] | null; // Reaction
+    removedReaction?: NexusGenRootTypes['Reaction'] | null; // Reaction
+    updatedReaction?: NexusGenRootTypes['Reaction'] | null; // Reaction
+    userTypingStatus?: NexusGenRootTypes['TypingStatus'] | null; // TypingStatus
+  }
   TwitterPayload: { // root type
     bio: string; // String!
     followers: string; // String!
@@ -150,6 +164,9 @@ export interface NexusGenFieldTypes {
     notifications: NexusGenRootTypes['Notification'][]; // [Notification!]!
     url: string; // String!
   }
+  CountType: { // field return type
+    count: number | null; // Int
+  }
   File: { // field return type
     Key: string; // String!
     encoding: string; // String!
@@ -171,6 +188,42 @@ export interface NexusGenFieldTypes {
     reactions: NexusGenRootTypes['Reaction'][]; // [Reaction!]!
     remoteAttachments: NexusGenRootTypes['RemoteAttachment'][]; // [RemoteAttachment!]!
     updatedAt: NexusGenScalars['DateTime']; // DateTime!
+  }
+  Mutation: { // field return type
+    attachRoleToUser: NexusGenRootTypes['User'] | null; // User
+    createChannel: NexusGenRootTypes['Channel'] | null; // Channel
+    createCommunity: NexusGenRootTypes['Community'] | null; // Community
+    createRole: NexusGenRootTypes['Role'] | null; // Role
+    deattachRoleToUser: NexusGenRootTypes['User'] | null; // User
+    deleteFile: string | null; // String
+    deleteMessage: NexusGenRootTypes['Message'] | null; // Message
+    deleteReplyMessage: NexusGenRootTypes['ReplyMessage'] | null; // ReplyMessage
+    deleteRole: NexusGenRootTypes['Role'] | null; // Role
+    editChannel: NexusGenRootTypes['Channel'] | null; // Channel
+    editMessage: NexusGenRootTypes['Message'] | null; // Message
+    editReplyMessage: NexusGenRootTypes['ReplyMessage'] | null; // ReplyMessage
+    followCommunity: NexusGenRootTypes['Community'] | null; // Community
+    login: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
+    logout: NexusGenRootTypes['User'] | null; // User
+    markChannelNotificationsAsRead: NexusGenRootTypes['Notification'] | null; // Notification
+    markCommunityNotificationsAsRead: NexusGenRootTypes['Notification'] | null; // Notification
+    markNotificationAsRead: NexusGenRootTypes['CountType'] | null; // CountType
+    markNotificationsAsRead: NexusGenRootTypes['CountType'] | null; // CountType
+    replyMessage: NexusGenRootTypes['ReplyMessage'] | null; // ReplyMessage
+    searchMessages: NexusGenRootTypes['Message'] | null; // Message
+    sendMessage: NexusGenRootTypes['Message'] | null; // Message
+    sendNotification: NexusGenRootTypes['Notification'] | null; // Notification
+    setCurrentChannel: NexusGenRootTypes['User'] | null; // User
+    setUserTypingStatus: NexusGenRootTypes['TypingStatus'] | null; // TypingStatus
+    signup: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
+    toggleReaction: NexusGenRootTypes['Reaction'] | null; // Reaction
+    unfollowCommunity: NexusGenRootTypes['Community'] | null; // Community
+    updateChannelInfo: NexusGenRootTypes['User'] | null; // User
+    updateRole: NexusGenRootTypes['Role'] | null; // Role
+    updateUser: NexusGenRootTypes['User'] | null; // User
+    uploadFile: NexusGenRootTypes['File'] | null; // File
+    uploadFiles: NexusGenRootTypes['File'] | null; // File
+    users: NexusGenRootTypes['User'] | null; // User
   }
   Notification: { // field return type
     action: string | null; // String
@@ -254,6 +307,19 @@ export interface NexusGenFieldTypes {
     title: string; // String!
     users: NexusGenRootTypes['User'][]; // [User!]!
   }
+  Subscription: { // field return type
+    channelNewMessage: NexusGenRootTypes['Channel'] | null; // Channel
+    deleteMessage: NexusGenRootTypes['Message'] | null; // Message
+    editMessage: NexusGenRootTypes['Message'] | null; // Message
+    newMessage: NexusGenRootTypes['Message'] | null; // Message
+    newNotification: NexusGenRootTypes['Notification'] | null; // Notification
+    newReaction: NexusGenRootTypes['Reaction'] | null; // Reaction
+    removedReaction: NexusGenRootTypes['Reaction'] | null; // Reaction
+    updatedReaction: NexusGenRootTypes['Reaction'] | null; // Reaction
+    userTypingStatus: NexusGenRootTypes['TypingStatus'] | null; // TypingStatus
+    userWentOffline: NexusGenRootTypes['User'] | null; // User
+    userWentOnline: NexusGenRootTypes['User'] | null; // User
+  }
   TwitterPayload: { // field return type
     bio: string; // String!
     followers: string; // String!
@@ -332,6 +398,9 @@ export interface NexusGenFieldTypeNames {
     notifications: 'Notification'
     url: 'String'
   }
+  CountType: { // field return type name
+    count: 'Int'
+  }
   File: { // field return type name
     Key: 'String'
     encoding: 'String'
@@ -353,6 +422,42 @@ export interface NexusGenFieldTypeNames {
     reactions: 'Reaction'
     remoteAttachments: 'RemoteAttachment'
     updatedAt: 'DateTime'
+  }
+  Mutation: { // field return type name
+    attachRoleToUser: 'User'
+    createChannel: 'Channel'
+    createCommunity: 'Community'
+    createRole: 'Role'
+    deattachRoleToUser: 'User'
+    deleteFile: 'String'
+    deleteMessage: 'Message'
+    deleteReplyMessage: 'ReplyMessage'
+    deleteRole: 'Role'
+    editChannel: 'Channel'
+    editMessage: 'Message'
+    editReplyMessage: 'ReplyMessage'
+    followCommunity: 'Community'
+    login: 'AuthPayload'
+    logout: 'User'
+    markChannelNotificationsAsRead: 'Notification'
+    markCommunityNotificationsAsRead: 'Notification'
+    markNotificationAsRead: 'CountType'
+    markNotificationsAsRead: 'CountType'
+    replyMessage: 'ReplyMessage'
+    searchMessages: 'Message'
+    sendMessage: 'Message'
+    sendNotification: 'Notification'
+    setCurrentChannel: 'User'
+    setUserTypingStatus: 'TypingStatus'
+    signup: 'AuthPayload'
+    toggleReaction: 'Reaction'
+    unfollowCommunity: 'Community'
+    updateChannelInfo: 'User'
+    updateRole: 'Role'
+    updateUser: 'User'
+    uploadFile: 'File'
+    uploadFiles: 'File'
+    users: 'User'
   }
   Notification: { // field return type name
     action: 'String'
@@ -436,6 +541,19 @@ export interface NexusGenFieldTypeNames {
     title: 'String'
     users: 'User'
   }
+  Subscription: { // field return type name
+    channelNewMessage: 'Channel'
+    deleteMessage: 'Message'
+    editMessage: 'Message'
+    newMessage: 'Message'
+    newNotification: 'Notification'
+    newReaction: 'Reaction'
+    removedReaction: 'Reaction'
+    updatedReaction: 'Reaction'
+    userTypingStatus: 'TypingStatus'
+    userWentOffline: 'User'
+    userWentOnline: 'User'
+  }
   TwitterPayload: { // field return type name
     bio: 'String'
     followers: 'String'
@@ -491,6 +609,151 @@ export interface NexusGenArgTypes {
       first?: number | null; // Int
       last?: number | null; // Int
       skip?: number | null; // Int
+    }
+  }
+  Mutation: {
+    attachRoleToUser: { // args
+      roleId?: string | null; // String
+      userId: string; // String!
+    }
+    createChannel: { // args
+      communityUrl?: string | null; // String
+      description?: string | null; // String
+      isPrivate?: boolean | null; // Boolean
+      name?: string | null; // String
+      url?: string | null; // String
+    }
+    createCommunity: { // args
+      description?: string | null; // String
+      image?: string | null; // String
+      isPrivate?: boolean | null; // Boolean
+      name?: string | null; // String
+      url?: string | null; // String
+    }
+    createRole: { // args
+      color?: string | null; // String
+      roleSettings?: string | null; // String
+      title?: string | null; // String
+    }
+    deattachRoleToUser: { // args
+      roleId: string; // String!
+      userId: string; // String!
+    }
+    deleteFile: { // args
+      Key?: string | null; // String
+    }
+    deleteMessage: { // args
+      messageId?: string | null; // String
+    }
+    deleteReplyMessage: { // args
+      messageId?: string | null; // String
+    }
+    deleteRole: { // args
+      id?: string | null; // String
+    }
+    editChannel: { // args
+      channelId?: string | null; // String
+      description?: string | null; // String
+      name?: string | null; // String
+    }
+    editMessage: { // args
+      body?: string | null; // String
+      messageId?: string | null; // String
+    }
+    editReplyMessage: { // args
+      body?: string | null; // String
+      messageId?: string | null; // String
+    }
+    followCommunity: { // args
+      url?: string | null; // String
+    }
+    login: { // args
+      email: string; // String!
+      password: string; // String!
+      social: string; // String!
+    }
+    markChannelNotificationsAsRead: { // args
+      channelUrl?: string | null; // String
+    }
+    markCommunityNotificationsAsRead: { // args
+      communityUrl?: string | null; // String
+    }
+    markNotificationAsRead: { // args
+      id?: string | null; // String
+    }
+    markNotificationsAsRead: { // args
+      type?: string | null; // String
+    }
+    replyMessage: { // args
+      attachments?: string | null; // String
+      body?: string | null; // String
+      parentId?: string | null; // String
+      urlList?: string | null; // String
+    }
+    searchMessages: { // args
+      channelUrl?: string | null; // String
+      searchQuery?: string | null; // String
+    }
+    sendMessage: { // args
+      attachments?: string | null; // String
+      body?: string | null; // String
+      channelUrl?: string | null; // String
+      communityUrl?: string | null; // String
+      mentions?: string | null; // String
+      urlList?: string | null; // String
+    }
+    sendNotification: { // args
+      channelUrl?: string | null; // String
+      communityUrl?: string | null; // String
+      messageId?: string | null; // ID
+      receiverName?: string | null; // String
+      type?: string | null; // String
+    }
+    setCurrentChannel: { // args
+      channelUrl?: string | null; // String
+    }
+    setUserTypingStatus: { // args
+      channelUrl?: string | null; // String
+      isTyping?: boolean | null; // Boolean
+    }
+    signup: { // args
+      bio?: string | null; // String
+      email: string; // String!
+      fullname: string; // String!
+      password: string; // String!
+      username: string; // String!
+    }
+    toggleReaction: { // args
+      messageId?: string | null; // String
+      name?: string | null; // String
+    }
+    unfollowCommunity: { // args
+      url?: string | null; // String
+    }
+    updateChannelInfo: { // args
+      channelUrl: string; // String!
+      date: string; // String!
+    }
+    updateRole: { // args
+      color?: string | null; // String
+      id?: string | null; // String
+      roleSettings?: string | null; // String
+      title?: string | null; // String
+    }
+    updateUser: { // args
+      email: string; // String!
+      fullname: string; // String!
+      image?: string | null; // String
+      username: string; // String!
+    }
+    uploadFile: { // args
+      file?: NexusGenScalars['Upload'] | null; // Upload
+    }
+    uploadFiles: { // args
+      files: NexusGenScalars['Upload'][]; // [Upload!]!
+    }
+    users: { // args
+      searchString?: string | null; // String
     }
   }
   Query: {
@@ -581,6 +844,51 @@ export interface NexusGenArgTypes {
       first?: number | null; // Int
       last?: number | null; // Int
       skip?: number | null; // Int
+    }
+  }
+  Subscription: {
+    channelNewMessage: { // args
+      communityUrl?: string | null; // String
+      tenant?: string | null; // String
+    }
+    deleteMessage: { // args
+      channelUrl?: string | null; // String
+      tenant?: string | null; // String
+    }
+    editMessage: { // args
+      channelUrl?: string | null; // String
+      tenant?: string | null; // String
+    }
+    newMessage: { // args
+      channelUrl?: string | null; // String
+      tenant?: string | null; // String
+    }
+    newNotification: { // args
+      receiverId?: string | null; // String
+      tenant?: string | null; // String
+    }
+    newReaction: { // args
+      channelUrl?: string | null; // String
+      tenant?: string | null; // String
+    }
+    removedReaction: { // args
+      channelUrl?: string | null; // String
+      tenant?: string | null; // String
+    }
+    updatedReaction: { // args
+      channelUrl?: string | null; // String
+      tenant?: string | null; // String
+    }
+    userTypingStatus: { // args
+      channelUrl?: string | null; // String
+      tenant?: string | null; // String
+      username?: string | null; // String
+    }
+    userWentOffline: { // args
+      tenant?: string | null; // String
+    }
+    userWentOnline: { // args
+      tenant?: string | null; // String
     }
   }
   User: {

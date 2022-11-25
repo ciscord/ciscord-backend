@@ -45,8 +45,8 @@ const baseSchema = makeSchema({
   ],
 })
 
-const schema = applyMiddleware(baseSchema)
-// const schema = applyMiddleware(baseSchema, permissions)
+// const schema = applyMiddleware(baseSchema)
+const schema = applyMiddleware(baseSchema, permissions)
 
 // const apollo = new ApolloServer({
 //   context: () => ({ context }),

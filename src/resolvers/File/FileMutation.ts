@@ -6,7 +6,7 @@ import { File } from '../index'
 import { Upload } from '../Others'
 
 export const uploadFile = mutationField("uploadFile", {
-  type: File,
+  type: 'File',
   args: { file: nullable(arg({ type: Upload })) },
   resolve: async (parent, { file }, Context) => {
     const userId = getUserId(Context);
@@ -32,7 +32,7 @@ export const uploadFile = mutationField("uploadFile", {
 });
 
 export const uploadFiles = mutationField("uploadFiles", {
-  type: File,
+  type: 'File',
   args: {
     files: arg({ type: nonNull(list(nonNull(Upload))) }),
   },
