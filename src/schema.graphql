@@ -109,7 +109,7 @@ type Mutation {
   markNotificationsAsRead(type: String): CountType
   replyMessage(attachments: String, body: String, parentId: String, urlList: String): ReplyMessage
   searchMessages(channelUrl: String, searchQuery: String): Message
-  sendMessage(attachments: String, body: String, channelUrl: String, communityUrl: String, mentions: String, urlList: String): Message
+  sendMessage(attachments: [String], body: String, channelUrl: String, communityUrl: String, mentions: [String], urlList: [String]): Message
   sendNotification(channelUrl: String, communityUrl: String, messageId: ID, receiverName: String, type: String): Notification
   setCurrentChannel(channelUrl: String): User
   setUserTypingStatus(channelUrl: String, isTyping: Boolean): TypingStatus
@@ -161,7 +161,7 @@ type Query {
   getNextMessages(channelUrl: String, cursorId: ID, number: String): [Message]
   getPrevMessages(channelUrl: String, cursorId: ID, number: String): [Message]
   getUnreadMessagesCount(channelUrl: String, username: String): UnreadMessagePayload
-  getUser(username: String!): TwitterPayload
+  getUser(username: String!): User
   me: User
   messageReplies(after: ID, messageId: String): [ReplyMessage]
   notifications: [Notification]
@@ -173,7 +173,7 @@ type Query {
   searchMessages(channelUrl: String, searchQuery: String): [Message]
   unreadNotifications: [Notification]
   userFiles(after: ID, userId: ID): [File]
-  users(searchString: String): User
+  users(searchString: String): [User]
 }
 
 type Reaction {
@@ -233,13 +233,6 @@ type Subscription {
   userTypingStatus(channelUrl: String, tenant: String, username: String): TypingStatus
   userWentOffline(tenant: String): User
   userWentOnline(tenant: String): User
-}
-
-type TwitterPayload {
-  bio: String!
-  followers: String!
-  followings: String!
-  user: User!
 }
 
 type TypingStatus {

@@ -60,6 +60,7 @@ export const lastMessages = queryField('getLastMessages', {
         where: { channel: { url: channelUrl! } },
         include: { channel: true },
         take: -(Number(number) || messagesNumber),
+        skip: 1,
         cursor: {id: searchMessageId}
       })
 
@@ -67,6 +68,7 @@ export const lastMessages = queryField('getLastMessages', {
         where: { channel: { url: channelUrl! } },
         include: { channel: true },
         take: Number(number) || messagesNumber,
+        skip: 1,
         cursor: {id: searchMessageId}
       })
 
@@ -98,6 +100,7 @@ export const prevMessages = queryField('getPrevMessages', {
     return Context.prisma.message.findMany({
       where: { channel: { url: channelUrl! } },
       take: -(Number(number) || messagesNumber),
+      skip: 1,
       cursor: {id: cursorId}
     })
   }
@@ -117,6 +120,7 @@ export const nextMessages = queryField('getNextMessages', {
     return Context.prisma.message.findMany({
       where: { channel: { url: channelUrl! } },
       take: Number(number) || messagesNumber,
+      skip: 1,
       cursor: {id: cursorId}
     })
   }
@@ -220,6 +224,7 @@ export const getUnreadMessagesCount = queryField('getUnreadMessagesCount', {
       const prevMessages = await Context.prisma.message.findMany({
         where: { channel: { url: channelUrl! } },
         take: -1,
+        skip: 1,
         cursor: {id: searchMessageId}
       })
 

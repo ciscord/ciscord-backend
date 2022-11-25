@@ -1,4 +1,4 @@
-import { mutationField, stringArg, nullable } from 'nexus'
+import { mutationField, stringArg, nullable, list } from 'nexus'
 import { getUserId, getTenant } from '../../utils';
 import { removeFile, getOpenGraphData, createRemoteAttachments } from '../../utils/helpers';
 import { Message } from '../index';
@@ -7,10 +7,10 @@ export const sendMessage = mutationField('sendMessage', {
   type: 'Message',
   args: {
     body: stringArg(),
-    attachments: nullable(stringArg()),
+    attachments: list(stringArg()),
     channelUrl: stringArg(),
-    urlList: nullable(stringArg()),
-    mentions: nullable(stringArg()),
+    urlList: list(stringArg()),
+    mentions: list(stringArg()),
     communityUrl: stringArg()
   },
   resolve: async (parent, { body, channelUrl, attachments, urlList, mentions, communityUrl }, Context) => {
@@ -59,55 +59,58 @@ export const sendMessage = mutationField('sendMessage', {
         where: { id: userId },
         include: { channelsInfo: { include: { channel: true } } }
       });
-      await Context.prisma.channelInfo.upsert({
-        where: {
-          uniqueUserChannelPair: `${user.username}:${channelUrl}`
-        },
-        create: {
-          channel: { connect: { url: channelUrl } },
-          user: { connect: { id: userId } },
-          uniqueUserChannelPair: `${user.username}:${channelUrl}`,
-        },
-        update: {
-          lastUpdateAt: new Date(message.createdAt)
-        },
-      });
-
-
-      mentions.map(async (mention: any) => {
-        const notification = await Context.prisma.notification.create({
-          data: {
-            type: 'mention',
-            sender: { connect: { id: userId } },
-            receiver: { connect: { username: mention } },
-            message: { connect: { id: message.id } },
-            channel: { connect: { url: channelUrl } },
-            community: { connect: { url: communityUrl } }
+      if (user) {
+        await Context.prisma.channelInfo.upsert({
+          where: {
+            uniqueUserChannelPair: `${user.username}:${channelUrl}`
           },
-          include: {
-            sender: true,
-            receiver: true,
-            message: true,
-            channel: true
-          }
+          create: {
+            channel: { connect: { url: channelUrl! } },
+            user: { connect: { id: userId } },
+            uniqueUserChannelPair: `${user.username}:${channelUrl}`,
+          },
+          update: {
+            lastUpdateAt: new Date(message.createdAt)
+          },
+        });
+      }
+      if (mentions) {
+        mentions.map(async (mention: any) => {
+          const notification = await Context.prisma.notification.create({
+            data: {
+              type: 'mention',
+              sender: { connect: { id: userId } },
+              receiver: { connect: { username: mention } },
+              message: { connect: { id: message.id } },
+              channel: { connect: { url: channelUrl } },
+              community: { connect: { url: communityUrl } }
+            },
+            include: {
+              sender: true,
+              receiver: true,
+              message: true,
+              channel: true
+            }
+          })
+          Context.pubsub.publish('NEW_NOTIFICATION', {
+            newNotification: notification,
+            tenant: getTenant(Context)
+          })
         })
-        Context.pubsub.publish('NEW_NOTIFICATION', {
-          newNotification: notification,
-          tenant: getTenant(Context)
-        })
-      })
+      }
+      
 
       if (communityUrl === 'direct') {
         // update channel createdAt (we will use createAt like the updatedAt lastmessage for private chat sort function)
         Context.prisma.channel.update({
-          where: { url: channelUrl },
+          where: { url: channelUrl! },
           data: {
             createdAt: new Date()
           }
         })
 
         // ----- get other user and create the notification for private chat
-        const channelUsernames = channelUrl.replace('direct/', '').split('-')
+        const channelUsernames = channelUrl!.replace('direct/', '').split('-')
         
         const user1 = await Context.prisma.user.findFirst({
           where: {
@@ -137,7 +140,7 @@ export const sendMessage = mutationField('sendMessage', {
                 sender: { connect: { id: userId } },
                 receiver: { connect: { username: otherUser.username } },
                 message: { connect: { id: message.id } },
-                channel: { connect: { url: channelUrl } },
+                channel: { connect: { url: channelUrl! } },
                 community: { connect: { url: communityUrl } }
               },
               include: {

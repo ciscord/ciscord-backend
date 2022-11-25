@@ -34,7 +34,7 @@ export const getOpenGraphData = (url: string) => {
 
 }
 
-export const createRemoteAttachments = async (urlList: string[]) => {
+export const createRemoteAttachments = async (urlList: string[] | null | undefined) => {
   if (urlList && urlList.length) {
     const urlSet = new Set(urlList);
     const uniqUrlList = Array.from(urlSet);
