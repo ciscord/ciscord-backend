@@ -1,30 +1,30 @@
 import { mutationField, stringArg, booleanArg } from "nexus";
-import { TypingStatus } from '../index';
+import { Context } from "../../context";
 import { getTenant, getUserId } from "../../utils";
 
 export const setUserTypingStatus = mutationField("setUserTypingStatus", {
   type: 'TypingStatus',
   args: { channelUrl: stringArg(), isTyping: booleanArg() },
-  resolve: async (parent, { channelUrl, isTyping }, Context) => {
-    const userId = await getUserId(Context);
+  resolve: async (_, { channelUrl, isTyping }, ctx: Context): Promise<any> => {
+    const userId = await getUserId(ctx);
 
-    const user = await Context.prisma.user.findFirst({
+    const user = await ctx.prisma.user.findFirst({
       where: {
         id: userId
       }
     });
 
-    Context.pubsub.publish("USER_TYPING_STATUS", {
+    ctx.pubsub.publish("USER_TYPING_STATUS", {
       userTypingStatus: {
-        username: user.username,
-        tenant: await getTenant(Context),
+        username: user!.username,
+        tenant: await getTenant(ctx),
         isTyping,
         channelUrl
       }
     });
 
     return {
-      username: user.username,
+      username: user!.username,
       isTyping
     };
   }

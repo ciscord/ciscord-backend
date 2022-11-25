@@ -1,4 +1,4 @@
-import { queryField, stringArg, nonNull, nullable } from 'nexus'
+import { queryField, stringArg, nonNull, nullable, list } from 'nexus'
 import { getUserId, isEmpty } from '../../utils'
 import Twitter from 'twitter'
 
@@ -11,31 +11,30 @@ const client = new Twitter({
 
 export const me = queryField('me', {
   type: 'User',
-  resolve: (parent, args, Context) => {
-    const userId: string = getUserId(Context);
+  resolve: (_, args, ctx) => {
+    const userId = getUserId(ctx)
     if (!isEmpty(userId)) {
-      return Context.prisma.user.findFirst({
+      return ctx.prisma.user.findFirst({
         where: {
-          id: userId,
-        },
+          id: userId
+        }
       })
     }
     throw new Error(`Invalid Token`)
-
-  },
+  }
 })
 
 export const getUser = queryField('getUser', {
   type: 'TwitterPayload',
   args: { username: nonNull(stringArg()) },
-  resolve: async (_parent, { username }, context) => {
-    if(!username) throw "username is required";
+  resolve: async (_parent, { username }, ctx): Promise<any> => {
+    if (!username) throw 'username is required'
 
-    const user = await context.prisma.user.findFirst({
+    const user = await ctx.prisma.user.findFirst({
       where: {
-        username,
-      },
-    });
+        username
+      }
+    })
 
     const params = { screen_name: username }
 
@@ -46,22 +45,22 @@ export const getUser = queryField('getUser', {
       followers: userObject ? userObject.followers_count : 0,
       followings: userObject ? userObject.friends_count : 0,
       user
-    };
-  },
+    }
+  }
 })
 
 export const users = queryField('users', {
-  type: 'User',
-  
+  type: list('User'),
+
   args: { searchString: nullable(stringArg()) },
-  resolve: (parent, { searchString } : any, Context) => {
-    return Context.prisma.user.findMany({
+  resolve: (parent, { searchString }: any, ctx): Promise<any> => {
+    return ctx.prisma.user.findMany({
       where: {
         username: {
-          contains: searchString,
-        },
+          contains: searchString
+        }
       },
       orderBy: { username: 'asc' }
     })
-  },
+  }
 })
