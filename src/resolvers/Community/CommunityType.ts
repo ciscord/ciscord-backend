@@ -1,17 +1,18 @@
 import { objectType } from 'nexus'
+import { Channel, User, Notification } from '../index'
 
 export const Community = objectType({
-  name: 'Community',
+  name: "Community",
   definition(t) {
-    t.model.id()
-    t.model.name()
-    t.model.url()
-    t.model.isPrivate()
-    t.model.image()
-    t.model.description()
-    t.model.author()
-    t.model.members({ pagination: false })
-    t.model.channels({ pagination: false })
-    t.model.notifications({ pagination: false })
-  },
+    t.field("author", { type: User })
+    t.nonNull.list.nonNull.field("channels", { type: Channel })
+    t.string("description")
+    t.nonNull.string("id")
+    t.string("image")
+    t.nonNull.boolean("isPrivate")
+    t.nonNull.list.nonNull.field("members", { type: User })
+    t.nonNull.string("name")
+    t.nonNull.list.nonNull.field("notifications", { type: Notification })
+    t.nonNull.string("url")
+  }
 })

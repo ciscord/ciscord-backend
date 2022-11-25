@@ -1,16 +1,26 @@
-import { objectType } from 'nexus'
+import { arg, intArg, objectType } from 'nexus'
+import { Message, RemoteAttachment, User, File } from '../index'
+import { DateTime, FileWhereUniqueInput } from '../Others'
 
 export const ReplyMessage = objectType({
-  name: 'ReplyMessage',
+  name: "ReplyMessage",
   definition(t) {
-    t.model.id()
-    t.model.createdAt()
-    t.model.updatedAt()
-    t.model.body()
-    t.model.author()
-    t.model.attachments()
-    t.model.parent()
-    t.model.remoteAttachments({ pagination: false })
-  },
+    t.nonNull.list.nonNull.field("attachments", {
+      type: File,
+      args: {
+        after: arg({ type: FileWhereUniqueInput }),
+        before: arg({ type: FileWhereUniqueInput }),
+        first: intArg(),
+        last: intArg(),
+        skip: intArg(),
+      },
+    })
+    t.nonNull.field("author", { type: User })
+    t.nonNull.string("body")
+    t.nonNull.field("createdAt", { type: 'DateTime' })
+    t.nonNull.string("id")
+    t.nonNull.field("parent", { type: Message })
+    t.nonNull.list.nonNull.field("remoteAttachments", { type: RemoteAttachment })
+    t.nonNull.field("updatedAt", { type: 'DateTime' })
+  }
 })
-

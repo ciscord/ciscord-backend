@@ -1,82 +1,40 @@
-import { mutationField, stringArg } from 'nexus'
+import { mutationField, stringArg, nonNull, nullable } from 'nexus'
 import { sign } from 'jsonwebtoken'
 import { compare, hash } from 'bcryptjs'
 import { getTenant, getUserId } from '../../utils'
-import { channel } from '../Channel/ChannelQuery'
-import { disconnect } from 'cluster'
+import { AuthPayload, User } from '../index';
 
 export const login = mutationField('login', {
   type: 'AuthPayload',
   args: {
-    email: stringArg({ nullable: false }),
-    password: stringArg({ nullable: false }),
-    social: stringArg({ nullable: false })
+    email: nonNull(stringArg()),
+    password: nonNull(stringArg()),
   },
-  resolve: async (_parent, { email, password, social }, context) => {
+  resolve: async (_parent, { email, password }, context) => {
     try {
-      let user = await context.prisma.user.findOne({
+      let user = await context.prisma.user.findUnique({
         where: { email }
       })
       if (!user) {
         throw new Error(`No user found for email: ${email}`)
       }
 
-      if (social === '') {
-        const passwordValid = await compare(password, user.password)
-        if (!passwordValid) {
-          throw new Error('Invalid password')
-        }
+      const passwordValid = await compare(password, user.password!)
+      if (!passwordValid) {
+        throw new Error('Invalid password')
       }
-
-      const twitterProfile = JSON.parse(social)
-      user = await context.prisma.user.update({
-        where: { email },
-        data: {
-          image: twitterProfile.photos[0].value,
-        }
-      })
       
       const data = {
         token: sign(
-          { userId: user.id, tenant: getTenant(context) },
-          process.env['APP_SECRET']
+          { userId: user.id },
+          process.env['APP_SECRET'] || ''
         ),
         user
       }
       console.log(data, 'user')
       return data;
     } catch (error) {
-      if (social !== '') {
-        const twitterProfile = JSON.parse(social)
-        const user = await context.prisma.user.create({
-          data: {
-            username: twitterProfile.username,
-            fullname: twitterProfile.displayName,
-            image: twitterProfile.photos[0].value,
-            email,
-            social: 'twitter',
-            password: '',
-            communitiesFollowed: { connect: { url: 'general' } }
-          }
-        })
-
-        await context.prisma.community.update({
-          where: { url: 'general' },
-          data: { members: { connect: { email } } }
-        })
-
-        await context.prisma.role.update({
-          where: { title: 'Member' },
-          data: { users: { connect: { id: user.id } } }
-        })
-
-        return {
-          token: sign({ userId: user.id }, process.env['APP_SECRET']),
-          user
-        }
-      } else {
-        throw new Error(`No user found for email: ${email}`)
-      }
+      throw error
     }
   }
 })
@@ -84,11 +42,11 @@ export const login = mutationField('login', {
 export const signup = mutationField('signup', {
   type: 'AuthPayload',
   args: {
-    fullname: stringArg({ nullable: false }),
-    username: stringArg({ nullable: false }),
+    fullname: nonNull(stringArg()),
+    username: nonNull(stringArg()),
     bio: stringArg(),
-    email: stringArg({ nullable: false }),
-    password: stringArg({ nullable: false })
+    email: nonNull(stringArg()),
+    password: nonNull(stringArg())
   },
   resolve: async (
     _parent,
@@ -121,7 +79,7 @@ export const signup = mutationField('signup', {
     return {
       token: sign(
         { userId: user.id, tenant: getTenant(context) },
-        process.env['APP_SECRET']
+        process.env['APP_SECRET'] || ''
       ),
       user
     }
@@ -131,9 +89,9 @@ export const signup = mutationField('signup', {
 export const updateUser = mutationField('updateUser', {
   type: 'User',
   args: {
-    email: stringArg({ nullable: false }),
-    fullname: stringArg({ nullable: false }),
-    username: stringArg({ nullable: false }),
+    email: nonNull(stringArg()),
+    fullname: nonNull(stringArg()),
+    username: nonNull(stringArg()),
     image: stringArg()
   },
   resolve: (_parent, { email, fullname, username, image }, context) => {
@@ -150,8 +108,8 @@ export const updateUser = mutationField('updateUser', {
 
 export const users = mutationField('users', {
   type: 'User',
-  list: true,
-  args: { searchString: stringArg({ nullable: true }) },
+  
+  args: { searchString: nullable(stringArg()) },
   resolve: (parent, { searchString }, context) => {
     return context.prisma.user.findMany({
       where: {
@@ -184,7 +142,7 @@ export const logout = mutationField('logout', {
 export const setCurrentChannel = mutationField('setCurrentChannel', {
   type: 'User',
   args: {
-    channelUrl: stringArg({ nullable: true })
+    channelUrl: nullable(stringArg())
   },
   resolve: async (_parent, { channelUrl }, context) => {
     try {

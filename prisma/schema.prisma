@@ -1,14 +1,15 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
 
 model User {
   id                      String          @default(cuid()) @id
@@ -22,8 +23,8 @@ model User {
   isOnline                Boolean         @default(true)
   communitiesOwned        Community[]     @relation(name: "UserCommunityAuthor")
   communitiesFollowed     Community[]     @relation(name: "UserCommunityMember")
-  currentChannel          Channel?
   channelsInfo            ChannelInfo[]
+  currentChannel          Channel?        @relation(name: "UserCurrentChannel", fields: [currentChannelId], references: [id])
   messages                Message[]
   files                   File[]
   replyMessages           ReplyMessage[]
@@ -32,6 +33,11 @@ model User {
   reactions               Reaction[]
   role                    Role[]          @relation(name: "UserRoles")
   owner                   String?
+  chanelAuthor            Channel?         @relation(name: "UserAuthor", fields: [chanelAuthorId], references: [id])
+  typingUsers            Channel?         @relation(name: "UserTypingUsers", fields: [typingUsersId], references: [id])
+  typingUsersId           String?
+  currentChannelId           String?      @unique
+  chanelAuthorId          String?        @unique
 }
 
 model Community {
@@ -41,10 +47,11 @@ model Community {
   image                   String?
   description             String?
   isPrivate               Boolean                   @default(false)
-  author                  User?                     @relation(name: "UserCommunityAuthor")
+  author                  User?                     @relation(name: "UserCommunityAuthor", fields: [authorId], references: [id])
   members                 User[]                    @relation(name: "UserCommunityMember")
   channels                Channel[]
   notifications           Notification[]
+  authorId               String?
 }
 
 model Channel {
@@ -54,12 +61,14 @@ model Channel {
   url                     String          @unique
   description             String?
   isPrivate               Boolean         @default(false)
-  community               Community
-  author                  User?           @relation(name: "UserChannelAuthor")
+  community               Community       @relation(fields: [communityId], references: [id])
+  author                  User?           @relation(name: "UserAuthor")
   messages                Message[]
-  typingUsers             User[]
+  typingUsers             User[]          @relation(name: "UserTypingUsers")
   notifications           Notification[]
   userData                ChannelInfo[]
+  communityId             String
+  currentChannel          User?           @relation(name: "UserCurrentChannel")
 }
 
 model Message {
@@ -67,12 +76,15 @@ model Message {
   createdAt               DateTime           @default(now())
   updatedAt               DateTime            @updatedAt
   body                    String?
-  channel                 Channel?
-  author                  User
+  channel                 Channel?            @relation(fields: [channelId], references: [id])
+  author                  User                @relation(fields: [authorId], references: [id])
   attachments             File[]
   remoteAttachments       RemoteAttachment[]
   children                ReplyMessage[]
   reactions               Reaction[]
+  authorId               String
+  channelId               String?
+  notification            Notification?
 }
 
 model ReplyMessage {
@@ -80,10 +92,12 @@ model ReplyMessage {
   createdAt               DateTime            @default(now())
   updatedAt               DateTime            @updatedAt
   body                    String
-  author                  User
+  author                  User                @relation(fields: [authorId], references: [id])
   attachments             File[]
   remoteAttachments       RemoteAttachment[]
-  parent                  Message
+  parent                  Message             @relation(fields: [parentId], references: [id])
+  authorId               String
+  parentId               String
 }
 
 model Reaction {
@@ -92,7 +106,8 @@ model Reaction {
   createdAt               DateTime        @default(now())
   updatedAt               DateTime        @updatedAt
   users                   User[]
-  message                 Message
+  message                 Message       @relation(fields: [messageId], references: [id])
+  messageId               String
 }
 
 model Notification {
@@ -101,12 +116,17 @@ model Notification {
   body                    String?
   type                    String?
   action                  String?
-  message                 Message?
-  channel                 Channel?
-  community               Community?
-  sender                  User            @relation(name: "UserNotificationSender")
-  receiver                User            @relation(name: "UserNotificationReceiver")
+  message                 Message?        @relation(fields: [messageId], references: [id])
+  channel                 Channel?         @relation(fields: [channelId], references: [id])
+  community               Community?      @relation(fields: [communityId], references: [id])
+  sender                  User            @relation(name: "UserNotificationSender", fields: [senderId], references: [id])
+  receiver                User            @relation(name: "UserNotificationReceiver", fields: [receiverId], references: [id])
   isRead                  Boolean         @default(false)
+  senderId               String
+  receiverId               String
+  messageId               String?         @unique
+  channelId               String?
+  communityId               String?
 }
 
 model File {
@@ -115,10 +135,14 @@ model File {
   filename                String
   mimetype                String
   filesize                String?
-  message                 Message?
+  message                 Message?        @relation(fields: [messageId], references: [id])
+  replyMessage                 ReplyMessage?        @relation(fields: [replyMessageId], references: [id])
   encoding                String
   Key                     String          @unique
-  uploader                User
+  uploader                User            @relation(fields: [uploaderId], references: [id])
+  uploaderId               String
+  messageId               String?
+  replyMessageId               String?
 }
 
 model Role {
@@ -132,10 +156,12 @@ model Role {
 
 model ChannelInfo {
   id                      String          @default(cuid()) @id
-  channel                 Channel
-  user                    User
+  channel                 Channel         @relation(fields: [channelId], references: [id])
+  user                    User            @relation(fields: [userId], references: [id])
   lastUpdateAt            DateTime        @default(now())
   uniqueUserChannelPair   String          @unique
+  channelId               String
+  userId                 String
 }
 
 model RemoteAttachment {
@@ -146,6 +172,8 @@ model RemoteAttachment {
   url                     String
   preview                 String?
   videoLink               String?
-  parentMessage           Message?
-  parentReplyMessage      ReplyMessage?
+  parentMessage           Message?        @relation(fields: [parentMessageId], references: [id])
+  parentReplyMessage      ReplyMessage?   @relation(fields: [parentReplyMessageId], references: [id])
+  parentReplyMessageId    String?
+  parentMessageId         String?
 }
