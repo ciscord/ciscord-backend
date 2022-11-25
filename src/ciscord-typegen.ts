@@ -98,12 +98,6 @@ export interface NexusGenObjects {
     updatedReaction?: NexusGenRootTypes['Reaction'] | null; // Reaction
     userTypingStatus?: NexusGenRootTypes['TypingStatus'] | null; // TypingStatus
   }
-  TwitterPayload: { // root type
-    bio: string; // String!
-    followers: string; // String!
-    followings: string; // String!
-    user: NexusGenRootTypes['User']; // User!
-  }
   TypingStatus: { // root type
     isTyping: boolean; // Boolean!
     username: string; // String!
@@ -257,7 +251,7 @@ export interface NexusGenFieldTypes {
     getNextMessages: Array<NexusGenRootTypes['Message'] | null> | null; // [Message]
     getPrevMessages: Array<NexusGenRootTypes['Message'] | null> | null; // [Message]
     getUnreadMessagesCount: NexusGenRootTypes['UnreadMessagePayload'] | null; // UnreadMessagePayload
-    getUser: NexusGenRootTypes['TwitterPayload'] | null; // TwitterPayload
+    getUser: NexusGenRootTypes['User'] | null; // User
     me: NexusGenRootTypes['User'] | null; // User
     messageReplies: Array<NexusGenRootTypes['ReplyMessage'] | null> | null; // [ReplyMessage]
     notifications: Array<NexusGenRootTypes['Notification'] | null> | null; // [Notification]
@@ -269,7 +263,7 @@ export interface NexusGenFieldTypes {
     searchMessages: Array<NexusGenRootTypes['Message'] | null> | null; // [Message]
     unreadNotifications: Array<NexusGenRootTypes['Notification'] | null> | null; // [Notification]
     userFiles: Array<NexusGenRootTypes['File'] | null> | null; // [File]
-    users: NexusGenRootTypes['User'] | null; // User
+    users: Array<NexusGenRootTypes['User'] | null> | null; // [User]
   }
   Reaction: { // field return type
     createdAt: NexusGenScalars['DateTime']; // DateTime!
@@ -320,12 +314,6 @@ export interface NexusGenFieldTypes {
     userTypingStatus: NexusGenRootTypes['TypingStatus'] | null; // TypingStatus
     userWentOffline: NexusGenRootTypes['User'] | null; // User
     userWentOnline: NexusGenRootTypes['User'] | null; // User
-  }
-  TwitterPayload: { // field return type
-    bio: string; // String!
-    followers: string; // String!
-    followings: string; // String!
-    user: NexusGenRootTypes['User']; // User!
   }
   TypingStatus: { // field return type
     isTyping: boolean; // Boolean!
@@ -493,7 +481,7 @@ export interface NexusGenFieldTypeNames {
     getNextMessages: 'Message'
     getPrevMessages: 'Message'
     getUnreadMessagesCount: 'UnreadMessagePayload'
-    getUser: 'TwitterPayload'
+    getUser: 'User'
     me: 'User'
     messageReplies: 'ReplyMessage'
     notifications: 'Notification'
@@ -556,12 +544,6 @@ export interface NexusGenFieldTypeNames {
     userTypingStatus: 'TypingStatus'
     userWentOffline: 'User'
     userWentOnline: 'User'
-  }
-  TwitterPayload: { // field return type name
-    bio: 'String'
-    followers: 'String'
-    followings: 'String'
-    user: 'User'
   }
   TypingStatus: { // field return type name
     isTyping: 'Boolean'
@@ -698,12 +680,12 @@ export interface NexusGenArgTypes {
       searchQuery?: string | null; // String
     }
     sendMessage: { // args
-      attachments?: string | null; // String
+      attachments?: Array<string | null> | null; // [String]
       body?: string | null; // String
       channelUrl?: string | null; // String
       communityUrl?: string | null; // String
-      mentions?: string | null; // String
-      urlList?: string | null; // String
+      mentions?: Array<string | null> | null; // [String]
+      urlList?: Array<string | null> | null; // [String]
     }
     sendNotification: { // args
       channelUrl?: string | null; // String
