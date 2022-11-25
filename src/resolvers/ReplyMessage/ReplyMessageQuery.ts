@@ -1,33 +1,34 @@
-import { queryField, stringArg, idArg, nullable, list } from 'nexus'
+import { queryField, stringArg, idArg } from 'nexus'
+import { getUserId } from '../../utils';
 
 export const messages = queryField('replyMessages', {
-  type: list('Message'),
-  
+  type: 'Message',
+  list: true,
   args: {
     channelUrl: stringArg(),
-    after: nullable(idArg()),
+    after: idArg({ nullable: true }),
   },
-  resolve: async (_, { channelUrl, after }, Context) => {
+  resolve: async (_, { channelUrl, after }, ctx) => {
 
-    return Context.prisma.message.findMany({
-      where: { channel: { url: channelUrl! } },
-      cursor: { id: after! }
+    return ctx.prisma.message.findMany({
+      where: { channel: { url: channelUrl } },
+      after: { id: after }
     })
   },
 })
 
 export const messageReplies = queryField('messageReplies', {
-  type: list('ReplyMessage'),
-  
+  type: 'ReplyMessage',
+  list: true,
   args: {
     messageId: stringArg(),
-    after: nullable(idArg()),
+    after: idArg({ nullable: true }),
   },
-  resolve: async (_, { messageId, after }, Context) => {
+  resolve: async (_, { messageId, after }, ctx) => {
 
-    return Context.prisma.replyMessage.findMany({
-      where: { parent: { id: messageId! } },
-      cursor: { id: after! }
+    return ctx.prisma.replyMessage.findMany({
+      where: { parent: { id: messageId } },
+      after: { id: after }
     })
   },
 })

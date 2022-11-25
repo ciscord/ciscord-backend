@@ -1,15 +1,15 @@
 
 import * as express from "express";
-import { Express } from "express-serve-static-core";
+import { GraphQLServer } from 'graphql-yoga'
 import { sign } from 'jsonwebtoken';
-import passport from 'passport';
+import * as passport from 'passport';
 import * as request from 'request';
 
 let TwitterTokenStrategy = require('passport-twitter-token');
 let router = express.Router();
 
 export default class SocialConfig {
-  public static configure(server: Express): void {
+  public static configure(server: GraphQLServer): void {
 
     // Initialize Passport and restore authentication state, if any, from the
     // session.

@@ -1,27 +1,26 @@
 import { verify } from 'jsonwebtoken'
-import { Context } from '../context'
+import { Context } from '../types'
 
 interface Token {
   userId: string
 }
 
-export function getUserId(context: Context) : string | undefined {
-  const Authorization = context.req.headers['authorization']
+export function getUserId(context: Context) : string {
+  const Authorization = context.request.get('Authorization')
   if (Authorization) {
     const token = Authorization.replace('Bearer ', '')
     const verifiedToken = verify(token, process.env['APP_SECRET']) as Token
     return verifiedToken && verifiedToken.userId
   }
-  return undefined;
+  return null;
 }
 
 export function getTenant(context: Context) : string {
-  // const tenantName = context.request.get('ciscord-tenant')
-  // if (tenantName) {
-  //   return tenantName;
-  // }
-  // return null;
-  return 'test'
+  const tenantName = context.request.get('ciscord-tenant')
+  if (tenantName) {
+    return tenantName;
+  }
+  return null;
 }
 
 export const isEmpty = (value: any): boolean =>
