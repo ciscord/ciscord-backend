@@ -1,10 +1,11 @@
 import { objectType } from 'nexus'
+import { User } from './UserType'
 
 export const OnlinePayload = objectType({
-  name: 'OnlinePayload',
+  name: "OnlinePayload",
   definition(t) {
-    t.string('id')
-    t.string('isOnline')
-    t.field('user', { type: 'User' })
-  },
+    t.nonNull.string("id")
+    t.nonNull.string("isOnline")
+    t.nonNull.field("user", { type: User })
+  }
 })

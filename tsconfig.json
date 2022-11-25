@@ -9,6 +9,11 @@
     "alwaysStrict": true,
     "strictBindCallApply": true,
     "strictFunctionTypes": true,
-    "skipLibCheck": true // `skipLibCheck` is enabled until this is issue is fixed: https://github.com/prisma/nexus-prisma/issues/82
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true, // `skipLibCheck` is enabled until this is issue is fixed: https://github.com/prisma/nexus-prisma/issues/82
+    "allowJs": true,
+    "maxNodeModuleJsDepth": 10,
+    "module": "NodeNext"
   }
 }

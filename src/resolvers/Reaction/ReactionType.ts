@@ -1,14 +1,15 @@
 import { objectType } from 'nexus'
+import { Message, User } from '../index'
+import { DateTime } from '../Others'
 
 export const Reaction = objectType({
-  name: 'Reaction',
+  name: "Reaction",
   definition(t) {
-    t.model.id()
-    t.model.name()
-    t.model.createdAt()
-    t.model.updatedAt()
-    t.model.users({ pagination: false })
-    t.model.message()
+    t.nonNull.field("createdAt", { type: 'DateTime' })
+    t.nonNull.string("id")
+    t.nonNull.field("message", { type: Message })
+    t.nonNull.string("name")
+    t.nonNull.field("updatedAt", { type: 'DateTime' })
+    t.nonNull.list.nonNull.field("users", { type: User })
   }
-});
-
+})

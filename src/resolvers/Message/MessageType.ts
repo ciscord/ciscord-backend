@@ -1,18 +1,19 @@
 import { objectType } from 'nexus'
+import { Channel, Reaction, File, RemoteAttachment, ReplyMessage, User } from '../index'
+import { DateTime } from '../Others'
 
 export const Message = objectType({
-  name: 'Message',
+  name: "Message",
   definition(t) {
-    t.model.id()
-    t.model.createdAt()
-    t.model.updatedAt()
-    t.model.body()
-    t.model.author()
-    t.model.channel()
-    t.model.children({ pagination: false })
-    t.model.reactions({ pagination: false })
-    t.model.attachments({ pagination: false })
-    t.model.remoteAttachments({ pagination: false })
-  },
+    t.nonNull.list.nonNull.field("attachments", { type: File })
+    t.nonNull.field("author", { type: User })
+    t.string("body")
+    t.field("channel", { type: Channel })
+    t.nonNull.list.nonNull.field("children", { type: ReplyMessage })
+    t.nonNull.field("createdAt", { type: 'DateTime' })
+    t.nonNull.string("id")
+    t.nonNull.list.nonNull.field("reactions", { type: Reaction })
+    t.nonNull.list.nonNull.field("remoteAttachments", { type: RemoteAttachment })
+    t.nonNull.field("updatedAt", { type: 'DateTime' })
+  }
 })
-
