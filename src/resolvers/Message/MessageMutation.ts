@@ -44,12 +44,11 @@ export const sendMessage = mutationField('sendMessage', {
       })
 
       console.log(ctx.pubsub, '===ctx.pubsub===')
-      await ctx.pubsub.publish('newMessage', {
-        newMessage: message,
-        tenant: getTenant(ctx)
+      await ctx.pubsub.publish('NEW_MESSAGE', {
+        message
       })
 
-      await ctx.pubsub.publish('channelNewMessage', {
+      await ctx.pubsub.publish('CHANNEL_NEW_MESSAGE', {
         channelNewMessage: {
           ...message.channel,
         },

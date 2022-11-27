@@ -14,7 +14,7 @@ export const Subscription = objectType({
       subscribe: (_, { channelUrl, tenant }, context) => {
         console.log(channelUrl, tenant, '===newMessage====')
         return pipe(
-          context.pubsub.subscribe('newMessage'),
+          context.pubsub.subscribe('NEW_MESSAGE'),
           filter((payload) => payload.newMessage.channel.url === channelUrl)
         )
       },
@@ -57,6 +57,7 @@ export const Subscription = objectType({
       type: 'Channel',
       args: { communityUrl: stringArg(), tenant: stringArg() },
       subscribe: (_, { channelUrl, tenant }, context) => {
+        console.log(channelUrl, tenant, '===channelNewMessage====')
         return pipe(
           context.pubsub.subscribe('CHANNEL_NEW_MESSAGE'),
           filter((payload) => payload.channelNewMessage.channel.url === channelUrl)
