@@ -13,9 +13,9 @@ export const sendMessage = mutationField('sendMessage', {
     mentions: list(stringArg()),
     communityUrl: stringArg()
   },
-  resolve: async (parent, { body, channelUrl, attachments, urlList, mentions, communityUrl }, Context) => {
+  resolve: async (_, { body, channelUrl, attachments, urlList, mentions, communityUrl }, ctx) => {
     try {
-      const userId = await getUserId(Context)
+      const userId = await getUserId(ctx)
 
       const data = {
         body,
@@ -33,7 +33,7 @@ export const sendMessage = mutationField('sendMessage', {
         }
       }
 
-      const message = await Context.prisma.message.create({
+      const message = await ctx.prisma.message.create({
         data,
         include: {
           channel: true,
@@ -42,25 +42,27 @@ export const sendMessage = mutationField('sendMessage', {
           attachments: true
         }
       })
-      await Context.pubsub.publish('NEW_MESSAGE', {
+
+      console.log(ctx.pubsub, '===ctx.pubsub===')
+      await ctx.pubsub.publish('newMessage', {
         newMessage: message,
-        tenant: getTenant(Context)
+        tenant: getTenant(ctx)
       })
 
-      await Context.pubsub.publish('CHANNEL_NEW_MESSAGE', {
+      await ctx.pubsub.publish('channelNewMessage', {
         channelNewMessage: {
           ...message.channel,
         },
-        tenant: getTenant(Context)
+        tenant: getTenant(ctx)
       })
 
       //upsert his channelinfo
-      const user = await Context.prisma.user.findFirst({
+      const user = await ctx.prisma.user.findFirst({
         where: { id: userId },
         include: { channelsInfo: { include: { channel: true } } }
       });
       if (user) {
-        await Context.prisma.channelInfo.upsert({
+        await ctx.prisma.channelInfo.upsert({
           where: {
             uniqueUserChannelPair: `${user.username}:${channelUrl}`
           },
@@ -76,7 +78,7 @@ export const sendMessage = mutationField('sendMessage', {
       }
       if (mentions) {
         mentions.map(async (mention: any) => {
-          const notification = await Context.prisma.notification.create({
+          const notification = await ctx.prisma.notification.create({
             data: {
               type: 'mention',
               sender: { connect: { id: userId } },
@@ -92,9 +94,9 @@ export const sendMessage = mutationField('sendMessage', {
               channel: true
             }
           })
-          Context.pubsub.publish('NEW_NOTIFICATION', {
+          ctx.pubsub.publish('NEW_NOTIFICATION', {
             newNotification: notification,
-            tenant: getTenant(Context)
+            tenant: getTenant(ctx)
           })
         })
       }
@@ -102,7 +104,7 @@ export const sendMessage = mutationField('sendMessage', {
 
       if (communityUrl === 'direct') {
         // update channel createdAt (we will use createAt like the updatedAt lastmessage for private chat sort function)
-        Context.prisma.channel.update({
+        ctx.prisma.channel.update({
           where: { url: channelUrl! },
           data: {
             createdAt: new Date()
@@ -112,7 +114,7 @@ export const sendMessage = mutationField('sendMessage', {
         // ----- get other user and create the notification for private chat
         const channelUsernames = channelUrl!.replace('direct/', '').split('-')
         
-        const user1 = await Context.prisma.user.findFirst({
+        const user1 = await ctx.prisma.user.findFirst({
           where: {
             username: channelUsernames[0]
           },
@@ -121,7 +123,7 @@ export const sendMessage = mutationField('sendMessage', {
           }
         })
 
-        const user2 = await Context.prisma.user.findFirst({
+        const user2 = await ctx.prisma.user.findFirst({
           where: {
             username: channelUsernames[1]
           },
@@ -134,7 +136,7 @@ export const sendMessage = mutationField('sendMessage', {
           let otherUser = user1.id === userId ? user2 : user1
 
           if (otherUser.currentChannel && otherUser.currentChannel.url !== channelUrl) {
-            const notification = await Context.prisma.notification.create({
+            const notification = await ctx.prisma.notification.create({
               data: {
                 type: 'direct',
                 sender: { connect: { id: userId } },
@@ -150,9 +152,9 @@ export const sendMessage = mutationField('sendMessage', {
                 channel: true
               }
             })
-            Context.pubsub.publish('NEW_NOTIFICATION', {
+            ctx.pubsub.publish('newNotification', {
               newNotification: notification,
-              tenant: getTenant(Context)
+              tenant: getTenant(ctx)
             })
           }
         }
@@ -171,14 +173,14 @@ export const editMessage = mutationField('editMessage', {
     body: stringArg(),
     messageId: stringArg()
   },
-  resolve: async (parent, { body, messageId }, Context) => {
-    const userId = getUserId(Context)
+  resolve: async (parent, { body, messageId }, ctx) => {
+    const userId = getUserId(ctx)
 
     if (!userId) {
       throw new Error('nonexistent user')
     }
 
-    const requestingUserIsAuthor = await Context.prisma.message.findMany({
+    const requestingUserIsAuthor = await ctx.prisma.message.findMany({
       where: {
         id: messageId
       }
@@ -188,7 +190,7 @@ export const editMessage = mutationField('editMessage', {
       throw new Error('Invalid permissions, you must be an author of this post to edit it.')
     }
 
-    const message = await Context.prisma.message.update({
+    const message = await ctx.prisma.message.update({
       where: {
         id: messageId
       },
@@ -203,9 +205,9 @@ export const editMessage = mutationField('editMessage', {
       }
     })
 
-    Context.pubsub.publish('EDITED_MESSAGE', {
+    ctx.pubsub.publish('EDITED_MESSAGE', {
       editMessage: message,
-      tenant: getTenant(Context)
+      tenant: getTenant(ctx)
     })
 
     return message
@@ -217,14 +219,14 @@ export const deleteMessage = mutationField('deleteMessage', {
   args: {
     messageId: stringArg()
   },
-  resolve: async (parent, { messageId }, Context) => {
-    const userId = getUserId(Context)
+  resolve: async (parent, { messageId }, ctx) => {
+    const userId = getUserId(ctx)
 
     if (!userId) {
       throw new Error('nonexistent user')
     }
 
-    const currentMessage = await Context.prisma.message.findMany({
+    const currentMessage = await ctx.prisma.message.findMany({
       where: {
         id: messageId
       },
@@ -239,7 +241,7 @@ export const deleteMessage = mutationField('deleteMessage', {
     }
 
     /*Cascading deletes are not yet implemented*/
-    await Context.prisma.reaction.deleteMany({
+    await ctx.prisma.reaction.deleteMany({
       where: {
         message: {
           id: messageId
@@ -255,9 +257,9 @@ export const deleteMessage = mutationField('deleteMessage', {
 
     const filesList = [].concat(...repliesAttachments, messageFiles)
 
-    await removeFile({ filesList, Context, messageId })
+    await removeFile({ filesList, ctx, messageId })
 
-    await Context.prisma.replyMessage.deleteMany({
+    await ctx.prisma.replyMessage.deleteMany({
       where: {
         parent: {
           id: messageId
@@ -267,7 +269,7 @@ export const deleteMessage = mutationField('deleteMessage', {
 
     /*Cascading deletes are not yet implemented*/
 
-    const message = await Context.prisma.message.delete({
+    const message = await ctx.prisma.message.delete({
       where: {
         id: messageId
       },
@@ -277,9 +279,9 @@ export const deleteMessage = mutationField('deleteMessage', {
       }
     })
 
-    Context.pubsub.publish('DELETED_MESSAGE', {
+    ctx.pubsub.publish('DELETED_MESSAGE', {
       deleteMessage: message,
-      tenant: getTenant(Context)
+      tenant: getTenant(ctx)
     })
 
     return message
@@ -293,12 +295,12 @@ export const searchMessages = mutationField('searchMessages', {
     channelUrl: stringArg(),
     searchQuery: stringArg()
   },
-  resolve: async (_, { channelUrl, searchQuery }, Context) => {
+  resolve: async (_, { channelUrl, searchQuery }, ctx) => {
     if (!searchQuery || !searchQuery.length) throw new Error('search error')
 
-    const userId = await getUserId(Context)
+    const userId = await getUserId(ctx)
 
-    const messagesList = await Context.prisma.message.findMany({
+    const messagesList = await ctx.prisma.message.findMany({
       where: { channel: { url: channelUrl }, body: { contains: searchQuery } }
     })
 

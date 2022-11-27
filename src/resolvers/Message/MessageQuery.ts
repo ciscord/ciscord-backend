@@ -18,12 +18,10 @@ export const lastMessages = queryField('getLastMessages', {
     let channelsInfo = null;
     let lastReadedMessage = null;
     if (!isEmpty(userId)) {
-      console.log(userId, '====userId channel')
       await Context.prisma.user.update({
         where: { id: userId },
         data: { currentChannel: { connect: { url: channelUrl! } } }
       })
-      console.log('====updated channel')
 
       channelsInfo = await Context.prisma.channelInfo.findMany({
         where: {
@@ -33,7 +31,6 @@ export const lastMessages = queryField('getLastMessages', {
           }
         }
       })
-      console.log(channelsInfo, '====channelsInfo channel')
       const lastUpdateDate = lastVisitDate || (channelsInfo[0] && channelsInfo[0].lastUpdateAt)
       lastReadedMessage = await Context.prisma.message.findMany({
         where: {
@@ -44,7 +41,6 @@ export const lastMessages = queryField('getLastMessages', {
       })
     }
 
-    console.log(lastReadedMessage, '====lastUpdateDate channel')
     const searchMessageId = cursorId || (lastReadedMessage && lastReadedMessage[0] && lastReadedMessage[0].id)
 
     if (!searchMessageId) {
@@ -53,7 +49,6 @@ export const lastMessages = queryField('getLastMessages', {
         include: { channel: true },
         take: Number(number) || messagesNumber
       })
-      console.log(messageList, '====messageList channel')
       return messageList;
     } else {
       const prevMessages = await Context.prisma.message.findMany({

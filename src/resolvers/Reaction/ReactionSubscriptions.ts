@@ -8,7 +8,7 @@ const ReactionSubscriptions = (t: any) => {
     
     subscribe: (_, { channelUrl, tenant }, context) => {
       return pipe(
-        context.subscribe('NEW_REACTION'),
+        context.pubsub.subscribe('NEW_REACTION'),
         filter((payload) => payload.newReaction.message.channel.url === channelUrl && payload.tenant === tenant)
       )
     },
@@ -20,7 +20,7 @@ const ReactionSubscriptions = (t: any) => {
     
     subscribe: (_, { channelUrl, tenant }, context) => {
       return pipe(
-        context.subscribe('UPDATE_REACTION'),
+        context.pubsub.subscribe('UPDATE_REACTION'),
         filter((payload) => payload.updatedReaction.message.channel.url === channelUrl && payload.tenant === tenant)
       )
     },
@@ -32,7 +32,7 @@ const ReactionSubscriptions = (t: any) => {
     
     subscribe: (_, { channelUrl, tenant }, context) => {
       return pipe(
-        context.subscribe('REMOVE_REACTION'),
+        context.pubsub.subscribe('REMOVE_REACTION'),
         filter((payload) => payload.removedReaction.message.channel.url === channelUrl && payload.tenant === tenant)
       )
     },

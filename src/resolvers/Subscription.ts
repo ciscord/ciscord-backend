@@ -1,7 +1,9 @@
-import { objectType } from 'nexus'
+import { objectType, stringArg } from 'nexus'
 import { filter, pipe } from 'graphql-yoga'
-import { stringArg } from 'nexus'
+import { context } from "../context"
 import ReactionSubscriptions from './Reaction/ReactionSubscriptions'
+
+import { subscriptionField } from 'nexus'
 
 export const Subscription = objectType({
   name: 'Subscription',
@@ -10,14 +12,12 @@ export const Subscription = objectType({
       type: 'Message',
       args: { channelUrl: stringArg(), tenant: stringArg() },
       subscribe: (_, { channelUrl, tenant }, context) => {
+        console.log(channelUrl, tenant, '===newMessage====')
         return pipe(
-          context.subscribe('NEW_MESSAGE'),
-          filter((payload) => payload.newMessage.channel.url === channelUrl && payload.tenant === tenant)
+          context.pubsub.subscribe('newMessage'),
+          filter((payload) => payload.newMessage.channel.url === channelUrl)
         )
       },
-      resolve: (payload) => {
-        return payload.newMessage
-      }
     })
 
     t.field('editMessage', {
@@ -25,8 +25,8 @@ export const Subscription = objectType({
       args: { channelUrl: stringArg(), tenant: stringArg() },
       subscribe: (_, { channelUrl, tenant }, context) => {
         return pipe(
-          context.subscribe('EDITED_MESSAGE'),
-          filter((payload) => payload.editMessage.channel.url === channelUrl && payload.tenant === tenant)
+          context.pubsub.subscribe('EDITED_MESSAGE'),
+          filter((payload) => payload.editMessage.channel.url === channelUrl)
         )
       }
     })
@@ -36,8 +36,8 @@ export const Subscription = objectType({
       args: { channelUrl: stringArg(), tenant: stringArg() },
       subscribe: (_, { channelUrl, tenant }, context) => {
         return pipe(
-          context.subscribe('DELETED_MESSAGE'),
-          filter((payload) => payload.deleteMessage.channel.url === channelUrl && payload.tenant === tenant)
+          context.pubsub.subscribe('DELETED_MESSAGE'),
+          filter((payload) => payload.deleteMessage.channel.url === channelUrl)
         )
       }
     })
@@ -47,8 +47,8 @@ export const Subscription = objectType({
       args: { receiverId: stringArg(), tenant: stringArg() },
       subscribe: (_, { channelUrl, tenant }, context) => {
         return pipe(
-          context.subscribe('NEW_NOTIFICATION'),
-          filter((payload) => payload.newNotification.channel.url === channelUrl && payload.tenant === tenant)
+          context.pubsub.subscribe('NEW_NOTIFICATION'),
+          filter((payload) => payload.newNotification.channel.url === channelUrl)
         )
       }
     })
@@ -58,8 +58,8 @@ export const Subscription = objectType({
       args: { communityUrl: stringArg(), tenant: stringArg() },
       subscribe: (_, { channelUrl, tenant }, context) => {
         return pipe(
-          context.subscribe('CHANNEL_NEW_MESSAGE'),
-          filter((payload) => payload.channelNewMessage.channel.url === channelUrl && payload.tenant === tenant)
+          context.pubsub.subscribe('CHANNEL_NEW_MESSAGE'),
+          filter((payload) => payload.channelNewMessage.channel.url === channelUrl)
         )
       }
     })
@@ -67,10 +67,10 @@ export const Subscription = objectType({
     t.field('userWentOnline', {
       type: 'User',
       args: { tenant: stringArg() },
-      
+
       subscribe: (_, { channelUrl, tenant }, context) => {
         return pipe(
-          context.subscribe('USER_WENT_ONLINE'),
+          context.pubsub.subscribe('USER_WENT_ONLINE'),
           filter((payload) => payload.tenant === tenant)
         )
       },
@@ -82,10 +82,10 @@ export const Subscription = objectType({
     t.field('userWentOffline', {
       type: 'User',
       args: { tenant: stringArg() },
-      
+
       subscribe: (_, { channelUrl, tenant }, context) => {
         return pipe(
-          context.subscribe('USER_WENT_OFFLINE'),
+          context.pubsub.subscribe('USER_WENT_OFFLINE'),
           filter((payload) => payload.tenant === tenant)
         )
       },
@@ -101,10 +101,10 @@ export const Subscription = objectType({
         tenant: stringArg(),
         username: stringArg()
       },
-      
+
       subscribe: ({ userTypingStatus }, { channelUrl, tenant, username }, context) => {
         return pipe(
-          context.subscribe('USER_TYPING_STATUS'),
+          context.pubsub.subscribe('USER_TYPING_STATUS'),
           filter(
             (payload) =>
               channelUrl === userTypingStatus.channelUrl &&
@@ -117,4 +117,4 @@ export const Subscription = objectType({
 
     ReactionSubscriptions(t)
   }
-})
+});

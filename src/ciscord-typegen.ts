@@ -92,6 +92,7 @@ export interface NexusGenObjects {
     channelNewMessage?: NexusGenRootTypes['Channel'] | null; // Channel
     deleteMessage?: NexusGenRootTypes['Message'] | null; // Message
     editMessage?: NexusGenRootTypes['Message'] | null; // Message
+    newMessage?: NexusGenRootTypes['Message'] | null; // Message
     newNotification?: NexusGenRootTypes['Notification'] | null; // Notification
     newReaction?: NexusGenRootTypes['Reaction'] | null; // Reaction
     removedReaction?: NexusGenRootTypes['Reaction'] | null; // Reaction

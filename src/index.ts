@@ -1,12 +1,11 @@
 const dotenv = require('dotenv')
 dotenv.config({ path: `../.env.${process.env.NODE_ENV}` })
-// import { ApolloServer } from 'apollo-server-express'
-// import express from 'express'
-import { createYoga,  } from 'graphql-yoga';
+import { useServer } from 'graphql-ws/lib/use/ws'
+import { createYoga } from 'graphql-yoga';
 import express from 'express'
 import { join } from 'path'
 import * as types from './resolvers'
-import { context } from './context'
+import { Context, context } from './context'
 import SocialConfig from './passport'
 import RegisterCompany from './registerCompany'
 import { permissions } from './permissions'
@@ -50,7 +49,11 @@ const schema = applyMiddleware(baseSchema)
 
 const app = express()
 
-const yoga = createYoga({ schema, context })
+const yoga = createYoga<Context, any>({
+  schema: schema,
+  logging: true,
+  context,
+})
 
 // enable cors
 var corsOption = {
@@ -71,6 +74,7 @@ app.use(bodyParser.text({ type: 'text/html' }))
 app.use('/register', RegisterCompany)
 
 app.use('/graphql', yoga)
+
  
 app.listen(4000, () => {
   console.log('Running a GraphQL API server at http://localhost:4000/graphql')
