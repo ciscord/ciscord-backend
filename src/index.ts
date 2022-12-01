@@ -1,18 +1,15 @@
 const dotenv = require('dotenv')
 dotenv.config({ path: `../.env.${process.env.NODE_ENV}` })
-import { useServer } from 'graphql-ws/lib/use/ws'
 import { createYoga } from 'graphql-yoga';
 import express from 'express'
 import { join } from 'path'
 import * as types from './resolvers'
 import { Context, context } from './context'
-import SocialConfig from './passport'
 import RegisterCompany from './registerCompany'
 import { permissions } from './permissions'
 import { applyMiddleware } from 'graphql-middleware'
 import compression from 'compression' // compresses requests
 import * as bodyParser from 'body-parser'
-import { verify } from 'jsonwebtoken'
 import { makeSchema, nullabilityGuardPlugin } from 'nexus'
 
 const cors = require('cors')

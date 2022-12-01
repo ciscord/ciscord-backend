@@ -29,7 +29,7 @@ export const createTenant = async (req: any, res: any, next: any) => {
         email,
         password: '',
         owner: '1',
-        social: 'twitter',
+        social: '',
         role: {
           create: [
             {
