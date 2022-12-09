@@ -1,5 +1,5 @@
 # Backend
-Node Version: 14.16.2
+Node Version: 14.16.0
 ========= Currently migrating from prisma2 to prisma v4 ===========
 ## 1. install packages
 ### 1) install global packages
