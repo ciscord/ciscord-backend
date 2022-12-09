@@ -1,7 +1,6 @@
 import { mutationField, stringArg, nullable, list } from 'nexus'
-import { getUserId, getTenant } from '../../utils';
-import { removeFile, getOpenGraphData, createRemoteAttachments } from '../../utils/helpers';
-import { Message } from '../index';
+import { getUserId, getTenant } from '../../utils'
+import { removeFile, getOpenGraphData, createRemoteAttachments } from '../../utils/helpers'
 
 export const sendMessage = mutationField('sendMessage', {
   type: 'Message',
@@ -42,15 +41,12 @@ export const sendMessage = mutationField('sendMessage', {
           attachments: true
         }
       })
-
-      console.log(ctx.pubsub, '===ctx.pubsub===')
       await ctx.pubsub.publish('NEW_MESSAGE', {
         message
       })
-
       await ctx.pubsub.publish('CHANNEL_NEW_MESSAGE', {
         channelNewMessage: {
-          ...message.channel,
+          ...message.channel
         },
         tenant: getTenant(ctx)
       })
@@ -59,7 +55,7 @@ export const sendMessage = mutationField('sendMessage', {
       const user = await ctx.prisma.user.findFirst({
         where: { id: userId },
         include: { channelsInfo: { include: { channel: true } } }
-      });
+      })
       if (user) {
         await ctx.prisma.channelInfo.upsert({
           where: {
@@ -68,12 +64,12 @@ export const sendMessage = mutationField('sendMessage', {
           create: {
             channel: { connect: { url: channelUrl! } },
             user: { connect: { id: userId } },
-            uniqueUserChannelPair: `${user.username}:${channelUrl}`,
+            uniqueUserChannelPair: `${user.username}:${channelUrl}`
           },
           update: {
             lastUpdateAt: new Date(message.createdAt)
-          },
-        });
+          }
+        })
       }
       if (mentions) {
         mentions.map(async (mention: any) => {
@@ -99,7 +95,6 @@ export const sendMessage = mutationField('sendMessage', {
           })
         })
       }
-      
 
       if (communityUrl === 'direct') {
         // update channel createdAt (we will use createAt like the updatedAt lastmessage for private chat sort function)
@@ -112,7 +107,7 @@ export const sendMessage = mutationField('sendMessage', {
 
         // ----- get other user and create the notification for private chat
         const channelUsernames = channelUrl!.replace('direct/', '').split('-')
-        
+
         const user1 = await ctx.prisma.user.findFirst({
           where: {
             username: channelUsernames[0]
@@ -250,7 +245,7 @@ export const deleteMessage = mutationField('deleteMessage', {
 
     const repliesAttachments = currentMessage[0].children
       .map(({ attachments }) => attachments.map(({ Key }) => Key))
-      .filter(item => item.length)
+      .filter((item) => item.length)
 
     const messageFiles = currentMessage[0].attachments.map(({ Key }) => Key)
 
@@ -289,7 +284,7 @@ export const deleteMessage = mutationField('deleteMessage', {
 
 export const searchMessages = mutationField('searchMessages', {
   type: 'Message',
-  
+
   args: {
     channelUrl: stringArg(),
     searchQuery: stringArg()

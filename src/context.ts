@@ -1,5 +1,8 @@
 import { PrismaClient } from '@prisma/client'
 import { PubSub, createPubSub, YogaInitialContext } from 'graphql-yoga'
+import { RedisPubSub } from 'graphql-redis-subscriptions';
+
+
 export interface Context  extends YogaInitialContext {
   prisma: PrismaClient
   pubsub: PubSub<any>
@@ -11,9 +14,7 @@ export interface Token {
 }
 
 const prisma = new PrismaClient()
-const pubsub = createPubSub<{
-  newMessage: any
-}>()
+const pubsub = new RedisPubSub();
 
 export const context = {
   prisma,
