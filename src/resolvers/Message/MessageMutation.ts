@@ -48,7 +48,6 @@ export const sendMessage = mutationField('sendMessage', {
         channelNewMessage: {
           ...message.channel
         },
-        tenant: getTenant(ctx)
       })
 
       //upsert his channelinfo

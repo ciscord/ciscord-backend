@@ -5,7 +5,7 @@ import { RedisPubSub } from 'graphql-redis-subscriptions';
 
 export interface Context  extends YogaInitialContext {
   prisma: PrismaClient
-  pubsub: PubSub<any>
+  pubsub: RedisPubSub
 }
 
 export interface Token {
