@@ -5,13 +5,13 @@ import { Reaction } from '../index';
 type reactionPayload = {
   messageId?: string;
   name?: string;
-  Context: any;
+  ctx: any;
   userId?: string;
   reactionId?: string;
 }
 
-const addNewReaction = async ({messageId, name, Context, userId}: reactionPayload) => {
-  const reaction = await Context.prisma.reaction.create({
+const addNewReaction = async ({messageId, name, ctx, userId}: reactionPayload) => {
+  const reaction = await ctx.prisma.reaction.create({
     data: {
       name: name,
       users: { connect: { id: userId } },
@@ -20,16 +20,16 @@ const addNewReaction = async ({messageId, name, Context, userId}: reactionPayloa
     include: { message: { include: {channel: true}, }, }
   });
 
-  Context.pubsub.publish('NEW_REACTION', {
+  ctx.pubsub.publish('NEW_REACTION', {
     newReaction: reaction,
-    tenant: getTenant(Context),
+    tenant: getTenant(ctx),
   })
 
   return reaction;
 }
 
-const addReactedUser = async ({reactionId, Context, userId}: reactionPayload) => {
-  const reaction = await Context.prisma.reaction.update({
+const addReactedUser = async ({reactionId, ctx, userId}: reactionPayload) => {
+  const reaction = await ctx.prisma.reaction.update({
     where: {id: reactionId},
     data: {
       users: {connect: {id: userId}}
@@ -40,16 +40,16 @@ const addReactedUser = async ({reactionId, Context, userId}: reactionPayload) =>
     }
   });
 
-  Context.pubsub.publish('UPDATE_REACTION', {
+  ctx.pubsub.publish('UPDATE_REACTION', {
     updatedReaction: reaction,
-    tenant: getTenant(Context),
+    tenant: getTenant(ctx),
   })
 
   return reaction;
 }
 
-const removeReactedUser = async ({reactionId, Context, userId}: reactionPayload) => {
-  const reaction = await Context.prisma.reaction.update({
+const removeReactedUser = async ({reactionId, ctx, userId}: reactionPayload) => {
+  const reaction = await ctx.prisma.reaction.update({
     where: {id: reactionId},
     data: {
       users: {disconnect: {id: userId}}
@@ -60,16 +60,16 @@ const removeReactedUser = async ({reactionId, Context, userId}: reactionPayload)
     }
   });
 
-  Context.pubsub.publish('UPDATE_REACTION', {
+  ctx.pubsub.publish('UPDATE_REACTION', {
     updatedReaction: reaction,
-    tenant: getTenant(Context),
+    tenant: getTenant(ctx),
   })
 
   return reaction;
 }
 
-const removeReaction = async ({reactionId, Context}: reactionPayload) => {
- const result = await Context.prisma.reaction.delete({
+const removeReaction = async ({reactionId, ctx}: reactionPayload) => {
+ const result = await ctx.prisma.reaction.delete({
     where: { id: reactionId },
     include: {
       message: { include: {channel: true}, },
@@ -77,9 +77,9 @@ const removeReaction = async ({reactionId, Context}: reactionPayload) => {
     }
   });
 
-  Context.pubsub.publish('REMOVE_REACTION', {
+  ctx.pubsub.publish('REMOVE_REACTION', {
     removedReaction: result,
-    tenant: getTenant(Context),
+    tenant: getTenant(ctx),
   })
 
   return result;
@@ -91,11 +91,11 @@ export const toggleReaction = mutationField("toggleReaction", {
     messageId: stringArg(),
     name: stringArg()
   },
-  resolve: async (parent, { messageId, name }, Context) => {
-    const userId = await getUserId(Context) || "ck3fot8rr0000qmkp16jlc1mq"; // TODO: REMOVE TEST ID
+  resolve: async (parent, { messageId, name }, ctx) => {
+    const userId = await getUserId(ctx) || "ck3fot8rr0000qmkp16jlc1mq"; // TODO: REMOVE TEST ID
 
     const existingReaction = (
-      await Context.prisma.reaction.findMany({
+      await ctx.prisma.reaction.findMany({
         where: {
           name,
           message: {
@@ -114,23 +114,23 @@ export const toggleReaction = mutationField("toggleReaction", {
     )[0];
 
     if (!existingReaction) {
-      const reaction = await addNewReaction({ userId, name, messageId, Context });
+      const reaction = await addNewReaction({ userId, name, messageId, ctx });
 
       return reaction;
     }
 
     if (existingReaction.users.findIndex(({id})=> id === userId) === -1) {
-      const reaction = await addReactedUser({ userId, reactionId: existingReaction.id , Context });
+      const reaction = await addReactedUser({ userId, reactionId: existingReaction.id , ctx });
 
       return reaction;
     }
 
     if (existingReaction.users.length > 1) {
-      const reaction = await removeReactedUser({ userId, reactionId: existingReaction.id, Context });
+      const reaction = await removeReactedUser({ userId, reactionId: existingReaction.id, ctx });
 
       return reaction;
     } else {
-      const reaction = await removeReaction({ reactionId: existingReaction.id, Context });
+      const reaction = await removeReaction({ reactionId: existingReaction.id, ctx });
 
       return reaction;
     }

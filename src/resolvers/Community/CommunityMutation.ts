@@ -1,12 +1,12 @@
-import { mutationField, stringArg, booleanArg, nullable } from "nexus";
+import { mutationField, stringArg, booleanArg, nullable, nonNull } from "nexus";
 import { getUserId } from "../../utils";
 import { Community } from '../index';
 
 export const createCommunity = mutationField("createCommunity", {
   type: 'Community',
   args: {
-    name: stringArg(),
-    url: stringArg(),
+    name: nonNull(stringArg()),
+    url: nonNull(stringArg()),
     image: stringArg(),
     description: nullable(stringArg()),
     isPrivate: nullable(booleanArg())

@@ -3,7 +3,6 @@ import { getUserId } from '../../utils'
 
 export const notifications = queryField('notifications', {
   type: list('Notification'),
-  
   resolve: (parent, args, Context) => {
     const userId = getUserId(Context)
 
@@ -16,7 +15,6 @@ export const notifications = queryField('notifications', {
 
 export const unreadNotifications = queryField('unreadNotifications', {
   type: list('Notification'),
-  
   resolve: (parent, args, Context) => {
     const userId = getUserId(Context)
 
@@ -30,7 +28,6 @@ export const unreadNotifications = queryField('unreadNotifications', {
 
 export const channelNotifications = queryField('channelNotifications', {
   type: list('Notification'),
-  
   args: { channelUrl: stringArg() },
   resolve: (parent, { channelUrl }, Context) => {
     const userId = getUserId(Context)
@@ -46,7 +43,6 @@ export const channelNotifications = queryField('channelNotifications', {
 
 export const communityNotifications = queryField('communityNotifications', {
   type: list('Notification'),
-  
   args: { communityUrl: stringArg() },
   resolve: (parent, { communityUrl }, Context) => {
     const userId = getUserId(Context)

@@ -1,18 +1,18 @@
 import { mutationField, stringArg, nonNull, nullable } from 'nexus'
 import { sign } from 'jsonwebtoken'
+import { isEmpty } from '../../utils'
 import { compare, hash } from 'bcryptjs'
 import { getTenant, getUserId } from '../../utils'
-import { AuthPayload, User } from '../index';
 
 export const login = mutationField('login', {
   type: 'AuthPayload',
   args: {
     email: nonNull(stringArg()),
-    password: nonNull(stringArg()),
+    password: nonNull(stringArg())
   },
-  resolve: async (_parent, { email, password }, context) => {
+  resolve: async (_parent, { email, password }, ctx): Promise<any> => {
     try {
-      let user = await context.prisma.user.findUnique({
+      let user = await ctx.prisma.user.findUnique({
         where: { email }
       })
       if (!user) {
@@ -23,16 +23,13 @@ export const login = mutationField('login', {
       if (!passwordValid) {
         throw new Error('Invalid password')
       }
-      
+
       const data = {
-        token: sign(
-          { userId: user.id },
-          process.env['APP_SECRET'] || ''
-        ),
+        token: sign({ userId: user.id }, process.env['APP_SECRET'] || ''),
         user
       }
       console.log(data, 'user')
-      return data;
+      return data
     } catch (error) {
       throw error
     }
@@ -48,13 +45,9 @@ export const signup = mutationField('signup', {
     email: nonNull(stringArg()),
     password: nonNull(stringArg())
   },
-  resolve: async (
-    _parent,
-    { fullname, username, bio, email, password },
-    context
-  ) => {
+  resolve: async (_parent, { fullname, username, bio, email, password }, ctx): Promise<any> => {
     const hashedPassword = await hash(password, 10)
-    const user = await context.prisma.user.create({
+    const user = await ctx.prisma.user.create({
       data: {
         username,
         fullname,
@@ -66,21 +59,18 @@ export const signup = mutationField('signup', {
       }
     })
 
-    await context.prisma.community.update({
+    await ctx.prisma.community.update({
       where: { url: 'general' },
       data: { members: { connect: { username } } }
     })
 
-    await context.prisma.role.update({
+    await ctx.prisma.role.update({
       where: { title: 'Member' },
       data: { users: { connect: { id: user.id } } }
     })
 
     return {
-      token: sign(
-        { userId: user.id, tenant: getTenant(context) },
-        process.env['APP_SECRET'] || ''
-      ),
+      token: sign({ userId: user.id, tenant: getTenant(ctx) }, process.env['APP_SECRET'] || ''),
       user
     }
   }
@@ -94,8 +84,8 @@ export const updateUser = mutationField('updateUser', {
     username: nonNull(stringArg()),
     image: stringArg()
   },
-  resolve: (_parent, { email, fullname, username, image }, context) => {
-    return context.prisma.user.update({
+  resolve: (_parent, { email, fullname, username, image }, ctx): Promise<any> => {
+    return ctx.prisma.user.update({
       where: { email },
       data: {
         username,
@@ -108,13 +98,16 @@ export const updateUser = mutationField('updateUser', {
 
 export const users = mutationField('users', {
   type: 'User',
-  
   args: { searchString: nullable(stringArg()) },
-  resolve: (parent, { searchString }, context) => {
-    return context.prisma.user.findMany({
+  resolve: (parent, { searchString }, ctx): Promise<any> => {
+    if (isEmpty(searchString)) {
+      throw new Error(`no searchString`)
+    }
+
+    return ctx.prisma.user.findMany({
       where: {
         username: {
-          contains: searchString
+          contains: searchString!
         }
       }
     })
@@ -123,16 +116,16 @@ export const users = mutationField('users', {
 
 export const logout = mutationField('logout', {
   type: 'User',
-  resolve: async (parent, args, context) => {
+  resolve: async (parent, args, ctx): Promise<any> => {
     try {
-      const userId = await getUserId(context)
-      const user = await context.prisma.user.update({
+      const userId = await getUserId(ctx)
+      const user = await ctx.prisma.user.update({
         where: { id: userId },
         data: { isOnline: false }
       })
-      context.pubsub.publish('USER_WENT_OFFLINE', {
+      ctx.pubsub.publish('USER_WENT_OFFLINE', {
         user,
-        tenant: await getTenant(context)
+        tenant: await getTenant(ctx)
       })
       return user
     } catch (error) {}
@@ -144,12 +137,12 @@ export const setCurrentChannel = mutationField('setCurrentChannel', {
   args: {
     channelUrl: nullable(stringArg())
   },
-  resolve: async (_parent, { channelUrl }, context) => {
+  resolve: async (_parent, { channelUrl }, ctx): Promise<any> => {
     try {
-      const userId = await getUserId(context)
-      const user = await context.prisma.user.update({
+      const userId = await getUserId(ctx)
+      const user = await ctx.prisma.user.update({
         where: { id: userId },
-        data: { currentChannel: { connect: { url: channelUrl } } }
+        data: { currentChannel: { connect: { url: channelUrl! } } }
       })
       return user
     } catch (error) {}

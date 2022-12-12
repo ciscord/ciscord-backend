@@ -1,6 +1,6 @@
-import { mutationField, stringArg, nullable, list } from 'nexus'
+import { mutationField, stringArg, list } from 'nexus'
 import { getUserId, getTenant } from '../../utils'
-import { removeFile, getOpenGraphData, createRemoteAttachments } from '../../utils/helpers'
+import { removeFile, createRemoteAttachments } from '../../utils/helpers'
 
 export const sendMessage = mutationField('sendMessage', {
   type: 'Message',
@@ -167,11 +167,6 @@ export const editMessage = mutationField('editMessage', {
     messageId: stringArg()
   },
   resolve: async (parent, { body, messageId }, ctx) => {
-    const userId = getUserId(ctx)
-
-    if (!userId) {
-      throw new Error('nonexistent user')
-    }
 
     const requestingUserIsAuthor = await ctx.prisma.message.findMany({
       where: {
@@ -213,11 +208,6 @@ export const deleteMessage = mutationField('deleteMessage', {
     messageId: stringArg()
   },
   resolve: async (parent, { messageId }, ctx) => {
-    const userId = getUserId(ctx)
-
-    if (!userId) {
-      throw new Error('nonexistent user')
-    }
 
     const currentMessage = await ctx.prisma.message.findMany({
       where: {
@@ -282,16 +272,13 @@ export const deleteMessage = mutationField('deleteMessage', {
 })
 
 export const searchMessages = mutationField('searchMessages', {
-  type: 'Message',
-
+  type: list('Message'),
   args: {
     channelUrl: stringArg(),
     searchQuery: stringArg()
   },
   resolve: async (_, { channelUrl, searchQuery }, ctx) => {
     if (!searchQuery || !searchQuery.length) throw new Error('search error')
-
-    const userId = await getUserId(ctx)
 
     const messagesList = await ctx.prisma.message.findMany({
       where: { channel: { url: channelUrl }, body: { contains: searchQuery } }
