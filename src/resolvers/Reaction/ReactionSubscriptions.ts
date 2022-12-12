@@ -5,7 +5,6 @@ const ReactionSubscriptions = (t: any) => {
   t.field("newReaction", {
     type: "Reaction",
     args: { channelUrl: stringArg(), tenant: stringArg() },
-    
     subscribe: (_, { channelUrl, tenant }, context) => {
       return pipe(
         context.pubsub.asyncIterator('NEW_REACTION'),
@@ -16,8 +15,7 @@ const ReactionSubscriptions = (t: any) => {
 
   t.field("updatedReaction", {
     type: "Reaction",
-    args: { channelUrl: stringArg(), tenant: stringArg() },
-    
+    args: { channelUrl: stringArg(), tenant: stringArg() }, 
     subscribe: (_, { channelUrl, tenant }, context) => {
       return pipe(
         context.pubsub.asyncIterator('UPDATE_REACTION'),
@@ -29,7 +27,6 @@ const ReactionSubscriptions = (t: any) => {
   t.field("removedReaction", {
     type: "Reaction",
     args: { channelUrl: stringArg(), tenant: stringArg() },
-    
     subscribe: (_, { channelUrl, tenant }, context) => {
       return pipe(
         context.pubsub.asyncIterator('REMOVE_REACTION'),

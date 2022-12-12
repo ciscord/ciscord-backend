@@ -5,7 +5,6 @@ const messagesNumber = 30
 
 export const lastMessages = queryField('getLastMessages', {
   type: list('Message'),
-  
   args: {
     channelUrl: stringArg(),
     number: nullable(stringArg()),
@@ -83,14 +82,12 @@ export const lastMessages = queryField('getLastMessages', {
 
 export const prevMessages = queryField('getPrevMessages', {
   type: list('Message'),
-  
   args: {
     channelUrl: stringArg(),
     number: nullable(stringArg()),
     cursorId: idArg()
   },
   resolve: async (_, { channelUrl, cursorId, number }, Context) => {
-    const userId = await getUserId(Context)
 
     return Context.prisma.message.findMany({
       where: { channel: { url: channelUrl! } },
@@ -103,14 +100,12 @@ export const prevMessages = queryField('getPrevMessages', {
 
 export const nextMessages = queryField('getNextMessages', {
   type: list('Message'),
-  
   args: {
     channelUrl: stringArg(),
     number: nullable(stringArg()),
     cursorId: idArg()
   },
   resolve: async (_, { channelUrl, cursorId, number }, Context) => {
-    const userId = await getUserId(Context)
 
     return Context.prisma.message.findMany({
       where: { channel: { url: channelUrl! } },
@@ -123,12 +118,10 @@ export const nextMessages = queryField('getNextMessages', {
 
 export const allMessages = queryField('allMessages', {
   type: list('Message'),
-  
   args: {
     channelUrl: stringArg()
   },
   resolve: async (_, { channelUrl }, Context) => {
-    const userId = await getUserId(Context)
 
     const messagesList = await Context.prisma.message.findMany({
       where: { channel: { url: channelUrl! } }
@@ -140,15 +133,12 @@ export const allMessages = queryField('allMessages', {
 
 export const searchMessages = queryField('searchMessages', {
   type: list('Message'),
-  
   args: {
     channelUrl: stringArg(),
     searchQuery: stringArg()
   },
   resolve: async (_, { channelUrl, searchQuery }, Context) => {
     if (!searchQuery || !searchQuery.length) throw new Error('search error')
-
-    const userId = await getUserId(Context)
 
     const messagesList = await Context.prisma.message.findMany({
       where: { channel: { url: channelUrl! }, body: { contains: searchQuery } }

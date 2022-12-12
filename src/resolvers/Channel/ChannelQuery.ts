@@ -1,10 +1,9 @@
-import { queryField, stringArg, list } from 'nexus'
+import { queryField, stringArg, list, nonNull } from 'nexus'
 import { getUserId, getTenant } from '../../utils'
 
 export const channels = queryField('channels', {
   type: list('Channel'),
-
-  args: { communityUrl: stringArg() },
+  args: { communityUrl: nonNull(stringArg()) },
   resolve: (parent, { communityUrl }, Context) => {
     return Context.prisma.channel.findMany({
       where: {
@@ -18,10 +17,9 @@ export const channels = queryField('channels', {
 })
 
 export const channel = queryField('channel', {
-  type: list('Channel'),
-
+  type: 'Channel',
   args: {
-    url: stringArg()
+    url: nonNull(stringArg())
   },
   resolve: (parent, { url }, Context) => {
     return Context.prisma.channel.findFirst({
@@ -32,7 +30,6 @@ export const channel = queryField('channel', {
 
 export const privateChannels = queryField('privateChannels', {
   type: list('Channel'),
-
   resolve: async (_parent, {}, Context) => {
     const userId = await getUserId(Context)
 
@@ -43,7 +40,7 @@ export const privateChannels = queryField('privateChannels', {
     })
 
     const searchString = 'direct/'
-    const searchString1 = user.username + '-'
+    const searchString1 = user!.username + '-'
 
     const channels = await Context.prisma.channel.findMany({
       where: {

@@ -48,12 +48,12 @@ export const updateChannelInfo = mutationField("updateChannelInfo", {
     
     const res = await Context.prisma.channelInfo.upsert({
       where: {
-        uniqueUserChannelPair: `${user.username}:${channel.url}`
+        uniqueUserChannelPair: `${user!.username}:${channel.url}`
       },
       create: {
         channel: { connect: { id: channel.id } },
         user: { connect: { id: userId } },
-        uniqueUserChannelPair: `${user.username}:${channel.url}`,
+        uniqueUserChannelPair: `${user!.username}:${channel.url}`,
       },
       update: {
         lastUpdateAt: new Date(date)
@@ -64,8 +64,8 @@ export const updateChannelInfo = mutationField("updateChannelInfo", {
       }
     });
 
-    const index = user.channelsInfo.findIndex(({id}) => id === res.id);
-    const newInfos = user.channelsInfo;
+    const index = user!.channelsInfo.findIndex(({id}) => id === res.id);
+    const newInfos = user!.channelsInfo;
     newInfos[index] = res;
 
     return { ...user, channelsInfo: [...newInfos] };

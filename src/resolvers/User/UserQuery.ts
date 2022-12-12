@@ -1,9 +1,10 @@
 import { queryField, stringArg, nonNull, nullable, list } from 'nexus'
 import { getUserId, isEmpty } from '../../utils'
+import { User } from '../';
 
 export const me = queryField('me', {
   type: 'User',
-  resolve: (_, args, ctx) => {
+  resolve: (_, args, ctx): Promise<any> => {
     const userId = getUserId(ctx)
     if (!isEmpty(userId)) {
       return ctx.prisma.user.findFirst({

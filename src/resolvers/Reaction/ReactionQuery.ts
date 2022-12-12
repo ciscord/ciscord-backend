@@ -3,7 +3,6 @@ import { getUserId } from '../../utils';
 
 export const reactions = queryField('reactions', {
   type: list('Reaction'),
-  
   args: {
     messageId: stringArg(),
   },

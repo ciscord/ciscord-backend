@@ -11,8 +11,8 @@ export const replyMessage = mutationField("replyMessage", {
     attachments: nullable(stringArg()),
     urlList: nullable(stringArg())
   },
-  resolve: async (parent, { body, parentId, attachments, urlList }, Context) => {
-    const userId = (await getUserId(Context)) || "ck3fot8rr0000qmkp16jlc1mq";
+  resolve: async (parent, { body, parentId, attachments, urlList }, ctx) => {
+    const userId = (await getUserId(ctx)) || "ck3fot8rr0000qmkp16jlc1mq";
 
     const data = {
       body,
@@ -30,7 +30,7 @@ export const replyMessage = mutationField("replyMessage", {
       };
     }
 
-    const replyMessage = await Context.prisma.replyMessage.create({
+    const replyMessage = await ctx.prisma.replyMessage.create({
       data,
       include: {
         parent: { include: { channel: true, children: true, reactions: true } },
@@ -38,9 +38,9 @@ export const replyMessage = mutationField("replyMessage", {
       }
     });
 
-    Context.pubsub.publish("EDITED_MESSAGE", {
+    ctx.pubsub.publish("EDITED_MESSAGE", {
       editMessage: replyMessage.parent,
-      tenant: getTenant(Context),
+      tenant: getTenant(ctx),
     });
 
     return replyMessage;
@@ -53,14 +53,14 @@ export const editReplyMessage = mutationField("editReplyMessage", {
     body: stringArg(),
     messageId: stringArg()
   },
-  resolve: async (parent, { body, messageId }, Context) => {
-    const userId = getUserId(Context) || "ck3fot8rr0000qmkp16jlc1mq";
+  resolve: async (parent, { body, messageId }, ctx) => {
+    const userId = getUserId(ctx) || "ck3fot8rr0000qmkp16jlc1mq";
 
     if (!userId) {
       throw new Error("nonexistent user");
     }
 
-    const requestingUserIsAuthor = await Context.prisma.replyMessage.findMany({
+    const requestingUserIsAuthor = await ctx.prisma.replyMessage.findMany({
       where: {
         id: messageId,
         author: { id: userId }
@@ -73,7 +73,7 @@ export const editReplyMessage = mutationField("editReplyMessage", {
       );
     }
 
-    const message = await Context.prisma.replyMessage.update({
+    const message = await ctx.prisma.replyMessage.update({
       where: {
         id: messageId
       },
@@ -86,9 +86,9 @@ export const editReplyMessage = mutationField("editReplyMessage", {
       }
     });
 
-    Context.pubsub.publish("EDITED_MESSAGE", {
+    ctx.pubsub.publish("EDITED_MESSAGE", {
       editMessage: message.parent,
-      tenant: getTenant(Context),
+      tenant: getTenant(ctx),
     });
 
     return message;
@@ -100,14 +100,14 @@ export const deleteReplyMessage = mutationField("deleteReplyMessage", {
   args: {
     messageId: stringArg()
   },
-  resolve: async (parent, { messageId }, Context) => {
-    const userId = getUserId(Context) || "ck3fot8rr0000qmkp16jlc1mq";
+  resolve: async (parent, { messageId }, ctx) => {
+    const userId = getUserId(ctx) || "ck3fot8rr0000qmkp16jlc1mq";
 
     if (!userId) {
       throw new Error("nonexistent user");
     }
 
-    const requestingUserIsAuthor = await Context.prisma.replyMessage.findMany({
+    const requestingUserIsAuthor = await ctx.prisma.replyMessage.findMany({
       where: {
         id: messageId,
         author: { id: userId }
@@ -123,9 +123,9 @@ export const deleteReplyMessage = mutationField("deleteReplyMessage", {
 
     const filesList = requestingUserIsAuthor[0].attachments.map(({ Key }) => Key);
 
-    await removeFile({filesList, Context, messageId});
+    await removeFile({filesList, ctx, messageId});
 
-    const message = await Context.prisma.replyMessage.delete({
+    const message = await ctx.prisma.replyMessage.delete({
       where: {
         id: messageId
       },
@@ -135,9 +135,9 @@ export const deleteReplyMessage = mutationField("deleteReplyMessage", {
       }
     });
 
-    Context.pubsub.publish("EDITED_MESSAGE", {
+    ctx.pubsub.publish("EDITED_MESSAGE", {
       editMessage: message.parent,
-      tenant: getTenant(Context),
+      tenant: getTenant(ctx),
     });
 
     return message;
