@@ -10,6 +10,9 @@ export const files = queryField('files', {
   resolve: async (_, { after }, Context) => {
     const userId = await getUserId(Context)
 
+    if (!userId) {
+      throw new Error("nonexistent user");
+    }
     return Context.prisma.file.findMany({
       take: +after!
     })
