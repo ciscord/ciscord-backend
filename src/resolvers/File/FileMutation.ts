@@ -70,6 +70,10 @@ export const deleteFile = mutationField("deleteFile", {
   resolve: async (parent, { Key }, Context) => {
     const userId = getUserId(Context);
 
+    if (!userId) {
+      throw new Error("nonexistent user");
+    }
+
     const file = await Context.prisma.file.findMany({
       where: {
         Key,
