@@ -15,7 +15,9 @@ export const sendMessage = mutationField('sendMessage', {
   resolve: async (_, { body, channelUrl, attachments, urlList, mentions, communityUrl }, ctx) => {
     try {
       const userId = await getUserId(ctx)
-
+      if (!userId) {
+        throw new Error("nonexistent user");
+      }
       const data = {
         body,
         author: { connect: { id: userId } },

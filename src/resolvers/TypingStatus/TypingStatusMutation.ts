@@ -7,7 +7,9 @@ export const setUserTypingStatus = mutationField("setUserTypingStatus", {
   args: { channelUrl: stringArg(), isTyping: booleanArg() },
   resolve: async (_, { channelUrl, isTyping }, ctx: Context): Promise<any> => {
     const userId = await getUserId(ctx);
-
+    if (!userId) {
+      throw new Error("nonexistent user");
+    }
     const user = await ctx.prisma.user.findFirst({
       where: {
         id: userId

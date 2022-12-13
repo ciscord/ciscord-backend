@@ -13,7 +13,9 @@ export const replyMessage = mutationField("replyMessage", {
   },
   resolve: async (parent, { body, parentId, attachments, urlList }, ctx) => {
     const userId = (await getUserId(ctx)) || "ck3fot8rr0000qmkp16jlc1mq";
-
+    if (!userId) {
+      throw new Error("nonexistent user");
+    }
     const data = {
       body,
       author: { connect: { id: userId } },
