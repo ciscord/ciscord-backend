@@ -119,6 +119,9 @@ export const logout = mutationField('logout', {
   resolve: async (parent, args, ctx): Promise<any> => {
     try {
       const userId = await getUserId(ctx)
+      if (!userId) {
+        throw new Error('nonexistent user')
+      }
       const user = await ctx.prisma.user.update({
         where: { id: userId },
         data: { isOnline: false }
@@ -140,6 +143,9 @@ export const setCurrentChannel = mutationField('setCurrentChannel', {
   resolve: async (_parent, { channelUrl }, ctx): Promise<any> => {
     try {
       const userId = await getUserId(ctx)
+      if (!userId) {
+        throw new Error('nonexistent user')
+      }
       const user = await ctx.prisma.user.update({
         where: { id: userId },
         data: { currentChannel: { connect: { url: channelUrl! } } }

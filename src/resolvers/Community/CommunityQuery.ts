@@ -6,13 +6,13 @@ export const community = queryField('community', {
     id: nullable(idArg()),
     url: nullable(stringArg())
   },
-  resolve: (parent, { id, url }, Context) => {
+  resolve: (parent, { id, url }, ctx) => {
     if (id) {
-      return Context.prisma.community.findFirst({
+      return ctx.prisma.community.findFirst({
         where: { id }
       })
     } else if (url) {
-      return Context.prisma.community.findFirst({
+      return ctx.prisma.community.findFirst({
         where: { url }
       })
     }
@@ -22,8 +22,8 @@ export const community = queryField('community', {
 export const communities = queryField('communities', {
   type: list('Community'),
   args: {},
-  resolve: (parent, {}, Context) => {
-    return Context.prisma.community.findMany({
+  resolve: (parent, {}, ctx) => {
+    return ctx.prisma.community.findMany({
       where: {
         url: { not: 'direct' }
       }
@@ -34,9 +34,9 @@ export const communities = queryField('communities', {
 // export const followedCommunities = queryField('followedCommunities', {
 //   type: 'Community',
 //   
-//   resolve: async (parent, args, Context) => {
-//     const userId = await getUserId(Context)
-//     return Context.prisma.community.findMany({
+//   resolve: async (parent, args, ctx) => {
+//     const userId = await getUserId(ctx)
+//     return ctx.prisma.community.findMany({
 //       where: {
 //         members: {
 //           id: userId
@@ -49,8 +49,8 @@ export const communities = queryField('communities', {
 export const searchCommunities = queryField('searchCommunities', {
   type: list('Community'),
   args: { searchString: nullable(stringArg()) },
-  resolve: (parent, { searchString }, Context) => {
-    return Context.prisma.community.findMany({
+  resolve: (parent, { searchString }, ctx) => {
+    return ctx.prisma.community.findMany({
       where: {
         AND: [
           { url: { not: 'direct' } },

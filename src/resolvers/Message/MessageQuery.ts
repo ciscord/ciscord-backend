@@ -11,18 +11,18 @@ export const lastMessages = queryField('getLastMessages', {
     cursorId: nullable(idArg()),
     lastVisitDate: nullable(stringArg())
   },
-  resolve: async (_, { channelUrl, number, cursorId, lastVisitDate }, Context) => {
-    const userId = getUserId(Context);
+  resolve: async (_, { channelUrl, number, cursorId, lastVisitDate }, ctx) => {
+    const userId = getUserId(ctx);
 
     let channelsInfo = null;
     let lastReadedMessage = null;
     if (!isEmpty(userId)) {
-      await Context.prisma.user.update({
+      await ctx.prisma.user.update({
         where: { id: userId },
         data: { currentChannel: { connect: { url: channelUrl! } } }
       })
 
-      channelsInfo = await Context.prisma.channelInfo.findMany({
+      channelsInfo = await ctx.prisma.channelInfo.findMany({
         where: {
           user: { id: userId },
           channel: {
@@ -31,7 +31,7 @@ export const lastMessages = queryField('getLastMessages', {
         }
       })
       const lastUpdateDate = lastVisitDate || (channelsInfo[0] && channelsInfo[0].lastUpdateAt)
-      lastReadedMessage = await Context.prisma.message.findMany({
+      lastReadedMessage = await ctx.prisma.message.findMany({
         where: {
           channel: { url: channelUrl! },
           OR: [{ createdAt: { equals: lastUpdateDate } }, { createdAt: { lt: lastUpdateDate } }]
@@ -43,14 +43,14 @@ export const lastMessages = queryField('getLastMessages', {
     const searchMessageId = cursorId || (lastReadedMessage && lastReadedMessage[0] && lastReadedMessage[0].id)
 
     if (!searchMessageId) {
-      const messageList = await Context.prisma.message.findMany({
+      const messageList = await ctx.prisma.message.findMany({
         where: { channel: { url: channelUrl! } },
         include: { channel: true },
         take: Number(number) || messagesNumber
       })
       return messageList;
     } else {
-      const prevMessages = await Context.prisma.message.findMany({
+      const prevMessages = await ctx.prisma.message.findMany({
         where: { channel: { url: channelUrl! } },
         include: { channel: true },
         take: -(Number(number) || messagesNumber),
@@ -58,7 +58,7 @@ export const lastMessages = queryField('getLastMessages', {
         cursor: {id: searchMessageId}
       })
 
-      const nextMessages = await Context.prisma.message.findMany({
+      const nextMessages = await ctx.prisma.message.findMany({
         where: { channel: { url: channelUrl! } },
         include: { channel: true },
         take: Number(number) || messagesNumber,
@@ -66,7 +66,7 @@ export const lastMessages = queryField('getLastMessages', {
         cursor: {id: searchMessageId}
       })
 
-      const message = await Context.prisma.message.findFirst({
+      const message = await ctx.prisma.message.findFirst({
         where: {
           id: searchMessageId
         },
@@ -87,9 +87,9 @@ export const prevMessages = queryField('getPrevMessages', {
     number: nullable(stringArg()),
     cursorId: idArg()
   },
-  resolve: async (_, { channelUrl, cursorId, number }, Context) => {
+  resolve: async (_, { channelUrl, cursorId, number }, ctx) => {
 
-    return Context.prisma.message.findMany({
+    return ctx.prisma.message.findMany({
       where: { channel: { url: channelUrl! } },
       take: -(Number(number) || messagesNumber),
       skip: 1,
@@ -105,9 +105,9 @@ export const nextMessages = queryField('getNextMessages', {
     number: nullable(stringArg()),
     cursorId: idArg()
   },
-  resolve: async (_, { channelUrl, cursorId, number }, Context) => {
+  resolve: async (_, { channelUrl, cursorId, number }, ctx) => {
 
-    return Context.prisma.message.findMany({
+    return ctx.prisma.message.findMany({
       where: { channel: { url: channelUrl! } },
       take: Number(number) || messagesNumber,
       skip: 1,
@@ -121,9 +121,9 @@ export const allMessages = queryField('allMessages', {
   args: {
     channelUrl: stringArg()
   },
-  resolve: async (_, { channelUrl }, Context) => {
+  resolve: async (_, { channelUrl }, ctx) => {
 
-    const messagesList = await Context.prisma.message.findMany({
+    const messagesList = await ctx.prisma.message.findMany({
       where: { channel: { url: channelUrl! } }
     })
 
@@ -137,10 +137,10 @@ export const searchMessages = queryField('searchMessages', {
     channelUrl: stringArg(),
     searchQuery: stringArg()
   },
-  resolve: async (_, { channelUrl, searchQuery }, Context) => {
+  resolve: async (_, { channelUrl, searchQuery }, ctx) => {
     if (!searchQuery || !searchQuery.length) throw new Error('search error')
 
-    const messagesList = await Context.prisma.message.findMany({
+    const messagesList = await ctx.prisma.message.findMany({
       where: { channel: { url: channelUrl! }, body: { contains: searchQuery } }
     })
 
@@ -154,16 +154,16 @@ export const getUnreadMessagesCount = queryField('getUnreadMessagesCount', {
     username: stringArg(),
     channelUrl: stringArg()
   },
-  resolve: async (_, { username, channelUrl }, Context) => {
-    const userId = await getUserId(Context)
+  resolve: async (_, { username, channelUrl }, ctx) => {
+    const userId = await getUserId(ctx)
     let fromNewUser = false
     //get Other user info
-    const user = await Context.prisma.user.findFirst({
+    const user = await ctx.prisma.user.findFirst({
       where: { username }
     })
 
     // get my channelInfo
-    const channelsInfo = await Context.prisma.channelInfo.findMany({
+    const channelsInfo = await ctx.prisma.channelInfo.findMany({
       where: {
         user: { id: userId },
         channel: {
@@ -177,7 +177,7 @@ export const getUnreadMessagesCount = queryField('getUnreadMessagesCount', {
     }
 
     const lastUpdateDate = channelsInfo[0] && channelsInfo[0].lastUpdateAt
-    const lastReadedMessage = await Context.prisma.message.findMany({
+    const lastReadedMessage = await ctx.prisma.message.findMany({
       where: {
         channel: { url: channelUrl! },
         OR: [{ createdAt: { equals: lastUpdateDate } }, { createdAt: { lt: lastUpdateDate } }]
@@ -191,22 +191,22 @@ export const getUnreadMessagesCount = queryField('getUnreadMessagesCount', {
     let messages
 
     if (!searchMessageId) {
-      messages = await Context.prisma.message.findMany({
+      messages = await ctx.prisma.message.findMany({
         where: { channel: { url: channelUrl! } }
       })
     } else {
-      messages = await Context.prisma.message.findMany({
+      messages = await ctx.prisma.message.findMany({
         where: { channel: { url: channelUrl! } },
         cursor: {id: searchMessageId}
       })
 
-      const message = await Context.prisma.message.findFirst({
+      const message = await ctx.prisma.message.findFirst({
         where: {
           id: searchMessageId
         }
       })
 
-      const prevMessages = await Context.prisma.message.findMany({
+      const prevMessages = await ctx.prisma.message.findMany({
         where: { channel: { url: channelUrl! } },
         take: -1,
         skip: 1,
