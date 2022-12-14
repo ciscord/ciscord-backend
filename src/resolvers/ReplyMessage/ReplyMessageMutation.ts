@@ -1,7 +1,6 @@
 import { mutationField, stringArg, nullable } from "nexus";
 import { getUserId, getTenant } from "../../utils";
 import { removeFile, createRemoteAttachments } from "../../utils/helpers";
-import { ReplyMessage } from '../index';
 
 export const replyMessage = mutationField("replyMessage", {
   type: 'ReplyMessage',

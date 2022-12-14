@@ -93,7 +93,9 @@ export const toggleReaction = mutationField("toggleReaction", {
   },
   resolve: async (parent, { messageId, name }, ctx) => {
     const userId = await getUserId(ctx) || "ck3fot8rr0000qmkp16jlc1mq"; // TODO: REMOVE TEST ID
-
+    if (!userId) {
+      throw new Error("nonexistent user");
+    }
     const existingReaction = (
       await ctx.prisma.reaction.findMany({
         where: {

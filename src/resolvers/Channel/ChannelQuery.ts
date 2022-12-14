@@ -1,11 +1,11 @@
 import { queryField, stringArg, list, nonNull } from 'nexus'
-import { getUserId, getTenant } from '../../utils'
+import { getUserId } from '../../utils'
 
 export const channels = queryField('channels', {
   type: list('Channel'),
   args: { communityUrl: nonNull(stringArg()) },
-  resolve: (parent, { communityUrl }, Context) => {
-    return Context.prisma.channel.findMany({
+  resolve: (parent, { communityUrl }, ctx) => {
+    return ctx.prisma.channel.findMany({
       where: {
         community: {
           url: communityUrl
@@ -21,8 +21,8 @@ export const channel = queryField('channel', {
   args: {
     url: nonNull(stringArg())
   },
-  resolve: (parent, { url }, Context) => {
-    return Context.prisma.channel.findFirst({
+  resolve: (parent, { url }, ctx) => {
+    return ctx.prisma.channel.findFirst({
       where: { url }
     })
   }
@@ -30,10 +30,12 @@ export const channel = queryField('channel', {
 
 export const privateChannels = queryField('privateChannels', {
   type: list('Channel'),
-  resolve: async (_parent, {}, Context) => {
-    const userId = await getUserId(Context)
-
-    const user = await Context.prisma.user.findFirst({
+  resolve: async (_parent, {}, ctx) => {
+    const userId = await getUserId(ctx)
+    if (!userId) {
+      throw new Error('nonexistent user')
+    }
+    const user = await ctx.prisma.user.findFirst({
       where: {
         id: userId
       }
@@ -42,7 +44,7 @@ export const privateChannels = queryField('privateChannels', {
     const searchString = 'direct/'
     const searchString1 = user!.username + '-'
 
-    const channels = await Context.prisma.channel.findMany({
+    const channels = await ctx.prisma.channel.findMany({
       where: {
         AND: [{ url: { contains: searchString } }, { url: { contains: searchString1 } }]
       },
