@@ -1,9 +1,9 @@
-import { objectType, stringArg } from "nexus";
+import { objectType, stringArg } from 'nexus'
 
 export const TypingStatus = objectType({
-  name: "TypingStatus",
+  name: 'TypingStatus',
   definition(t) {
-    t.nonNull.boolean("isTyping")
-    t.nonNull.string("username")
+    t.nonNull.boolean('isTyping')
+    t.nonNull.string('username')
   }
 })

@@ -16,7 +16,7 @@ export const sendMessage = mutationField('sendMessage', {
     try {
       const userId = await getUserId(ctx)
       if (!userId) {
-        throw new Error("nonexistent user");
+        throw new Error('nonexistent user')
       }
       const data = {
         body,
@@ -49,7 +49,7 @@ export const sendMessage = mutationField('sendMessage', {
       await ctx.pubsub.publish('CHANNEL_NEW_MESSAGE', {
         channelNewMessage: {
           ...message.channel
-        },
+        }
       })
 
       //upsert his channelinfo
@@ -169,7 +169,6 @@ export const editMessage = mutationField('editMessage', {
     messageId: stringArg()
   },
   resolve: async (parent, { body, messageId }, ctx) => {
-
     const requestingUserIsAuthor = await ctx.prisma.message.findMany({
       where: {
         id: messageId
@@ -210,7 +209,6 @@ export const deleteMessage = mutationField('deleteMessage', {
     messageId: stringArg()
   },
   resolve: async (parent, { messageId }, ctx) => {
-
     const currentMessage = await ctx.prisma.message.findMany({
       where: {
         id: messageId

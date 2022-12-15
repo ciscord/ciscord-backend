@@ -5,15 +5,15 @@ import { Message, User } from '../index'
 // export const Upload = GraphQLUpload;
 
 export const File = objectType({
-  name: "File",
+  name: 'File',
   definition(t) {
-    t.nonNull.string("encoding")
-    t.nonNull.string("filename")
-    t.string("filesize")
-    t.nonNull.string("id")
-    t.nonNull.string("Key")
-    t.field("message", { type: Message })
-    t.nonNull.string("mimetype")
-    t.nonNull.field("uploader", { type: User })
+    t.nonNull.string('encoding')
+    t.nonNull.string('filename')
+    t.string('filesize')
+    t.nonNull.string('id')
+    t.nonNull.string('Key')
+    t.field('message', { type: Message })
+    t.nonNull.string('mimetype')
+    t.nonNull.field('uploader', { type: User })
   }
 })

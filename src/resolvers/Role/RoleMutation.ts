@@ -5,22 +5,17 @@ export const createRole = mutationField('createRole', {
   args: {
     title: stringArg(),
     roleSettings: stringArg(),
-    color: nullable(stringArg()),
+    color: nullable(stringArg())
   },
-  resolve: (_parent, {
-    title,
-    roleSettings,
-    color,
-  }, ctx) => {
-
+  resolve: (_parent, { title, roleSettings, color }, ctx) => {
     return ctx.prisma.role.create({
       data: {
         title,
         roleSettings,
         color
-      },
+      }
     })
-  },
+  }
 })
 
 export const updateRole = mutationField('updateRole', {
@@ -29,15 +24,9 @@ export const updateRole = mutationField('updateRole', {
     id: stringArg(),
     title: stringArg(),
     roleSettings: stringArg(),
-    color: nullable(stringArg()),
+    color: nullable(stringArg())
   },
-  resolve: (_parent, {
-    title,
-    roleSettings,
-    color,
-    id,
-  }, ctx) => {
-
+  resolve: (_parent, { title, roleSettings, color, id }, ctx) => {
     return ctx.prisma.role.update({
       where: { id },
       data: {
@@ -46,51 +35,47 @@ export const updateRole = mutationField('updateRole', {
         color
       }
     })
-  },
+  }
 })
-
 
 export const deleteRole = mutationField('deleteRole', {
   type: 'Role',
   args: {
-    id: stringArg(),
+    id: stringArg()
   },
-  resolve: (_parent, {
-    id,
-  }, ctx) => {
-
+  resolve: (_parent, { id }, ctx) => {
     return ctx.prisma.role.delete({
-      where: { id },
+      where: { id }
     })
-  },
+  }
 })
 
 export const attachRoleToUser = mutationField('attachRoleToUser', {
   type: 'User',
-  args: { 
+  args: {
     userId: nonNull(stringArg()),
     roleId: nullable(stringArg())
-  } ,
+  },
   resolve: async (parent, { userId, roleId }, ctx) => {
     const user = await ctx.prisma.user.update({
       where: { id: userId },
-      data: { role: { connect: { id: roleId } }, },
-    });
+      data: { role: { connect: { id: roleId } } }
+    })
     return user
-  },
+  }
 })
 
 export const deattachRoleToUser = mutationField('deattachRoleToUser', {
   type: 'User',
-  args: { 
+  args: {
     userId: nonNull(stringArg()),
-    roleId: nonNull(stringArg()) 
-  } ,
+    roleId: nonNull(stringArg())
+  },
   resolve: async (parent, { userId, roleId }, ctx) => {
     const user = await ctx.prisma.user.update({
       where: { id: userId },
-      data: { role: { disconnect: { id: roleId } }, },
-    });
+      data: { role: { disconnect: { id: roleId } } }
+    })
     return user
-  },
+  }
 })

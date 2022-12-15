@@ -1,100 +1,100 @@
-import { mutationField, stringArg } from "nexus";
-import { getUserId, getTenant } from "../../utils";
-import { Reaction } from '../index';
+import { mutationField, stringArg } from 'nexus'
+import { getUserId, getTenant } from '../../utils'
+import { Reaction } from '../index'
 
 type reactionPayload = {
-  messageId?: string;
-  name?: string;
-  ctx: any;
-  userId?: string;
-  reactionId?: string;
+  messageId?: string
+  name?: string
+  ctx: any
+  userId?: string
+  reactionId?: string
 }
 
-const addNewReaction = async ({messageId, name, ctx, userId}: reactionPayload) => {
+const addNewReaction = async ({ messageId, name, ctx, userId }: reactionPayload) => {
   const reaction = await ctx.prisma.reaction.create({
     data: {
       name: name,
       users: { connect: { id: userId } },
       message: { connect: { id: messageId } }
     },
-    include: { message: { include: {channel: true}, }, }
-  });
+    include: { message: { include: { channel: true } } }
+  })
 
   ctx.pubsub.publish('NEW_REACTION', {
     newReaction: reaction,
-    tenant: getTenant(ctx),
+    tenant: getTenant(ctx)
   })
 
-  return reaction;
+  return reaction
 }
 
-const addReactedUser = async ({reactionId, ctx, userId}: reactionPayload) => {
+const addReactedUser = async ({ reactionId, ctx, userId }: reactionPayload) => {
   const reaction = await ctx.prisma.reaction.update({
-    where: {id: reactionId},
+    where: { id: reactionId },
     data: {
-      users: {connect: {id: userId}}
+      users: { connect: { id: userId } }
     },
     include: {
-      message: { include: {channel: true}, },
-      users: true,
+      message: { include: { channel: true } },
+      users: true
     }
-  });
+  })
 
   ctx.pubsub.publish('UPDATE_REACTION', {
     updatedReaction: reaction,
-    tenant: getTenant(ctx),
+    tenant: getTenant(ctx)
   })
 
-  return reaction;
+  return reaction
 }
 
-const removeReactedUser = async ({reactionId, ctx, userId}: reactionPayload) => {
+const removeReactedUser = async ({ reactionId, ctx, userId }: reactionPayload) => {
   const reaction = await ctx.prisma.reaction.update({
-    where: {id: reactionId},
+    where: { id: reactionId },
     data: {
-      users: {disconnect: {id: userId}}
+      users: { disconnect: { id: userId } }
     },
     include: {
-      message: { include: {channel: true}, },
-      users: true,
+      message: { include: { channel: true } },
+      users: true
     }
-  });
+  })
 
   ctx.pubsub.publish('UPDATE_REACTION', {
     updatedReaction: reaction,
-    tenant: getTenant(ctx),
+    tenant: getTenant(ctx)
   })
 
-  return reaction;
+  return reaction
 }
 
-const removeReaction = async ({reactionId, ctx}: reactionPayload) => {
- const result = await ctx.prisma.reaction.delete({
+const removeReaction = async ({ reactionId, ctx }: reactionPayload) => {
+  const result = await ctx.prisma.reaction.delete({
     where: { id: reactionId },
     include: {
-      message: { include: {channel: true}, },
-      users: true,
+      message: { include: { channel: true } },
+      users: true
     }
-  });
+  })
 
   ctx.pubsub.publish('REMOVE_REACTION', {
     removedReaction: result,
-    tenant: getTenant(ctx),
+    tenant: getTenant(ctx)
   })
 
-  return result;
+  return result
 }
 
-export const toggleReaction = mutationField("toggleReaction", {
+export const toggleReaction = mutationField('toggleReaction', {
   type: 'Reaction',
   args: {
     messageId: stringArg(),
     name: stringArg()
   },
   resolve: async (parent, { messageId, name }, ctx) => {
-    const userId = await getUserId(ctx) || "ck3fot8rr0000qmkp16jlc1mq"; // TODO: REMOVE TEST ID
+    const userId = (await getUserId(ctx)) || 'ck3fot8rr0000qmkp16jlc1mq' // TODO: REMOVE TEST ID
     if (!userId) {
-      throw new Error("nonexistent user");
+      throw new Error('nonexistent user')
     }
     const existingReaction = (
       await ctx.prisma.reaction.findMany({
@@ -108,33 +108,33 @@ export const toggleReaction = mutationField("toggleReaction", {
           users: true,
           message: {
             include: {
-              channel: true,
+              channel: true
             }
           }
         }
       })
-    )[0];
+    )[0]
 
     if (!existingReaction) {
-      const reaction = await addNewReaction({ userId, name, messageId, ctx });
+      const reaction = await addNewReaction({ userId, name, messageId, ctx })
 
-      return reaction;
+      return reaction
     }
 
-    if (existingReaction.users.findIndex(({id})=> id === userId) === -1) {
-      const reaction = await addReactedUser({ userId, reactionId: existingReaction.id , ctx });
+    if (existingReaction.users.findIndex(({ id }) => id === userId) === -1) {
+      const reaction = await addReactedUser({ userId, reactionId: existingReaction.id, ctx })
 
-      return reaction;
+      return reaction
     }
 
     if (existingReaction.users.length > 1) {
-      const reaction = await removeReactedUser({ userId, reactionId: existingReaction.id, ctx });
+      const reaction = await removeReactedUser({ userId, reactionId: existingReaction.id, ctx })
 
-      return reaction;
+      return reaction
     } else {
-      const reaction = await removeReaction({ reactionId: existingReaction.id, ctx });
+      const reaction = await removeReaction({ reactionId: existingReaction.id, ctx })
 
-      return reaction;
+      return reaction
     }
   }
-});
+})

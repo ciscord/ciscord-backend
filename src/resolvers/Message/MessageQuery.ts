@@ -12,10 +12,10 @@ export const lastMessages = queryField('getLastMessages', {
     lastVisitDate: nullable(stringArg())
   },
   resolve: async (_, { channelUrl, number, cursorId, lastVisitDate }, ctx) => {
-    const userId = getUserId(ctx);
+    const userId = getUserId(ctx)
 
-    let channelsInfo = null;
-    let lastReadedMessage = null;
+    let channelsInfo = null
+    let lastReadedMessage = null
     if (!isEmpty(userId)) {
       await ctx.prisma.user.update({
         where: { id: userId },
@@ -48,14 +48,14 @@ export const lastMessages = queryField('getLastMessages', {
         include: { channel: true },
         take: Number(number) || messagesNumber
       })
-      return messageList;
+      return messageList
     } else {
       const prevMessages = await ctx.prisma.message.findMany({
         where: { channel: { url: channelUrl! } },
         include: { channel: true },
         take: -(Number(number) || messagesNumber),
         skip: 1,
-        cursor: {id: searchMessageId}
+        cursor: { id: searchMessageId }
       })
 
       const nextMessages = await ctx.prisma.message.findMany({
@@ -63,7 +63,7 @@ export const lastMessages = queryField('getLastMessages', {
         include: { channel: true },
         take: Number(number) || messagesNumber,
         skip: 1,
-        cursor: {id: searchMessageId}
+        cursor: { id: searchMessageId }
       })
 
       const message = await ctx.prisma.message.findFirst({
@@ -88,12 +88,11 @@ export const prevMessages = queryField('getPrevMessages', {
     cursorId: idArg()
   },
   resolve: async (_, { channelUrl, cursorId, number }, ctx) => {
-
     return ctx.prisma.message.findMany({
       where: { channel: { url: channelUrl! } },
       take: -(Number(number) || messagesNumber),
       skip: 1,
-      cursor: {id: cursorId}
+      cursor: { id: cursorId }
     })
   }
 })
@@ -106,12 +105,11 @@ export const nextMessages = queryField('getNextMessages', {
     cursorId: idArg()
   },
   resolve: async (_, { channelUrl, cursorId, number }, ctx) => {
-
     return ctx.prisma.message.findMany({
       where: { channel: { url: channelUrl! } },
       take: Number(number) || messagesNumber,
       skip: 1,
-      cursor: {id: cursorId}
+      cursor: { id: cursorId }
     })
   }
 })
@@ -122,7 +120,6 @@ export const allMessages = queryField('allMessages', {
     channelUrl: stringArg()
   },
   resolve: async (_, { channelUrl }, ctx) => {
-
     const messagesList = await ctx.prisma.message.findMany({
       where: { channel: { url: channelUrl! } }
     })
@@ -197,7 +194,7 @@ export const getUnreadMessagesCount = queryField('getUnreadMessagesCount', {
     } else {
       messages = await ctx.prisma.message.findMany({
         where: { channel: { url: channelUrl! } },
-        cursor: {id: searchMessageId}
+        cursor: { id: searchMessageId }
       })
 
       const message = await ctx.prisma.message.findFirst({
@@ -210,7 +207,7 @@ export const getUnreadMessagesCount = queryField('getUnreadMessagesCount', {
         where: { channel: { url: channelUrl! } },
         take: -1,
         skip: 1,
-        cursor: {id: searchMessageId}
+        cursor: { id: searchMessageId }
       })
 
       messages = [].concat([message], messages)

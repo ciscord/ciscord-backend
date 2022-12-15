@@ -1,6 +1,6 @@
 const dotenv = require('dotenv')
 dotenv.config({ path: `../.env.${process.env.NODE_ENV}` })
-import { createYoga } from 'graphql-yoga';
+import { createYoga } from 'graphql-yoga'
 import express from 'express'
 import { join } from 'path'
 import * as types from './resolvers'
@@ -20,25 +20,23 @@ const baseSchema = makeSchema({
     schema: join(__dirname, '/schema.graphql')
   },
   contextType: {
-    module: join(__dirname, "context.ts"),
+    module: join(__dirname, 'context.ts'),
     export: 'Context'
   },
   sourceTypes: {
-    modules: [{ module: '.prisma/client', alias: 'PrismaClient' }],
+    modules: [{ module: '.prisma/client', alias: 'PrismaClient' }]
   },
-  shouldExitAfterGenerateArtifacts: Boolean(
-    process.env.NEXUS_SHOULD_EXIT_AFTER_REFLECTION,
-  ),
+  shouldExitAfterGenerateArtifacts: Boolean(process.env.NEXUS_SHOULD_EXIT_AFTER_REFLECTION),
   plugins: [
     nullabilityGuardPlugin({
       shouldGuard: true,
       fallbackValues: {
         String: () => '',
         ID: () => 'MISSING_ID',
-        Boolean: () => true,
-      },
-    }),
-  ],
+        Boolean: () => true
+      }
+    })
+  ]
 })
 
 // const schema = applyMiddleware(baseSchema, permissions)
@@ -49,7 +47,7 @@ const app = express()
 const yoga = createYoga<Context, any>({
   schema: schema,
   logging: true,
-  context,
+  context
 })
 
 // enable cors
@@ -72,11 +70,8 @@ app.use('/register', RegisterCompany)
 
 app.use('/graphql', yoga)
 
- 
 app.listen(4000, () => {
   console.log('Running a GraphQL API server at http://localhost:4000/graphql')
 })
 
-process.on('exit', async () => {
-
-})
+process.on('exit', async () => {})

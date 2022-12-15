@@ -51,7 +51,7 @@ export const communityNotifications = queryField('communityNotifications', {
       where: {
         AND: [{ community: { url: communityUrl! } }, { receiverId: userId }, { isRead: false }]
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: 'desc' }
     })
   }
 })

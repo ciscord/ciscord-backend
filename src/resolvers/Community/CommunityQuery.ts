@@ -33,7 +33,7 @@ export const communities = queryField('communities', {
 
 // export const followedCommunities = queryField('followedCommunities', {
 //   type: 'Community',
-//   
+//
 //   resolve: async (parent, args, ctx) => {
 //     const userId = await getUserId(ctx)
 //     return ctx.prisma.community.findMany({
@@ -55,10 +55,7 @@ export const searchCommunities = queryField('searchCommunities', {
         AND: [
           { url: { not: 'direct' } },
           {
-            OR: [
-              { name: { contains: searchString } },
-              { description: { contains: searchString } }
-            ]
+            OR: [{ name: { contains: searchString } }, { description: { contains: searchString } }]
           }
         ]
       }
