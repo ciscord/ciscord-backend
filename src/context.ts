@@ -1,21 +1,15 @@
-import { PrismaClient } from '@prisma/client'
-import { YogaInitialContext } from 'graphql-yoga'
-import { RedisPubSub } from 'graphql-redis-subscriptions'
+import { PrismaClient } from "@prisma/client";
+import { createPubSub } from 'graphql-yoga';
 
-export interface Context extends YogaInitialContext {
-  prisma: PrismaClient
-  pubsub: RedisPubSub
-}
+const prisma = new PrismaClient();
+export const pubsub = createPubSub();
 
-export interface Token {
-  userId: string
-  tenant: string
-}
-
-const prisma = new PrismaClient()
-const pubsub = new RedisPubSub()
+export type Context = {
+  prisma: PrismaClient;
+  pubsub: typeof pubsub;
+};
 
 export const context = {
   prisma,
-  pubsub
+  pubsub,
 }
