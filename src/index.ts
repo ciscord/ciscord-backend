@@ -14,7 +14,7 @@ import { makeSchema, nullabilityGuardPlugin } from 'nexus'
 
 const cors = require('cors')
 const baseSchema = makeSchema({
-  types,
+  types: [types],
   outputs: {
     typegen: join(__dirname.replace(/\/dist$/, '/src'), './ciscord-typegen.ts'),
     schema: join(__dirname, '/schema.graphql')
@@ -47,7 +47,7 @@ const app = express()
 const yoga = createYoga<Context, any>({
   schema: schema,
   logging: true,
-  context
+  context,
 })
 
 // enable cors
