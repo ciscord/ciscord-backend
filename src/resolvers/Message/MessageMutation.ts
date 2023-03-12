@@ -1,7 +1,7 @@
 import { mutationField, stringArg, list } from 'nexus'
 import { getUserId, getTenant } from '../../utils'
 import { removeFile, createRemoteAttachments } from '../../utils/helpers'
-
+import { pubsub } from '../../context'
 export const sendMessage = mutationField('sendMessage', {
   type: 'Message',
   args: {
@@ -43,10 +43,11 @@ export const sendMessage = mutationField('sendMessage', {
           attachments: true
         }
       })
-      await ctx.pubsub.publish('NEW_MESSAGE', {
+      
+      await pubsub.publish('NEW_MESSAGE', {
         message
       })
-      await ctx.pubsub.publish('CHANNEL_NEW_MESSAGE', {
+      await pubsub.publish('CHANNEL_NEW_MESSAGE', {
         channelNewMessage: {
           ...message.channel
         }
