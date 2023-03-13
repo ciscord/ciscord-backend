@@ -3,8 +3,8 @@ import { Stream } from 'stream'
 const uuid = require('uuid/v1')
 import { S3, AWSError } from 'aws-sdk'
 
-const bucketName = 'ciscord-dev'
-const awsRegion = 'us-east-2'
+const bucketName = 'shantsai'
+const awsRegion = 'us-east-1'
 
 const s3 = new S3({
   accessKeyId: process.env.AWS_KEY,
