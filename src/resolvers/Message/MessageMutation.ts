@@ -37,6 +37,7 @@ export const sendMessage = mutationField('sendMessage', {
       const message = await ctx.prisma.message.create({
         data,
         include: {
+          author: true,
           channel: true,
           reactions: true,
           children: true,
