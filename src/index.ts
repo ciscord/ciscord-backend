@@ -1,7 +1,6 @@
 const dotenv = require('dotenv')
 dotenv.config({ path: `../.env.${process.env.NODE_ENV}` })
 import { createYoga } from 'graphql-yoga'
-import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { WebSocketServer } from 'ws'
 import { useServer } from 'graphql-ws/lib/use/ws'
 import express from 'express'
@@ -79,9 +78,6 @@ async function main() {
       subscriptionsProtocol: 'WS'
     },
     plugins: [
-      // Proper shutdown for the HTTP server.
-      ApolloServerPluginDrainHttpServer({ httpServer }),
-
       // Proper shutdown for the WebSocket server.
       {
         async serverWillStart() {
