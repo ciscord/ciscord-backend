@@ -124,6 +124,38 @@ export const userTypingStatus = subscriptionField('userTypingStatus', {
   resolve: (payload) => payload
 })
 
-    // ReactionSubscriptions(t)
-//   }
-// })
+export const newReaction = subscriptionField('newReaction', {
+  type: 'Reaction',
+  args: { channelUrl: stringArg(), tenant: stringArg() },
+  subscribe: (_, { channelUrl, tenant }, ctx) => {
+    return pipe(
+      ctx.pubsub.subscribe('NEW_REACTION'),
+      filter((payload) => payload.newReaction.message.channel.url === channelUrl && payload.tenant === tenant)
+    )
+  },
+  resolve: (payload) => payload
+})
+
+export const updatedReaction = subscriptionField('updatedReaction', {
+  type: 'Reaction',
+  args: { channelUrl: stringArg(), tenant: stringArg() },
+  subscribe: (_, { channelUrl, tenant }, ctx) => {
+    return pipe(
+      ctx.pubsub.subscribe('UPDATE_REACTION'),
+      filter((payload) => payload.updatedReaction.message.channel.url === channelUrl && payload.tenant === tenant)
+    )
+  },
+  resolve: (payload) => payload
+})
+
+export const removedReaction = subscriptionField('removedReaction', {
+  type: 'Reaction',
+  args: { channelUrl: stringArg(), tenant: stringArg() },
+  subscribe: (_, { channelUrl, tenant }, ctx) => {
+    return pipe(
+      ctx.pubsub.subscribe('REMOVE_REACTION'),
+      filter((payload) => payload.removedReaction.message.channel.url === channelUrl && payload.tenant === tenant)
+    )
+  },
+  resolve: (payload) => payload
+})
