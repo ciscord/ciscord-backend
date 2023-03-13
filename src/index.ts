@@ -1,10 +1,14 @@
 const dotenv = require('dotenv')
 dotenv.config({ path: `../.env.${process.env.NODE_ENV}` })
 import { createYoga } from 'graphql-yoga'
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import { WebSocketServer } from 'ws'
+import { useServer } from 'graphql-ws/lib/use/ws'
 import express from 'express'
+import * as http from 'http';
 import { join } from 'path'
 import * as types from './resolvers'
-import { Context, context } from './context'
+import { Context, createContext } from './context'
 import RegisterCompany from './registerCompany'
 import { permissions } from './permissions'
 import { applyMiddleware } from 'graphql-middleware'
@@ -44,34 +48,75 @@ const schema = applyMiddleware(baseSchema)
 
 const app = express()
 
-const yoga = createYoga<Context, any>({
-  schema: schema,
-  logging: true,
-  context,
-})
 
-// enable cors
-var corsOption = {
-  origin: true,
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  credentials: true,
-  exposedHeaders: ['x-auth-token']
+const httpServer = http.createServer(app);
+
+async function main() {
+
+  const wsServer = new WebSocketServer({
+    server: httpServer,
+    path: '/graphql'
+  })
+
+  const serverCleanup = useServer({
+    schema,
+    context: createContext,
+    onConnect: async (ctx) => {
+      console.log('onConnect!');
+
+    },
+    onDisconnect(ctx, code, reason) {
+      console.log('Disconnected!');
+    },
+  }, wsServer);
+
+  const yoga = createYoga<Context, any>({
+    schema: schema,
+    logging: true,
+    context: createContext,
+    graphiql: {
+      // Use graphql-sse in GraphiQL.
+      subscriptionsProtocol: 'WS'
+    },
+    plugins: [
+      // Proper shutdown for the HTTP server.
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+
+      // Proper shutdown for the WebSocket server.
+      {
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              await serverCleanup.dispose();
+            },
+          };
+        },
+      },
+    ],
+  })
+
+  // enable cors
+  var corsOption = {
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+    exposedHeaders: ['x-auth-token']
+  }
+
+  app.use('/*', cors(corsOption))
+  app.use(compression())
+  app.use(bodyParser.json({ type: 'application/json' }))
+  app.use(bodyParser.urlencoded({ extended: true }))
+  app.use(bodyParser.text({ type: 'text/html' }))
+
+  app.use('/register', RegisterCompany)
+
+  app.use('/graphql', yoga)
+
+  httpServer.listen(4000, () => {
+    console.log('Server is running on port 4000')
+  })
+
 }
-
-app.use('/*', cors(corsOption))
-app.use(compression())
-app.use(bodyParser.json({ type: 'application/json' }))
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(bodyParser.text({ type: 'text/html' }))
-
-// SocialConfig.configure(app)
-
-app.use('/register', RegisterCompany)
-
-app.use('/graphql', yoga)
-
-app.listen(4000, () => {
-  console.log('Running a GraphQL API server at http://localhost:4000/graphql')
-})
-
-process.on('exit', async () => {})
+main();
+process.on('exit', async () => { })
