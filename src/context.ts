@@ -13,3 +13,7 @@ export const context = {
   prisma,
   pubsub,
 }
+export const createContext = async () => ({
+  prisma: prisma,
+  pubsub,
+})
