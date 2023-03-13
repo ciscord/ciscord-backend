@@ -26,7 +26,8 @@ export const communities = queryField('communities', {
     return ctx.prisma.community.findMany({
       where: {
         url: { not: 'direct' }
-      }
+      },
+      include: { channels: true },
     })
   }
 })
