@@ -90,7 +90,7 @@ type Message {
 type Mutation {
   attachRoleToUser(roleId: String, userId: String!): User
   createChannel(communityUrl: String, description: String, isPrivate: Boolean, name: String, url: String): Channel
-  createCommunity(description: String, image: String, isPrivate: Boolean, name: String, url: String): Community
+  createCommunity(description: String, image: String, isPrivate: Boolean, name: String!, url: String!): Community
   createRole(color: String, roleSettings: String, title: String): Role
   deattachRoleToUser(roleId: String!, userId: String!): User
   deleteFile(Key: String): String
@@ -107,8 +107,8 @@ type Mutation {
   markCommunityNotificationsAsRead(communityUrl: String): Notification
   markNotificationAsRead(id: String): CountType
   markNotificationsAsRead(type: String): CountType
-  replyMessage(attachments: String, body: String, parentId: String, urlList: String): ReplyMessage
-  searchMessages(channelUrl: String, searchQuery: String): Message
+  replyMessage(attachments: [String], body: String, parentId: String, urlList: String): ReplyMessage
+  searchMessages(channelUrl: String, searchQuery: String): [Message]
   sendMessage(attachments: [String], body: String, channelUrl: String, communityUrl: String, mentions: [String], urlList: [String]): Message
   sendNotification(channelUrl: String, communityUrl: String, messageId: ID, receiverName: String, type: String): Notification
   setCurrentChannel(channelUrl: String): User
@@ -150,11 +150,11 @@ type OnlinePayload {
 
 type Query {
   allMessages(channelUrl: String): [Message]
-  channel(url: String): [Channel]
+  channel(url: String!): Channel
   channelNotifications(channelUrl: String): [Notification]
-  channels(communityUrl: String): [Channel]
+  channels(communityUrl: String!): [Channel]
   communities: [Community]
-  community(id: ID, url: String): [Community]
+  community(id: ID, url: String): Community
   communityNotifications(communityUrl: String): [Notification]
   files(after: ID): [File]
   getLastMessages(channelUrl: String, cursorId: ID, lastVisitDate: String, number: String): [Message]

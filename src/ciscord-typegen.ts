@@ -88,16 +88,7 @@ export interface NexusGenObjects {
   RemoteAttachment: PrismaClient.RemoteAttachment;
   ReplyMessage: PrismaClient.ReplyMessage;
   Role: PrismaClient.Role;
-  Subscription: { // root type
-    channelNewMessage?: NexusGenRootTypes['Channel'] | null; // Channel
-    deleteMessage?: NexusGenRootTypes['Message'] | null; // Message
-    editMessage?: NexusGenRootTypes['Message'] | null; // Message
-    newNotification?: NexusGenRootTypes['Notification'] | null; // Notification
-    newReaction?: NexusGenRootTypes['Reaction'] | null; // Reaction
-    removedReaction?: NexusGenRootTypes['Reaction'] | null; // Reaction
-    updatedReaction?: NexusGenRootTypes['Reaction'] | null; // Reaction
-    userTypingStatus?: NexusGenRootTypes['TypingStatus'] | null; // TypingStatus
-  }
+  Subscription: {};
   TypingStatus: { // root type
     isTyping: boolean; // Boolean!
     username: string; // String!
@@ -205,7 +196,7 @@ export interface NexusGenFieldTypes {
     markNotificationAsRead: NexusGenRootTypes['CountType'] | null; // CountType
     markNotificationsAsRead: NexusGenRootTypes['CountType'] | null; // CountType
     replyMessage: NexusGenRootTypes['ReplyMessage'] | null; // ReplyMessage
-    searchMessages: NexusGenRootTypes['Message'] | null; // Message
+    searchMessages: Array<NexusGenRootTypes['Message'] | null> | null; // [Message]
     sendMessage: NexusGenRootTypes['Message'] | null; // Message
     sendNotification: NexusGenRootTypes['Notification'] | null; // Notification
     setCurrentChannel: NexusGenRootTypes['User'] | null; // User
@@ -240,11 +231,11 @@ export interface NexusGenFieldTypes {
   }
   Query: { // field return type
     allMessages: Array<NexusGenRootTypes['Message'] | null> | null; // [Message]
-    channel: Array<NexusGenRootTypes['Channel'] | null> | null; // [Channel]
+    channel: NexusGenRootTypes['Channel'] | null; // Channel
     channelNotifications: Array<NexusGenRootTypes['Notification'] | null> | null; // [Notification]
     channels: Array<NexusGenRootTypes['Channel'] | null> | null; // [Channel]
     communities: Array<NexusGenRootTypes['Community'] | null> | null; // [Community]
-    community: Array<NexusGenRootTypes['Community'] | null> | null; // [Community]
+    community: NexusGenRootTypes['Community'] | null; // Community
     communityNotifications: Array<NexusGenRootTypes['Notification'] | null> | null; // [Notification]
     files: Array<NexusGenRootTypes['File'] | null> | null; // [File]
     getLastMessages: Array<NexusGenRootTypes['Message'] | null> | null; // [Message]
@@ -613,8 +604,8 @@ export interface NexusGenArgTypes {
       description?: string | null; // String
       image?: string | null; // String
       isPrivate?: boolean | null; // Boolean
-      name?: string | null; // String
-      url?: string | null; // String
+      name: string; // String!
+      url: string; // String!
     }
     createRole: { // args
       color?: string | null; // String
@@ -670,7 +661,7 @@ export interface NexusGenArgTypes {
       type?: string | null; // String
     }
     replyMessage: { // args
-      attachments?: string | null; // String
+      attachments?: Array<string | null> | null; // [String]
       body?: string | null; // String
       parentId?: string | null; // String
       urlList?: string | null; // String
@@ -746,13 +737,13 @@ export interface NexusGenArgTypes {
       channelUrl?: string | null; // String
     }
     channel: { // args
-      url?: string | null; // String
+      url: string; // String!
     }
     channelNotifications: { // args
       channelUrl?: string | null; // String
     }
     channels: { // args
-      communityUrl?: string | null; // String
+      communityUrl: string; // String!
     }
     community: { // args
       id?: string | null; // ID

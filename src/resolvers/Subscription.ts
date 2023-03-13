@@ -65,7 +65,7 @@ export const channelNewMessage = subscriptionField('channelNewMessage', {
     console.log(channelUrl, tenant, '===channelNewMessage====')
     return pipe(
       context.pubsub.subscribe('CHANNEL_NEW_MESSAGE'),
-      filter((payload) => payload.channelNewMessage.channel.url === channelUrl)
+      filter((payload) => payload.channelNewMessage?.channel?.url === channelUrl)
     )
   },
   resolve: (payload) => payload
@@ -115,9 +115,9 @@ export const userTypingStatus = subscriptionField('userTypingStatus', {
       context.pubsub.subscribe('USER_TYPING_STATUS'),
       filter(
         (payload) =>
-          channelUrl === userTypingStatus.channelUrl &&
-          userTypingStatus.tenant === tenant &&
-          userTypingStatus.username !== username
+          channelUrl === userTypingStatus?.channelUrl &&
+          userTypingStatus?.tenant === tenant &&
+          userTypingStatus?.username !== username
       )
     )
   },
@@ -130,7 +130,7 @@ export const newReaction = subscriptionField('newReaction', {
   subscribe: (_, { channelUrl, tenant }, ctx) => {
     return pipe(
       ctx.pubsub.subscribe('NEW_REACTION'),
-      filter((payload) => payload.newReaction.message.channel.url === channelUrl && payload.tenant === tenant)
+      filter((payload) => payload.newReaction.message?.channel?.url === channelUrl && payload.tenant === tenant)
     )
   },
   resolve: (payload) => payload
@@ -142,7 +142,7 @@ export const updatedReaction = subscriptionField('updatedReaction', {
   subscribe: (_, { channelUrl, tenant }, ctx) => {
     return pipe(
       ctx.pubsub.subscribe('UPDATE_REACTION'),
-      filter((payload) => payload.updatedReaction.message.channel.url === channelUrl && payload.tenant === tenant)
+      filter((payload) => payload.updatedReaction.message?.channel?.url === channelUrl && payload.tenant === tenant)
     )
   },
   resolve: (payload) => payload
@@ -154,7 +154,7 @@ export const removedReaction = subscriptionField('removedReaction', {
   subscribe: (_, { channelUrl, tenant }, ctx) => {
     return pipe(
       ctx.pubsub.subscribe('REMOVE_REACTION'),
-      filter((payload) => payload.removedReaction.message.channel.url === channelUrl && payload.tenant === tenant)
+      filter((payload) => payload.removedReaction.message?.channel?.url === channelUrl && payload.tenant === tenant)
     )
   },
   resolve: (payload) => payload

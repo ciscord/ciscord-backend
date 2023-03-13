@@ -1,4 +1,4 @@
-import { mutationField, stringArg, nullable } from 'nexus'
+import { mutationField, stringArg, nullable, list } from 'nexus'
 import { getUserId, getTenant } from '../../utils'
 import { removeFile, createRemoteAttachments } from '../../utils/helpers'
 
@@ -7,7 +7,7 @@ export const replyMessage = mutationField('replyMessage', {
   args: {
     body: stringArg(),
     parentId: stringArg(),
-    attachments: nullable(stringArg()),
+    attachments: list(stringArg()),
     urlList: nullable(stringArg())
   },
   resolve: async (parent, { body, parentId, attachments, urlList }, ctx) => {
