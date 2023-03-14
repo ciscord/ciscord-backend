@@ -1,6 +1,5 @@
-import { mutationField, stringArg, nullable, list } from 'nexus'
+import { mutationField, stringArg, list } from 'nexus'
 import { getUserId, getTenant } from '../../utils'
-import { removeFile, createRemoteAttachments } from '../../utils/helpers'
 
 export const replyMessage = mutationField('replyMessage', {
   type: 'ReplyMessage',
@@ -29,8 +28,15 @@ export const replyMessage = mutationField('replyMessage', {
       }
     })
 
+    const _message = await ctx.prisma.message.findFirst({
+      where: {
+        id: replyMessage.parent.id
+      },
+      include: { author: true, channel: true, children: { include: {author: true}}, reactions: true }
+    })
+
     ctx.pubsub.publish('EDITED_MESSAGE', {
-      editMessage: replyMessage.parent,
+      editMessage: _message,
       tenant: getTenant(ctx)
     })
 
@@ -70,13 +76,20 @@ export const editReplyMessage = mutationField('editReplyMessage', {
         body
       },
       include: {
-        parent: { include: { channel: true, children: true, reactions: true } },
+        parent: { include: { channel: true, children: { include: { author: true }}, reactions: true } },
         author: true
       }
     })
 
+    const _message = await ctx.prisma.message.findFirst({
+      where: {
+        id: message.parent.id
+      },
+      include: { author: true, channel: true, children: { include: {author: true}}, reactions: true }
+    })
+
     ctx.pubsub.publish('EDITED_MESSAGE', {
-      editMessage: message.parent,
+      editMessage: _message,
       tenant: getTenant(ctx)
     })
 
@@ -112,13 +125,20 @@ export const deleteReplyMessage = mutationField('deleteReplyMessage', {
         id: messageId
       },
       include: {
-        parent: { include: { channel: true, children: true, reactions: true } },
+        parent: { include: { channel: true, children: { include: { author: true }}, reactions: true } },
         author: true
       }
     })
 
+    const _message = await ctx.prisma.message.findFirst({
+      where: {
+        id: message.parent.id
+      },
+      include: { author: true, channel: true, children: { include: {author: true}}, reactions: true }
+    })
+
     ctx.pubsub.publish('EDITED_MESSAGE', {
-      editMessage: message.parent,
+      editMessage: _message,
       tenant: getTenant(ctx)
     })
 
