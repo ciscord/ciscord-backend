@@ -14,6 +14,7 @@ import { applyMiddleware } from 'graphql-middleware'
 import compression from 'compression' // compresses requests
 import * as bodyParser from 'body-parser'
 import { makeSchema, nullabilityGuardPlugin } from 'nexus'
+import getSignedUrl from './getSignedUrl'
 
 const cors = require('cors')
 const baseSchema = makeSchema({
@@ -106,6 +107,7 @@ async function main() {
   app.use(bodyParser.text({ type: 'text/html' }))
 
   app.use('/register', RegisterCompany)
+  app.use('/presign', getSignedUrl)
 
   app.use('/graphql', yoga)
 
