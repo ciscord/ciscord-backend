@@ -12,10 +12,6 @@ declare global {
      * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
      */
     date<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "DateTime";
-    /**
-     * The `File` scalar type represents a file upload.
-     */
-    file<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "File";
   }
 }
 declare global {
@@ -24,10 +20,6 @@ declare global {
      * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
      */
     date<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "DateTime";
-    /**
-     * The `File` scalar type represents a file upload.
-     */
-    file<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "File";
   }
 }
 
@@ -68,7 +60,6 @@ export interface NexusGenScalars {
   Boolean: boolean
   ID: string
   DateTime: any
-  File: File
 }
 
 export interface NexusGenObjects {
@@ -92,23 +83,12 @@ export interface NexusGenObjects {
   }
   Query: {};
   Reaction: PrismaClient.Reaction;
-  RemoteAttachment: PrismaClient.RemoteAttachment;
   ReplyMessage: PrismaClient.ReplyMessage;
   Role: PrismaClient.Role;
   Subscription: {};
   TypingStatus: { // root type
     isTyping: boolean; // Boolean!
     username: string; // String!
-  }
-  UFile: { // root type
-    Key: string; // String!
-    encoding: string; // String!
-    filename: string; // String!
-    filesize?: string | null; // String
-    id: string; // String!
-    message?: NexusGenRootTypes['Message'] | null; // Message
-    mimetype: string; // String!
-    uploader: NexusGenRootTypes['User']; // User!
   }
   UnreadMessagePayload: { // root type
     fromNewUser: boolean; // Boolean!
@@ -171,7 +151,6 @@ export interface NexusGenFieldTypes {
     count: number | null; // Int
   }
   Message: { // field return type
-    attachments: NexusGenRootTypes['UFile'][]; // [UFile!]!
     author: NexusGenRootTypes['User']; // User!
     body: string | null; // String
     channel: NexusGenRootTypes['Channel'] | null; // Channel
@@ -179,8 +158,8 @@ export interface NexusGenFieldTypes {
     createdAt: NexusGenScalars['DateTime']; // DateTime!
     id: string; // String!
     reactions: NexusGenRootTypes['Reaction'][]; // [Reaction!]!
-    remoteAttachments: NexusGenRootTypes['RemoteAttachment'][]; // [RemoteAttachment!]!
     updatedAt: NexusGenScalars['DateTime']; // DateTime!
+    urlList: string[]; // [String!]!
   }
   Mutation: { // field return type
     attachRoleToUser: NexusGenRootTypes['User'] | null; // User
@@ -188,7 +167,6 @@ export interface NexusGenFieldTypes {
     createCommunity: NexusGenRootTypes['Community'] | null; // Community
     createRole: NexusGenRootTypes['Role'] | null; // Role
     deattachRoleToUser: NexusGenRootTypes['User'] | null; // User
-    deleteFile: string | null; // String
     deleteMessage: NexusGenRootTypes['Message'] | null; // Message
     deleteReplyMessage: NexusGenRootTypes['ReplyMessage'] | null; // ReplyMessage
     deleteRole: NexusGenRootTypes['Role'] | null; // Role
@@ -214,8 +192,6 @@ export interface NexusGenFieldTypes {
     updateChannelInfo: NexusGenRootTypes['User'] | null; // User
     updateRole: NexusGenRootTypes['Role'] | null; // Role
     updateUser: NexusGenRootTypes['User'] | null; // User
-    uploadFile: NexusGenRootTypes['UFile'] | null; // UFile
-    uploadFiles: NexusGenRootTypes['UFile'] | null; // UFile
     users: NexusGenRootTypes['User'] | null; // User
   }
   Notification: { // field return type
@@ -244,7 +220,6 @@ export interface NexusGenFieldTypes {
     communities: Array<NexusGenRootTypes['Community'] | null> | null; // [Community]
     community: NexusGenRootTypes['Community'] | null; // Community
     communityNotifications: Array<NexusGenRootTypes['Notification'] | null> | null; // [Notification]
-    files: Array<NexusGenRootTypes['UFile'] | null> | null; // [UFile]
     getLastMessages: Array<NexusGenRootTypes['Message'] | null> | null; // [Message]
     getNextMessages: Array<NexusGenRootTypes['Message'] | null> | null; // [Message]
     getPrevMessages: Array<NexusGenRootTypes['Message'] | null> | null; // [Message]
@@ -260,7 +235,6 @@ export interface NexusGenFieldTypes {
     searchCommunities: Array<NexusGenRootTypes['Community'] | null> | null; // [Community]
     searchMessages: Array<NexusGenRootTypes['Message'] | null> | null; // [Message]
     unreadNotifications: Array<NexusGenRootTypes['Notification'] | null> | null; // [Notification]
-    userFiles: Array<NexusGenRootTypes['UFile'] | null> | null; // [UFile]
     users: Array<NexusGenRootTypes['User'] | null> | null; // [User]
   }
   Reaction: { // field return type
@@ -271,26 +245,14 @@ export interface NexusGenFieldTypes {
     updatedAt: NexusGenScalars['DateTime']; // DateTime!
     users: NexusGenRootTypes['User'][]; // [User!]!
   }
-  RemoteAttachment: { // field return type
-    description: string | null; // String
-    id: string; // String!
-    parentMessage: NexusGenRootTypes['Message'] | null; // Message
-    parentReplyMessage: NexusGenRootTypes['ReplyMessage'] | null; // ReplyMessage
-    preview: string | null; // String
-    siteName: string | null; // String
-    title: string; // String!
-    url: string; // String!
-    videoLink: string | null; // String
-  }
   ReplyMessage: { // field return type
-    attachments: NexusGenRootTypes['UFile'][]; // [UFile!]!
     author: NexusGenRootTypes['User']; // User!
     body: string; // String!
     createdAt: NexusGenScalars['DateTime']; // DateTime!
     id: string; // String!
     parent: NexusGenRootTypes['Message']; // Message!
-    remoteAttachments: NexusGenRootTypes['RemoteAttachment'][]; // [RemoteAttachment!]!
     updatedAt: NexusGenScalars['DateTime']; // DateTime!
+    urlList: string[]; // [String!]!
   }
   Role: { // field return type
     color: string; // String!
@@ -317,16 +279,6 @@ export interface NexusGenFieldTypes {
     isTyping: boolean; // Boolean!
     username: string; // String!
   }
-  UFile: { // field return type
-    Key: string; // String!
-    encoding: string; // String!
-    filename: string; // String!
-    filesize: string | null; // String
-    id: string; // String!
-    message: NexusGenRootTypes['Message'] | null; // Message
-    mimetype: string; // String!
-    uploader: NexusGenRootTypes['User']; // User!
-  }
   UnreadMessagePayload: { // field return type
     fromNewUser: boolean; // Boolean!
     messages: NexusGenRootTypes['Message'][]; // [Message!]!
@@ -340,7 +292,6 @@ export interface NexusGenFieldTypes {
     communitiesOwned: NexusGenRootTypes['Community'][]; // [Community!]!
     currentChannel: NexusGenRootTypes['Channel'] | null; // Channel
     email: string | null; // String
-    files: NexusGenRootTypes['UFile'][]; // [UFile!]!
     fullname: string; // String!
     id: string; // String!
     image: string | null; // String
@@ -401,7 +352,6 @@ export interface NexusGenFieldTypeNames {
     count: 'Int'
   }
   Message: { // field return type name
-    attachments: 'UFile'
     author: 'User'
     body: 'String'
     channel: 'Channel'
@@ -409,8 +359,8 @@ export interface NexusGenFieldTypeNames {
     createdAt: 'DateTime'
     id: 'String'
     reactions: 'Reaction'
-    remoteAttachments: 'RemoteAttachment'
     updatedAt: 'DateTime'
+    urlList: 'String'
   }
   Mutation: { // field return type name
     attachRoleToUser: 'User'
@@ -418,7 +368,6 @@ export interface NexusGenFieldTypeNames {
     createCommunity: 'Community'
     createRole: 'Role'
     deattachRoleToUser: 'User'
-    deleteFile: 'String'
     deleteMessage: 'Message'
     deleteReplyMessage: 'ReplyMessage'
     deleteRole: 'Role'
@@ -444,8 +393,6 @@ export interface NexusGenFieldTypeNames {
     updateChannelInfo: 'User'
     updateRole: 'Role'
     updateUser: 'User'
-    uploadFile: 'UFile'
-    uploadFiles: 'UFile'
     users: 'User'
   }
   Notification: { // field return type name
@@ -474,7 +421,6 @@ export interface NexusGenFieldTypeNames {
     communities: 'Community'
     community: 'Community'
     communityNotifications: 'Notification'
-    files: 'UFile'
     getLastMessages: 'Message'
     getNextMessages: 'Message'
     getPrevMessages: 'Message'
@@ -490,7 +436,6 @@ export interface NexusGenFieldTypeNames {
     searchCommunities: 'Community'
     searchMessages: 'Message'
     unreadNotifications: 'Notification'
-    userFiles: 'UFile'
     users: 'User'
   }
   Reaction: { // field return type name
@@ -501,26 +446,14 @@ export interface NexusGenFieldTypeNames {
     updatedAt: 'DateTime'
     users: 'User'
   }
-  RemoteAttachment: { // field return type name
-    description: 'String'
-    id: 'String'
-    parentMessage: 'Message'
-    parentReplyMessage: 'ReplyMessage'
-    preview: 'String'
-    siteName: 'String'
-    title: 'String'
-    url: 'String'
-    videoLink: 'String'
-  }
   ReplyMessage: { // field return type name
-    attachments: 'UFile'
     author: 'User'
     body: 'String'
     createdAt: 'DateTime'
     id: 'String'
     parent: 'Message'
-    remoteAttachments: 'RemoteAttachment'
     updatedAt: 'DateTime'
+    urlList: 'String'
   }
   Role: { // field return type name
     color: 'String'
@@ -547,16 +480,6 @@ export interface NexusGenFieldTypeNames {
     isTyping: 'Boolean'
     username: 'String'
   }
-  UFile: { // field return type name
-    Key: 'String'
-    encoding: 'String'
-    filename: 'String'
-    filesize: 'String'
-    id: 'String'
-    message: 'Message'
-    mimetype: 'String'
-    uploader: 'User'
-  }
   UnreadMessagePayload: { // field return type name
     fromNewUser: 'Boolean'
     messages: 'Message'
@@ -570,7 +493,6 @@ export interface NexusGenFieldTypeNames {
     communitiesOwned: 'Community'
     currentChannel: 'Channel'
     email: 'String'
-    files: 'UFile'
     fullname: 'String'
     id: 'String'
     image: 'String'
@@ -633,9 +555,6 @@ export interface NexusGenArgTypes {
       roleId: string; // String!
       userId: string; // String!
     }
-    deleteFile: { // args
-      Key?: string | null; // String
-    }
     deleteMessage: { // args
       messageId?: string | null; // String
     }
@@ -678,17 +597,15 @@ export interface NexusGenArgTypes {
       type?: string | null; // String
     }
     replyMessage: { // args
-      attachments?: Array<string | null> | null; // [String]
       body?: string | null; // String
       parentId?: string | null; // String
-      urlList?: string | null; // String
+      urlList?: Array<string | null> | null; // [String]
     }
     searchMessages: { // args
       channelUrl?: string | null; // String
       searchQuery?: string | null; // String
     }
     sendMessage: { // args
-      attachments?: Array<string | null> | null; // [String]
       body?: string | null; // String
       channelUrl?: string | null; // String
       communityUrl?: string | null; // String
@@ -739,12 +656,6 @@ export interface NexusGenArgTypes {
       image?: string | null; // String
       username: string; // String!
     }
-    uploadFile: { // args
-      file: NexusGenScalars['File']; // File!
-    }
-    uploadFiles: { // args
-      files: NexusGenScalars['File'][]; // [File!]!
-    }
     users: { // args
       searchString?: string | null; // String
     }
@@ -768,9 +679,6 @@ export interface NexusGenArgTypes {
     }
     communityNotifications: { // args
       communityUrl?: string | null; // String
-    }
-    files: { // args
-      after?: string | null; // ID
     }
     getLastMessages: { // args
       channelUrl?: string | null; // String
@@ -813,21 +721,8 @@ export interface NexusGenArgTypes {
       channelUrl?: string | null; // String
       searchQuery?: string | null; // String
     }
-    userFiles: { // args
-      after?: string | null; // ID
-      userId?: string | null; // ID
-    }
     users: { // args
       searchString?: string | null; // String
-    }
-  }
-  ReplyMessage: {
-    attachments: { // args
-      after?: NexusGenInputs['FileWhereUniqueInput'] | null; // FileWhereUniqueInput
-      before?: NexusGenInputs['FileWhereUniqueInput'] | null; // FileWhereUniqueInput
-      first?: number | null; // Int
-      last?: number | null; // Int
-      skip?: number | null; // Int
     }
   }
   Role: {

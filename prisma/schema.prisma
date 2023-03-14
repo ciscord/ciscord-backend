@@ -26,7 +26,6 @@ model User {
   channelsInfo            ChannelInfo[]
   currentChannel          Channel?        @relation(name: "UserCurrentChannel", fields: [currentChannelId], references: [id])
   messages                Message[]
-  files                   File[]
   replyMessages           ReplyMessage[]
   notificationsSend       Notification[]  @relation(name: "UserNotificationSender")
   notificationsReceived   Notification[]  @relation(name: "UserNotificationReceiver")
@@ -78,13 +77,12 @@ model Message {
   body                    String?
   channel                 Channel?            @relation(fields: [channelId], references: [id])
   author                  User                @relation(fields: [authorId], references: [id])
-  attachments             File[]
-  remoteAttachments       RemoteAttachment[]
   children                ReplyMessage[]
   reactions               Reaction[]
   authorId               String
   channelId               String?
   notification            Notification?
+  urlList                 String[]
 }
 
 model ReplyMessage {
@@ -93,8 +91,7 @@ model ReplyMessage {
   updatedAt               DateTime            @updatedAt
   body                    String
   author                  User                @relation(fields: [authorId], references: [id])
-  attachments             File[]
-  remoteAttachments       RemoteAttachment[]
+  urlList                 String[]
   parent                  Message             @relation(fields: [parentId], references: [id])
   authorId               String
   parentId               String
@@ -129,22 +126,6 @@ model Notification {
   communityId               String?
 }
 
-model File {
-  id                      String          @default(cuid()) @id
-  createdAt               DateTime        @default(now())
-  filename                String
-  mimetype                String
-  filesize                String?
-  message                 Message?        @relation(fields: [messageId], references: [id])
-  replyMessage                 ReplyMessage?        @relation(fields: [replyMessageId], references: [id])
-  encoding                String
-  Key                     String          @unique
-  uploader                User            @relation(fields: [uploaderId], references: [id])
-  uploaderId               String
-  messageId               String?
-  replyMessageId               String?
-}
-
 model Role {
   id                      String          @default(cuid()) @id
   createdAt               DateTime        @default(now())
@@ -162,18 +143,4 @@ model ChannelInfo {
   uniqueUserChannelPair   String          @unique
   channelId               String
   userId                 String
-}
-
-model RemoteAttachment {
-  id                      String          @default(cuid()) @id
-  title                   String
-  description             String?
-  siteName                String?
-  url                     String
-  preview                 String?
-  videoLink               String?
-  parentMessage           Message?        @relation(fields: [parentMessageId], references: [id])
-  parentReplyMessage      ReplyMessage?   @relation(fields: [parentReplyMessageId], references: [id])
-  parentReplyMessageId    String?
-  parentMessageId         String?
 }

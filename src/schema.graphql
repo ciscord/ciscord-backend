@@ -58,16 +58,12 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
-"""The `File` scalar type represents a file upload."""
-scalar File
-
 input FileWhereUniqueInput {
   Key: String
   id: String
 }
 
 type Message {
-  attachments: [UFile!]!
   author: User!
   body: String
   channel: Channel
@@ -75,8 +71,8 @@ type Message {
   createdAt: DateTime!
   id: String!
   reactions: [Reaction!]!
-  remoteAttachments: [RemoteAttachment!]!
   updatedAt: DateTime!
+  urlList: [String!]!
 }
 
 type Mutation {
@@ -85,7 +81,6 @@ type Mutation {
   createCommunity(description: String, image: String, isPrivate: Boolean, name: String!, url: String!): Community
   createRole(color: String, roleSettings: String, title: String): Role
   deattachRoleToUser(roleId: String!, userId: String!): User
-  deleteFile(Key: String): String
   deleteMessage(messageId: String): Message
   deleteReplyMessage(messageId: String): ReplyMessage
   deleteRole(id: String): Role
@@ -99,9 +94,9 @@ type Mutation {
   markCommunityNotificationsAsRead(communityUrl: String): Notification
   markNotificationAsRead(id: String): CountType
   markNotificationsAsRead(type: String): CountType
-  replyMessage(attachments: [String], body: String, parentId: String, urlList: String): ReplyMessage
+  replyMessage(body: String, parentId: String, urlList: [String]): ReplyMessage
   searchMessages(channelUrl: String, searchQuery: String): [Message]
-  sendMessage(attachments: [String], body: String, channelUrl: String, communityUrl: String, mentions: [String], urlList: [String]): Message
+  sendMessage(body: String, channelUrl: String, communityUrl: String, mentions: [String], urlList: [String]): Message
   sendNotification(channelUrl: String, communityUrl: String, messageId: ID, receiverName: String, type: String): Notification
   setCurrentChannel(channelUrl: String): User
   setUserTypingStatus(channelUrl: String, isTyping: Boolean): TypingStatus
@@ -111,8 +106,6 @@ type Mutation {
   updateChannelInfo(channelUrl: String!, date: String!): User
   updateRole(color: String, id: String, roleSettings: String, title: String): Role
   updateUser(email: String!, fullname: String!, image: String, username: String!): User
-  uploadFile(file: File!): UFile
-  uploadFiles(files: [File!]!): UFile
   users(searchString: String): User
 }
 
@@ -148,7 +141,6 @@ type Query {
   communities: [Community]
   community(id: ID, url: String): Community
   communityNotifications(communityUrl: String): [Notification]
-  files(after: ID): [UFile]
   getLastMessages(channelUrl: String, cursorId: ID, lastVisitDate: String, number: String): [Message]
   getNextMessages(channelUrl: String, cursorId: ID, number: String): [Message]
   getPrevMessages(channelUrl: String, cursorId: ID, number: String): [Message]
@@ -164,7 +156,6 @@ type Query {
   searchCommunities(searchString: String): [Community]
   searchMessages(channelUrl: String, searchQuery: String): [Message]
   unreadNotifications: [Notification]
-  userFiles(after: ID, userId: ID): [UFile]
   users(searchString: String): [User]
 }
 
@@ -177,27 +168,14 @@ type Reaction {
   users: [User!]!
 }
 
-type RemoteAttachment {
-  description: String
-  id: String!
-  parentMessage: Message
-  parentReplyMessage: ReplyMessage
-  preview: String
-  siteName: String
-  title: String!
-  url: String!
-  videoLink: String
-}
-
 type ReplyMessage {
-  attachments(after: FileWhereUniqueInput, before: FileWhereUniqueInput, first: Int, last: Int, skip: Int): [UFile!]!
   author: User!
   body: String!
   createdAt: DateTime!
   id: String!
   parent: Message!
-  remoteAttachments: [RemoteAttachment!]!
   updatedAt: DateTime!
+  urlList: [String!]!
 }
 
 input ReplyMessageWhereUniqueInput {
@@ -232,17 +210,6 @@ type TypingStatus {
   username: String!
 }
 
-type UFile {
-  Key: String!
-  encoding: String!
-  filename: String!
-  filesize: String
-  id: String!
-  message: Message
-  mimetype: String!
-  uploader: User!
-}
-
 type UnreadMessagePayload {
   fromNewUser: Boolean!
   messages: [Message!]!
@@ -257,7 +224,6 @@ type User {
   communitiesOwned: [Community!]!
   currentChannel: Channel
   email: String
-  files: [UFile!]!
   fullname: String!
   id: String!
   image: String
