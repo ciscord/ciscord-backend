@@ -6,13 +6,12 @@ export const sendMessage = mutationField('sendMessage', {
   type: 'Message',
   args: {
     body: stringArg(),
-    attachments: list(stringArg()),
     channelUrl: stringArg(),
     urlList: list(stringArg()),
     mentions: list(stringArg()),
     communityUrl: stringArg()
   },
-  resolve: async (_, { body, channelUrl, attachments, urlList, mentions, communityUrl }, ctx) => {
+  resolve: async (_, { body, channelUrl, urlList, mentions, communityUrl }, ctx) => {
     try {
       const userId = await getUserId(ctx)
       if (!userId) {
@@ -22,18 +21,8 @@ export const sendMessage = mutationField('sendMessage', {
         body,
         author: { connect: { id: userId } },
         channel: { connect: { url: channelUrl } },
-        attachments: {},
-        remoteAttachments: await createRemoteAttachments(urlList)
+        urlList,
       }
-
-      if (attachments) {
-        data.attachments = {
-          connect: attachments.map((Key: string) => ({
-            Key
-          }))
-        }
-      }
-
       const message = await ctx.prisma.message.create({
         data,
         include: {
@@ -41,7 +30,6 @@ export const sendMessage = mutationField('sendMessage', {
           channel: true,
           reactions: true,
           children: true,
-          attachments: true
         }
       })
       
@@ -89,7 +77,7 @@ export const sendMessage = mutationField('sendMessage', {
               sender: true,
               receiver: true,
               message: true,
-              channel: true
+              channel: true,
             }
           })
           ctx.pubsub.publish('NEW_NOTIFICATION', {
@@ -192,7 +180,6 @@ export const editMessage = mutationField('editMessage', {
         channel: true,
         reactions: true,
         children: true,
-        attachments: true
       }
     })
 
@@ -216,8 +203,7 @@ export const deleteMessage = mutationField('deleteMessage', {
         id: messageId
       },
       include: {
-        attachments: true,
-        children: { include: { attachments: true } }
+        children: true
       }
     })
 
@@ -233,16 +219,6 @@ export const deleteMessage = mutationField('deleteMessage', {
         }
       }
     })
-
-    const repliesAttachments = currentMessage[0].children
-      .map(({ attachments }) => attachments.map(({ Key }) => Key))
-      .filter((item) => item.length)
-
-    const messageFiles = currentMessage[0].attachments.map(({ Key }) => Key)
-
-    const filesList = [].concat(...repliesAttachments, messageFiles)
-
-    await removeFile({ filesList, ctx, messageId })
 
     await ctx.prisma.replyMessage.deleteMany({
       where: {
