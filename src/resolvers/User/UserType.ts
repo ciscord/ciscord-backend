@@ -1,5 +1,5 @@
 import { arg, intArg, objectType } from 'nexus'
-import { Channel, ChannelInfo, Notification, File, Community, Message, Reaction, ReplyMessage, Role } from '../index'
+import { Channel, ChannelInfo, Notification, UFile, Community, Message, Reaction, ReplyMessage, Role } from '../index'
 import { NotificationWhereUniqueInput } from '../Others'
 import { ReplyMessageWhereUniqueInput } from '../Others'
 
@@ -13,7 +13,7 @@ export const User = objectType({
     t.field('currentChannel', { type: Channel })
     t.field('chanelAuthor', { type: Channel })
     t.string('email')
-    t.nonNull.list.nonNull.field('files', { type: File })
+    t.nonNull.list.nonNull.field('files', { type: UFile })
     t.nonNull.string('fullname')
     t.nonNull.string('id')
     t.string('image')

@@ -1,10 +1,9 @@
-import { FileUpload } from 'graphql-upload'
 import { Stream } from 'stream'
 const uuid = require('uuid/v1')
 import { S3, AWSError } from 'aws-sdk'
 
 const bucketName = 'shantsai'
-const awsRegion = 'us-east-1'
+const awsRegion = 'us-east-2'
 
 const s3 = new S3({
   accessKeyId: process.env.AWS_KEY,
@@ -15,16 +14,16 @@ const s3 = new S3({
   }
 })
 
-export async function processUpload(file: FileUpload) {
-  const { createReadStream, filename, mimetype, encoding } = await file
-  const stream = createReadStream()
-  const Key = await uploadToAws(stream, filename)
+export async function processUpload(file: File) {
+  console.log(file, '==file')
+  const stream = await file.text()
+  const Key = await uploadToAws(stream, file.name)
   const filesize = await sizeOfFile(Key, bucketName)
 
-  return { Key, filename, mimetype, encoding, filesize }
+  return { Key, filename: file.name, mimetype: file.type, encoding: 'blob', filesize }
 }
 
-export async function uploadToAws(stream: Stream, filename: string) {
+export async function uploadToAws(stream: string, filename: string) {
   const res = await s3
     .upload({
       Key: bucketName + uuid() + filename,

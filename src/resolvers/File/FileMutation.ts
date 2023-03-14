@@ -1,16 +1,13 @@
-import { FileUpload, GraphQLUpload } from 'graphql-upload'
 import { mutationField, arg, stringArg, nullable, nonNull, list } from 'nexus'
 import { processUpload, deleteFromAws } from '../../utils/fileApi'
 import { getUserId } from '../../utils'
-import { File } from '../index'
-import { Upload } from '../Others'
 
 export const uploadFile = mutationField('uploadFile', {
-  type: 'File',
-  args: { file: nullable(arg({ type: Upload })) },
-  resolve: async (parent, { file }, ctx) => {
+  type: 'UFile',
+  args: { file: nonNull(arg({ type: 'File' })) },
+  resolve: async (parent, { file }: { file: File }, ctx) => {
     const userId = getUserId(ctx)
-    if (!userId) {
+    if (!userId || !file) {
       throw new Error('nonexistent user')
     }
 
@@ -32,9 +29,9 @@ export const uploadFile = mutationField('uploadFile', {
 })
 
 export const uploadFiles = mutationField('uploadFiles', {
-  type: 'File',
+  type: 'UFile',
   args: {
-    files: arg({ type: nonNull(list(nonNull(Upload))) })
+    files: arg({ type: nonNull(list(nonNull('File'))) })
   },
   resolve: async (parent, { files }, ctx) => {
     const userId = getUserId(ctx)

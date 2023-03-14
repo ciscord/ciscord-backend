@@ -1,11 +1,11 @@
 import { objectType } from 'nexus'
-import { Channel, Reaction, File, RemoteAttachment, ReplyMessage, User } from '../index'
+import { Channel, Reaction, UFile, RemoteAttachment, ReplyMessage, User } from '../index'
 import { DateTime } from '../Others'
 
 export const Message = objectType({
   name: 'Message',
   definition(t) {
-    t.nonNull.list.nonNull.field('attachments', { type: File })
+    t.nonNull.list.nonNull.field('attachments', { type: UFile })
     t.nonNull.field('author', { type: User })
     t.string('body')
     t.field('channel', { type: Channel })

@@ -1,12 +1,12 @@
 import { arg, intArg, objectType } from 'nexus'
-import { Message, RemoteAttachment, User, File } from '../index'
+import { Message, RemoteAttachment, User, UFile } from '../index'
 import { DateTime, FileWhereUniqueInput } from '../Others'
 
 export const ReplyMessage = objectType({
   name: 'ReplyMessage',
   definition(t) {
     t.nonNull.list.nonNull.field('attachments', {
-      type: File,
+      type: UFile,
       args: {
         after: arg({ type: FileWhereUniqueInput }),
         before: arg({ type: FileWhereUniqueInput }),

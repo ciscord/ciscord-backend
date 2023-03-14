@@ -2,8 +2,7 @@ import { queryField, list, idArg, nullable } from 'nexus'
 import { getUserId } from '../../utils'
 
 export const files = queryField('files', {
-  type: list('File'),
-
+  type: list('UFile'),
   args: {
     after: nullable(idArg())
   },
@@ -20,8 +19,7 @@ export const files = queryField('files', {
 })
 
 export const userFiles = queryField('userFiles', {
-  type: list('File'),
-
+  type: list('UFile'),
   args: {
     after: nullable(idArg()),
     userId: idArg()

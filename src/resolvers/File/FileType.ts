@@ -1,11 +1,8 @@
-import { objectType } from 'nexus'
+import { objectType, scalarType } from 'nexus'
 import { Message, User } from '../index'
-// import { GraphQLUpload } from "graphql-upload";
 
-// export const Upload = GraphQLUpload;
-
-export const File = objectType({
-  name: 'File',
+export const UFile = objectType({
+  name: 'UFile',
   definition(t) {
     t.nonNull.string('encoding')
     t.nonNull.string('filename')
@@ -16,4 +13,11 @@ export const File = objectType({
     t.nonNull.string('mimetype')
     t.nonNull.field('uploader', { type: User })
   }
+})
+
+export const FileScalar = scalarType({
+  name: 'File',
+  asNexusMethod: 'file',
+  description: 'The `File` scalar type represents a file upload.',
+  sourceType: 'File'
 })

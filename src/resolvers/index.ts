@@ -1,4 +1,3 @@
-// import { GraphQLUpload as Upload } from 'graphql-upload'
 export * from './Query'
 export * from './Mutation'
 export * from './Subscription'
