@@ -1,4 +1,4 @@
-import { inputObjectType, asNexusMethod, scalarType } from 'nexus'
+import { inputObjectType, asNexusMethod } from 'nexus'
 import { GraphQLDateTime } from 'graphql-scalars'
 
 export const ChannelInfoWhereUniqueInput = inputObjectType({

@@ -1,6 +1,5 @@
 import { objectType } from 'nexus'
 import { Channel, Reaction, ReplyMessage, User } from '../index'
-import { DateTime } from '../Others'
 
 export const Message = objectType({
   name: 'Message',

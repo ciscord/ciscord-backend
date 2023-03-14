@@ -1,5 +1,5 @@
-import { arg, intArg, objectType } from 'nexus'
-import { Message, RemoteAttachment, User, UFile } from '../index'
+import { objectType } from 'nexus'
+import { Message, User } from '../index'
 
 export const ReplyMessage = objectType({
   name: 'ReplyMessage',
