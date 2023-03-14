@@ -7,10 +7,9 @@ export const replyMessage = mutationField('replyMessage', {
   args: {
     body: stringArg(),
     parentId: stringArg(),
-    attachments: list(stringArg()),
-    urlList: nullable(stringArg())
+    urlList: list(stringArg()),
   },
-  resolve: async (parent, { body, parentId, attachments, urlList }, ctx) => {
+  resolve: async (parent, { body, parentId, urlList }, ctx) => {
     const userId = (await getUserId(ctx)) || 'ck3fot8rr0000qmkp16jlc1mq'
     if (!userId) {
       throw new Error('nonexistent user')
@@ -19,16 +18,7 @@ export const replyMessage = mutationField('replyMessage', {
       body,
       author: { connect: { id: userId } },
       parent: { connect: { id: parentId } },
-      attachments: {},
-      remoteAttachments: await createRemoteAttachments(urlList)
-    }
-
-    if (attachments) {
-      data.attachments = {
-        connect: attachments.map((Key: string) => ({
-          Key
-        }))
-      }
+      urlList,
     }
 
     const replyMessage = await ctx.prisma.replyMessage.create({
@@ -111,16 +101,11 @@ export const deleteReplyMessage = mutationField('deleteReplyMessage', {
         id: messageId,
         author: { id: userId }
       },
-      include: { attachments: true }
     })
 
     if (!requestingUserIsAuthor[0]) {
       throw new Error('Invalid permissions, you must be an author of this post to delete it.')
     }
-
-    const filesList = requestingUserIsAuthor[0].attachments.map(({ Key }) => Key)
-
-    await removeFile({ filesList, ctx, messageId })
 
     const message = await ctx.prisma.replyMessage.delete({
       where: {

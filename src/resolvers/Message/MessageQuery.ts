@@ -45,14 +45,14 @@ export const lastMessages = queryField('getLastMessages', {
     if (!searchMessageId) {
       const messageList = await ctx.prisma.message.findMany({
         where: { channel: { url: channelUrl! } },
-        include: { author: true, channel: true, children: true, reactions: true, remoteAttachments: true } ,
+        include: { author: true, channel: true, children: true, reactions: true },
         take: Number(number) || messagesNumber
       })
       return messageList
     } else {
       const prevMessages = await ctx.prisma.message.findMany({
         where: { channel: { url: channelUrl! } },
-        include: { author: true, channel: true, children: true, reactions: true, remoteAttachments: true } ,
+        include: { author: true, channel: true, children: true, reactions: true },
         take: -(Number(number) || messagesNumber),
         skip: 1,
         cursor: { id: searchMessageId }
@@ -60,7 +60,7 @@ export const lastMessages = queryField('getLastMessages', {
 
       const nextMessages = await ctx.prisma.message.findMany({
         where: { channel: { url: channelUrl! } },
-        include: { author: true, channel: true, children: true, reactions: true, remoteAttachments: true } ,
+        include: { author: true, channel: true, children: true, reactions: true },
         take: Number(number) || messagesNumber,
         skip: 1,
         cursor: { id: searchMessageId }
@@ -70,7 +70,7 @@ export const lastMessages = queryField('getLastMessages', {
         where: {
           id: searchMessageId
         },
-        include: { author: true, channel: true, children: true, reactions: true, remoteAttachments: true } 
+        include: { author: true, channel: true, children: true, reactions: true }
       })
 
       const messageList = [].concat(prevMessages, [message], nextMessages)
