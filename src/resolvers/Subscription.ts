@@ -31,7 +31,7 @@ export const editMessage = subscriptionField('editMessage', {
       filter((payload) => payload.editMessage.channel.url === channelUrl)
     )
   },
-  resolve: (payload) => payload
+  resolve: (payload) => payload.editMessage
 })
 
 export const deleteMessage = subscriptionField('deleteMessage', {
@@ -43,7 +43,7 @@ export const deleteMessage = subscriptionField('deleteMessage', {
       filter((payload) => payload.deleteMessage.channel.url === channelUrl)
     )
   },
-  resolve: (payload) => payload
+  resolve: (payload) => payload.deleteMessage
 })
 
 export const newNotification = subscriptionField('newNotification', {
@@ -55,7 +55,7 @@ export const newNotification = subscriptionField('newNotification', {
       filter((payload) => payload.newNotification.channel.url === channelUrl)
     )
   },
-  resolve: (payload) => payload
+  resolve: (payload) => payload.newNotification
 })
 
 export const channelNewMessage = subscriptionField('channelNewMessage', {
@@ -68,7 +68,7 @@ export const channelNewMessage = subscriptionField('channelNewMessage', {
       filter((payload) => payload.channelNewMessage?.channel?.url === channelUrl)
     )
   },
-  resolve: (payload) => payload
+  resolve: (payload) => payload.channelNewMessage
 })
 
 
@@ -121,7 +121,7 @@ export const userTypingStatus = subscriptionField('userTypingStatus', {
       )
     )
   },
-  resolve: (payload) => payload
+  resolve: (payload) => payload.userTypingStatus
 })
 
 export const newReaction = subscriptionField('newReaction', {
@@ -133,7 +133,7 @@ export const newReaction = subscriptionField('newReaction', {
       filter((payload) => payload.newReaction.message?.channel?.url === channelUrl && payload.tenant === tenant)
     )
   },
-  resolve: (payload) => payload
+  resolve: (payload) => payload.newReaction
 })
 
 export const updatedReaction = subscriptionField('updatedReaction', {
@@ -145,7 +145,7 @@ export const updatedReaction = subscriptionField('updatedReaction', {
       filter((payload) => payload.updatedReaction.message?.channel?.url === channelUrl && payload.tenant === tenant)
     )
   },
-  resolve: (payload) => payload
+  resolve: (payload) => payload.updatedReaction
 })
 
 export const removedReaction = subscriptionField('removedReaction', {
@@ -157,5 +157,5 @@ export const removedReaction = subscriptionField('removedReaction', {
       filter((payload) => payload.removedReaction.message?.channel?.url === channelUrl && payload.tenant === tenant)
     )
   },
-  resolve: (payload) => payload
+  resolve: (payload) => payload.removedReaction
 })
