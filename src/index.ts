@@ -106,8 +106,8 @@ async function main() {
   app.use(bodyParser.urlencoded({ extended: true }))
   app.use(bodyParser.text({ type: 'text/html' }))
 
-  app.use('/register', RegisterCompany)
-  app.use('/presign', getSignedUrl)
+  app.use('/graphql/register', RegisterCompany)
+  app.use('/graphql/presign', getSignedUrl)
 
   app.use('/graphql', yoga)
 

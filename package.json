@@ -4,7 +4,7 @@
     "seed": "ts-node prisma/seed.ts",
     "dev": "NODE_ENV=development ts-node-dev --no-notify --respawn --transpile-only ./src",
     "staging": "NODE_ENV=staging ts-node-dev --notify --respawn --transpile-only ./src",
-    "production": "NODE_ENV=production ts-node-dev --notify --respawn --transpile-only ./src",
+    "production": "NODE_ENV=production ts-node --notify --respawn --transpile-only ./src",
     "new_service": "node scripts/prisma_new_service/index.js",
     "deploy": "node scripts/prisma_deploy_all/index.js"
   },
