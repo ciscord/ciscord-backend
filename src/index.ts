@@ -15,6 +15,7 @@ import compression from 'compression' // compresses requests
 import * as bodyParser from 'body-parser'
 import { makeSchema, nullabilityGuardPlugin } from 'nexus'
 import getSignedUrl from './getSignedUrl'
+import sendMessage from './sendMessage'
 
 const cors = require('cors')
 const baseSchema = makeSchema({
@@ -108,6 +109,7 @@ async function main() {
 
   app.use('/graphql/register', RegisterCompany)
   app.use('/graphql/presign', getSignedUrl)
+  app.use('/graphql/contact', sendMessage)
 
   app.use('/graphql', yoga)
 
